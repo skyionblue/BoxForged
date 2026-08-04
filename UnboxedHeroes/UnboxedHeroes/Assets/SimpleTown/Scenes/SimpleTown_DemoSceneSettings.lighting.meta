@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: acbf43fea81fbf745ae2155444805a72
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 43500
+  packageName: Simple Town - Cartoon Assets
+  packageVersion: 1.3.0
+  assetPath: Assets/SimpleTown/Scenes/SimpleTown_DemoSceneSettings.lighting
+  uploadId: 739765

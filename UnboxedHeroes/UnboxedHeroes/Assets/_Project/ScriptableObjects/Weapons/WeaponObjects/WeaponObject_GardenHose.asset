@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bfa5a586bcbf4db5b3e6ece0a8948ad, type: 3}
+  m_Name: WeaponObject_GardenHose
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponObjectSO
+  weaponName: Water Whip
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 5515635984768180744, guid: 6783afab385c044fba1f465c5d0185cd, type: 3}
+  material: {fileID: 2100000, guid: 2513f6ed2f28f49adbe38d3e1378e3b2, type: 2}
+  weaponIcon: {fileID: 21300000, guid: 1b1fb06a8ba5d429884b11fa5a04a67f, type: 3}
+  gripPositionOffset: {x: 0.0199, y: 0.1394, z: 0.0031}
+  gripRotationOffset: {x: 0, y: 81.22, z: 0}
+  gripScale: 0.35
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 
+  rawObjectName: Garden Hose
+  rawObjectPrefab: {fileID: 6387181012519967316, guid: 6bd37548c2e494320b75ce031a2a3725, type: 3}
+  rawObjectIcon: {fileID: 0}
+  rarity: 1
+  weaponType: 1
+  forgeCost: 2
+  epicUpgradeCost: 5
+  legendaryUpgradeCost: 0
+  standardDurability: 30
+  epicDurability: 60
+  legendaryDurability: 100
+  epicIcon: {fileID: 0}
+  legendaryIcon: {fileID: 0}
+  epicWeaponPrefab: {fileID: 0}
+  legendaryWeaponPrefab: {fileID: 0}
+  epicAbilityId: 
+  legendaryAbilityId: 

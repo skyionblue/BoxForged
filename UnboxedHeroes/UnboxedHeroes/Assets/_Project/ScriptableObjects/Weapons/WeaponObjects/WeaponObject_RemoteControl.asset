@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bfa5a586bcbf4db5b3e6ece0a8948ad, type: 3}
+  m_Name: WeaponObject_RemoteControl
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponObjectSO
+  weaponName: Magic Wand
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 2083918066854769309, guid: 932f981ded50748e492ce80e9370cfe1, type: 3}
+  material: {fileID: 2100000, guid: 6ed19cad1cafa498fb79dfe2d672dc7f, type: 2}
+  weaponIcon: {fileID: 0}
+  gripPositionOffset: {x: 0.049, y: 0.198, z: -0.144}
+  gripRotationOffset: {x: -203.875, y: -88.17801, z: 12.60201}
+  gripScale: 0.24
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 
+  rawObjectName: Remote Control
+  rawObjectPrefab: {fileID: 3549866876195801340, guid: 750b260bc99b7408893bc51a2f1dc611, type: 3}
+  rawObjectIcon: {fileID: 0}
+  rarity: 2
+  weaponType: 3
+  forgeCost: 2
+  epicUpgradeCost: 5
+  legendaryUpgradeCost: 10
+  standardDurability: 30
+  epicDurability: 60
+  legendaryDurability: 100
+  epicIcon: {fileID: 0}
+  legendaryIcon: {fileID: 0}
+  epicWeaponPrefab: {fileID: 0}
+  legendaryWeaponPrefab: {fileID: 0}
+  baseEquippedData: {fileID: 11400000, guid: d807f63ace0904351be68b09a60fa904, type: 2}
+  epicAbilityId: 
+  legendaryAbilityId: 

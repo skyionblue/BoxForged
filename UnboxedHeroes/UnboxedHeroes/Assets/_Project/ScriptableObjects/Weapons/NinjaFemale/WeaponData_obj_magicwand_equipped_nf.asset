@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b48e6af5fac94771a732868c7cf0734, type: 3}
+  m_Name: WeaponData_obj_magicwand_equipped_nf
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponData
+  weaponName: Magic Wand
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 2083918066854769309, guid: 932f981ded50748e492ce80e9370cfe1, type: 3}
+  material: {fileID: 2100000, guid: 6ed19cad1cafa498fb79dfe2d672dc7f, type: 2}
+  gripPositionOffset: {x: 0.1293, y: 0.1236, z: -0.0195}
+  gripRotationOffset: {x: -214.546, y: 20.496, z: -199.012}
+  gripScale: 0.24
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 

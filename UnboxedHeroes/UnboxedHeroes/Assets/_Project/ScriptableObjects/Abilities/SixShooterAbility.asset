@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfd2a85c9a4724efdaee44cadfdbd7d5, type: 3}
+  m_Name: SixShooterAbility
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.SixShooterAbilityData
+  _cooldownDuration: 0.2
+  maxShots: 6
+  reloadDuration: 1.2
+  bulletSpeed: 20
+  bulletDamage: 10
+  bulletPrefab: {fileID: 8599976118304548797, guid: d64978c22021b41db8387162ca56aac5, type: 3}
+  bulletLifetime: 3
+  muzzleFlashPrefab: {fileID: 3573099609334760723, guid: 0eee6989c2bc64dd3b353b77019d2926, type: 3}

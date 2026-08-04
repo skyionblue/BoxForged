@@ -1,0 +1,153 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5597198965301420811
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1975691603156269426}
+  m_Layer: 0
+  m_Name: WeaponGripPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1975691603156269426
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5597198965301420811}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4816694761002879862}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &443027040461510535
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_Name
+      value: pfb_char_cowboy
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: fb6ff93bbfbe64cf98e016991c7401ad, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8111781155169087978, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4758992fe166f4df6aca10b03a2385e9, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4971310860725525745, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1975691603156269426}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8317165439086210749}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4125231078857330985}
+  m_SourcePrefab: {fileID: 100100000, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+--- !u!1 &784923136525396694 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+  m_PrefabInstance: {fileID: 443027040461510535}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8317165439086210749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784923136525396694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa8356321922243fe96c25536f82a4f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Player.FootstepReceiver
+--- !u!114 &4125231078857330985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784923136525396694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e58fb1cb2ad1b4326b8eb4352a9b4dd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Core.FootstepReceiver
+--- !u!4 &4816694761002879862 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4971310860725525745, guid: 030f72afe3546474f9e3d2be9be930ea, type: 3}
+  m_PrefabInstance: {fileID: 443027040461510535}
+  m_PrefabAsset: {fileID: 0}

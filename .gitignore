@@ -1,0 +1,34 @@
+# Unity generated
+UnboxedHeroes/UnboxedHeroes/Library/
+UnboxedHeroes/UnboxedHeroes/Temp/
+UnboxedHeroes/UnboxedHeroes/Logs/
+UnboxedHeroes/UnboxedHeroes/UserSettings/
+UnboxedHeroes/UnboxedHeroes/obj/
+UnboxedHeroes/UnboxedHeroes/build/
+UnboxedHeroes/UnboxedHeroes/Build/
+UnboxedHeroes/UnboxedHeroes/Builds/
+
+# Unity auto-generated solution and project files
+*.sln
+*.csproj
+*.slnx
+*.unityproj
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vs/
+*.swp
+*.swo
+
+# Claude Code
+.claude/
+
+# Build outputs
+builds/
+
+# Screenshots
+UnboxedHeroes/UnboxedHeroes/Assets/Screenshots/

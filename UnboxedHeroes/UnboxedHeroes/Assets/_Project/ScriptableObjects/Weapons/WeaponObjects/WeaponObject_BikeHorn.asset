@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bfa5a586bcbf4db5b3e6ece0a8948ad, type: 3}
+  m_Name: WeaponObject_BikeHorn
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponObjectSO
+  weaponName: Dynamite Bundle
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 1379029868672781591, guid: 427de2a9f4fb042c5810dd0c5a628e91, type: 3}
+  material: {fileID: 2100000, guid: 29cd1eb546e234033beae33073890ecf, type: 2}
+  weaponIcon: {fileID: 21300000, guid: a8f47e554f71d42b78bc3e97f6a93101, type: 3}
+  gripPositionOffset: {x: 0.0925, y: 0.2216, z: -0.0716}
+  gripRotationOffset: {x: -11.693, y: 191.46, z: 284.942}
+  gripScale: 0.192
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 
+  rawObjectName: Bike Horn
+  rawObjectPrefab: {fileID: 1864690367171053572, guid: 10cf469874c784a26a92bdd32f6d2f37, type: 3}
+  rawObjectIcon: {fileID: 0}
+  rarity: 2
+  weaponType: 3
+  forgeCost: 2
+  epicUpgradeCost: 5
+  legendaryUpgradeCost: 10
+  standardDurability: 30
+  epicDurability: 60
+  legendaryDurability: 100
+  epicIcon: {fileID: 0}
+  legendaryIcon: {fileID: 0}
+  epicWeaponPrefab: {fileID: 0}
+  legendaryWeaponPrefab: {fileID: 0}
+  baseEquippedData: {fileID: 11400000, guid: 1de1870c9af474a0d84e62f31c589250, type: 2}
+  epicAbilityId: 
+  legendaryAbilityId: 

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b48e6af5fac94771a732868c7cf0734, type: 3}
+  m_Name: WeaponData_obj_lunchboxshield_equipped_nf
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponData
+  weaponName: Lunchbox Shield
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 5792548949299639102, guid: 920cb1e37e4df4038a45a815dbdacb01, type: 3}
+  material: {fileID: 2100000, guid: 24701016e309d4871a4018cd7770a585, type: 2}
+  weaponIcon: {fileID: 21300000, guid: de8618df075dd4855b85908563ac76b2, type: 3}
+  gripPositionOffset: {x: 0.06, y: 0.231, z: 0.11}
+  gripRotationOffset: {x: 47.84, y: -146.618, z: -188.102}
+  gripScale: 0.154
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 

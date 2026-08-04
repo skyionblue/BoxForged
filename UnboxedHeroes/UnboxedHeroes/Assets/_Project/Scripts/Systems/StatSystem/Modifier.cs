@@ -1,0 +1,42 @@
+using System;
+using System.Globalization;
+
+namespace StatSystem
+{
+    public readonly struct Modifier : IEquatable<Modifier>
+    {
+        private readonly ModifierType? _type;
+
+        public ModifierType Type => _type ?? ModifierType.Flat;
+        public object Source { get; }
+        public float Value { get; }
+
+        public Modifier(float value, ModifierType modifierType, object source = null)
+        {
+            Value = value;
+            _type = modifierType;
+            Source = source;
+        }
+
+        public bool Equals(Modifier other) =>
+            Type == other.Type && Equals(Source, other.Source) && Value.Equals(other.Value);
+
+        public override bool Equals(object obj) => obj is Modifier modifier && Equals(modifier);
+        public override int GetHashCode() => HashCode.Combine(Type, Source, Value);
+
+        public static bool operator ==(Modifier left, Modifier right) => left.Equals(right);
+        public static bool operator !=(Modifier left, Modifier right) => !left.Equals(right);
+
+        public override string ToString() =>
+            $"Value:{Value.ToString(CultureInfo.InvariantCulture)} Type:{Type} Source object: {Source ?? "None"}";
+
+        public static implicit operator float(Modifier modifier) => modifier.Value;
+
+        public void Deconstruct(out float value, out ModifierType type, out object source)
+        {
+            value = Value;
+            type = Type;
+            source = Source;
+        }
+    }
+}

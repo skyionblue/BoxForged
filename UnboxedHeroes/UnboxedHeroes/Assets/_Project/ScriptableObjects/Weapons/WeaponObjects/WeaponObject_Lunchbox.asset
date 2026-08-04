@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bfa5a586bcbf4db5b3e6ece0a8948ad, type: 3}
+  m_Name: WeaponObject_Lunchbox
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponObjectSO
+  weaponName: Shield
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 5792548949299639102, guid: 920cb1e37e4df4038a45a815dbdacb01, type: 3}
+  material: {fileID: 2100000, guid: 24701016e309d4871a4018cd7770a585, type: 2}
+  weaponIcon: {fileID: 21300000, guid: de8618df075dd4855b85908563ac76b2, type: 3}
+  gripPositionOffset: {x: 0.132, y: 0.299, z: 0.011}
+  gripRotationOffset: {x: 45.76, y: -90.904, z: -176.899}
+  gripScale: 0.154
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 
+  rawObjectName: Lunchbox
+  rawObjectPrefab: {fileID: 2953279333668777965, guid: 1dd533856efa84a52879ac0248468a22, type: 3}
+  rawObjectIcon: {fileID: 0}
+  rarity: 2
+  weaponType: 2
+  forgeCost: 2
+  epicUpgradeCost: 5
+  legendaryUpgradeCost: 10
+  standardDurability: 30
+  epicDurability: 60
+  legendaryDurability: 100
+  epicIcon: {fileID: 0}
+  legendaryIcon: {fileID: 0}
+  epicWeaponPrefab: {fileID: 0}
+  legendaryWeaponPrefab: {fileID: 0}
+  baseEquippedData: {fileID: 11400000, guid: d810df6819bf34b9a893698113338864, type: 2}
+  epicAbilityId: 
+  legendaryAbilityId: 

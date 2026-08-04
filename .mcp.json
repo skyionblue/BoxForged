@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "blender": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "blender-studio-pro-mcp"
+      ],
+      "env": {
+        "BLENDER_PORT": "9877"
+      }
+    },
+    "DevUnityMCP": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/Users/jcelli/Documents/tools/unity-mcp/Server",
+        "mcp-for-unity"
+      ]
+    }
+  }
+}

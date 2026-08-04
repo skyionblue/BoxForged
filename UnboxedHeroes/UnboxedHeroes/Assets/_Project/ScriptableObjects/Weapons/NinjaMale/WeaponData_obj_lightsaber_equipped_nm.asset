@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b48e6af5fac94771a732868c7cf0734, type: 3}
+  m_Name: WeaponData_obj_lightsaber_equipped_nm
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponData
+  weaponName: Lightsaber
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 8647682055171008051, guid: 151a4dad55c994bd987abd9481289062, type: 3}
+  material: {fileID: 2100000, guid: c441925bba783430a9d8731337a114eb, type: 2}
+  weaponIcon: {fileID: 21300000, guid: 237d68ee9ce144cbf9777cc2a8a37759, type: 3}
+  gripPositionOffset: {x: 0.027, y: 0.208, z: -0.168}
+  gripRotationOffset: {x: 133.514, y: -58.14301, z: 223.534}
+  gripScale: 0.35
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 

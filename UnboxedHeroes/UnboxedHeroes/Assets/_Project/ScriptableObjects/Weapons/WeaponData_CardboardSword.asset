@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b48e6af5fac94771a732868c7cf0734, type: 3}
+  m_Name: WeaponData_CardboardSword
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponData
+  weaponName: Cardboard Sword
+  description: A sturdy blade of compressed cardboard. Surprisingly effective.
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 2900126300265565464, guid: 0c86821cde67a45e38d02b216c4ea302, type: 3}
+  material: {fileID: 2100000, guid: a1e1619cea41c45a39af81c3517dc9c5, type: 2}
+  gripPositionOffset: {x: -0.098, y: -0.001, z: 0.003}
+  gripRotationOffset: {x: 7.639, y: -158.666, z: 330.087}
+  gripScale: 0.61
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 

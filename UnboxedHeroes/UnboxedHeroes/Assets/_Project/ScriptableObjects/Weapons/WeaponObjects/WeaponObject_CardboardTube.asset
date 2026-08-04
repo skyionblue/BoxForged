@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bfa5a586bcbf4db5b3e6ece0a8948ad, type: 3}
+  m_Name: WeaponObject_CardboardTube
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponObjectSO
+  weaponName: Katana
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 6719726776243900323, guid: 91ac576918d2a447aa390c61da409eab, type: 3}
+  material: {fileID: 2100000, guid: 7a53ca60c221e4c198a43f457e77070d, type: 2}
+  weaponIcon: {fileID: 21300000, guid: 488bb4accaa054252b38c2be7648860a, type: 3}
+  gripPositionOffset: {x: 0.0462, y: 0.1749, z: -0.2411}
+  gripRotationOffset: {x: -0.209, y: -281.977, z: 8.724}
+  gripScale: 0.35
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 
+  rawObjectName: Cardboard Tube
+  rawObjectPrefab: {fileID: 4099901832792793746, guid: 11f59016e494949d888c822bfcc40900, type: 3}
+  rawObjectIcon: {fileID: 0}
+  rarity: 1
+  weaponType: 0
+  forgeCost: 2
+  epicUpgradeCost: 5
+  legendaryUpgradeCost: 0
+  standardDurability: 30
+  epicDurability: 60
+  legendaryDurability: 100
+  epicIcon: {fileID: 0}
+  legendaryIcon: {fileID: 0}
+  epicWeaponPrefab: {fileID: 0}
+  legendaryWeaponPrefab: {fileID: 0}
+  baseEquippedData: {fileID: 11400000, guid: d3ea174f097b94d0287670912678883a, type: 2}
+  epicAbilityId: 
+  legendaryAbilityId: 
