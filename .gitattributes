@@ -1,3 +1,4 @@
+# Unity binary assets — tracked via Git LFS
 *.fbx filter=lfs diff=lfs merge=lfs -text
 *.FBX filter=lfs diff=lfs merge=lfs -text
 *.png filter=lfs diff=lfs merge=lfs -text
@@ -16,3 +17,27 @@
 *.dylib filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 *.unitypackage filter=lfs diff=lfs merge=lfs -text
+
+# Unity text-based files — NOT tracked by LFS (they are YAML text)
+*.unity -text
+*.prefab -text
+*.asset -text
+*.mat -text
+*.anim -text
+*.controller -text
+*.overrideController -text
+*.physicMaterial -text
+*.physicsMaterial2D -text
+*.playable -text
+*.mask -text
+*.brush -text
+*.flare -text
+*.fontsettings -text
+*.guiskin -text
+*.inputactions -text
+*.lighting -text
+*.mixer -text
+*.rendertexture -text
+*.spriteatlas -text
+*.terrainlayer -text
+*.signal -text
