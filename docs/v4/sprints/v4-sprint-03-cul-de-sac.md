@@ -89,31 +89,17 @@ Wire the V3 progression system into V4's runtime:
 
 ---
 
-### Phase 2 — HitchingHound Prefab
+### Phase 2 — Rooms 2–4 (Escalating Encounters)
 
-The `HitchingHoundAI.cs` script is migrated from V3 but has no prefab. Build it before Rooms 2–4.
+Three rooms drawn randomly from a pool, one scene per room. HitchingHound is **deferred to a future sprint** — not in this enemy roster.
 
-- Model: check `Assets/_Project/Models/Characters/` — HitchingHound model may exist from V3 migration
-- If model exists: run Blender pass (pivot, axis, scale) via `blender-specialist` → import → create prefab
-- If model missing: generate Meshy prompt via `art-direction-agent` first
-- Prefab: `pfb_enemy_hitching_hound.prefab` — same component pattern as `pfb_enemy_wagonwheel_roller`
-- Wire `HitchingHoundAI` + `EnemyStats` + `EnemyHealthBar` + animator
-
-**`unity-code-reviewer` sign-off before Phase 3.**
-
----
-
-### Phase 3 — Rooms 2–4 (Escalating Encounters)
-
-Three rooms drawn randomly from a pool. Each room is a scene or a `LevelData` SO variation.
-
-**Enemy roster by room:**
+**Enemy roster by room (confirmed):**
 
 | Room | Enemy Mix | Max Concurrent |
 |---|---|---|
-| Ambush Alley | 2 WagonWheelRoller + 2 HitchingHound | 3 |
-| Saloon Front | 2 MilepostMarshal + 1 HitchingHound | 3 |
-| Mailbox Row | 1 WagonWheelRoller + 1 MilepostMarshal + 2 HitchingHound | 4 |
+| Ambush Alley | 3 WagonWheelRoller | 3 |
+| Saloon Front | 2 MilepostMarshal + 1 WagonWheelRoller | 3 |
+| Mailbox Row | 1 WagonWheelRoller + 2 MilepostMarshal | 3 |
 
 **Steps:**
 1. Build 3 room scenes with distinct ENV layouts (same Polyworks pack, different prop arrangement)
@@ -200,17 +186,17 @@ Add `cardboardDrop` field to `EnemyStats` (or a new `EnemyLootData` SO). On `OnD
 
 ---
 
-## Open Questions
+## Locked Decisions
 
-1. **Scene structure:** Is the Cul-de-Sac a single scene with room boundaries, or a scene-per-room with scene loading between rooms? V3 used scene-per-room (`SceneManager.LoadScene`). Recommend: scene-per-room for V4 — simpler NavMesh, no room-visibility management.
+All decisions confirmed — 2026-08-05:
 
-2. **HitchingHound model:** Does the migrated V3 project have the Hound model? Needs visual check. If yes, use it. If no, Meshy generation required first.
-
-3. **SpinCycle V2 new attacks:** The GDD mentions "Dust Devil" and "Gallows Run" as new Phase 2 attacks. Are these new movement patterns only, or do they need new animations? Confirm before implementation.
-
-4. **Shop between rooms:** Wire the V3 `ShopScreen` in Sprint 3, or defer to Sprint 4? Recommend: defer — it's a nice-to-have and the run loop works without it.
-
-5. **Imagination Restore:** Is this a URP post-process volume fade or a shader on the terrain? Recommend: URP Global Volume with Saturation/Color Adjustment animated by `ImaginationRestore.cs`.
+| # | Decision | Answer |
+|---|---|---|
+| 1 | Scene structure | **Scene-per-room** — `SceneManager.LoadScene` between rooms. Simpler NavMesh baking, no room-visibility management. |
+| 2 | HitchingHound | **Deferred** — not in Sprint 3 enemy roster. Rooms 2–4 use WagonWheelRoller + MilepostMarshal only. |
+| 3 | SpinCycle V2 attacks | **New animations required** — Dust Devil and Gallows Run need new animation clips in addition to new movement patterns. Animation work precedes AI implementation for those attacks. |
+| 4 | Shop | **Deferred to Sprint 4** — run loop works without it. `ShopScreen` prefab already migrated, wire it in the next sprint. |
+| 5 | Imagination Restore | **URP Global Volume** — `ImaginationRestore.cs` animates a `Global Volume` (Saturation + Color Adjustments) from desaturated/warm → full vivid color over 3 seconds on boss death. |
 
 ---
 
@@ -229,11 +215,7 @@ Add `cardboardDrop` field to `EnemyStats` (or a new `EnemyLootData` SO). On `OnD
 - [ ] Workbench in safe zone at entrance
 - [ ] Player can forge weapons, fight, and clear the room in under 3 minutes
 
-**Phase 2 — HitchingHound:**
-- [ ] `pfb_enemy_hitching_hound.prefab` exists, AI functional
-- [ ] HitchingHound joins the enemy roster for Rooms 2–4
-
-**Phase 3 — Rooms 2–4:**
+**Phase 2 — Rooms 2–4:**
 - [ ] 3 random-draw room scenes built with correct enemy mixes
 - [ ] `GameManager` randomly selects 3 rooms after Room 1
 
