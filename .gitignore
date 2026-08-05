@@ -1,12 +1,12 @@
 # Unity generated
-UnboxedHeroes/UnboxedHeroes/Library/
-UnboxedHeroes/UnboxedHeroes/Temp/
-UnboxedHeroes/UnboxedHeroes/Logs/
-UnboxedHeroes/UnboxedHeroes/UserSettings/
-UnboxedHeroes/UnboxedHeroes/obj/
-UnboxedHeroes/UnboxedHeroes/build/
-UnboxedHeroes/UnboxedHeroes/Build/
-UnboxedHeroes/UnboxedHeroes/Builds/
+BoxForged/BoxForged/Library/
+BoxForged/BoxForged/Temp/
+BoxForged/BoxForged/Logs/
+BoxForged/BoxForged/UserSettings/
+BoxForged/BoxForged/obj/
+BoxForged/BoxForged/build/
+BoxForged/BoxForged/Build/
+BoxForged/BoxForged/Builds/
 
 # Unity auto-generated solution and project files
 *.sln
@@ -31,7 +31,7 @@ Thumbs.db
 builds/
 
 # Screenshots
-UnboxedHeroes/UnboxedHeroes/Assets/Screenshots/
+BoxForged/BoxForged/Assets/Screenshots/
 
 # Raw Models
 models
