@@ -29,10 +29,10 @@ MonoBehaviour:
   rawObjectName: Garden Trowel
   rawObjectPrefab: {fileID: 8086769972809197658, guid: d8f1172a202564cc4bd90316fa7bca01, type: 3}
   rawObjectIcon: {fileID: 0}
-  rarity: 0
+  rarity: 1
   weaponType: 0
   forgeCost: 2
-  epicUpgradeCost: 0
+  epicUpgradeCost: 5
   legendaryUpgradeCost: 0
   standardDurability: 30
   epicDurability: 60

@@ -29,10 +29,10 @@ MonoBehaviour:
   rawObjectName: Foam Sword
   rawObjectPrefab: {fileID: 6559211962254317679, guid: 9d83da360a3e245c39d0c9febf2e9ca3, type: 3}
   rawObjectIcon: {fileID: 0}
-  rarity: 0
+  rarity: 1
   weaponType: 0
   forgeCost: 2
-  epicUpgradeCost: 0
+  epicUpgradeCost: 5
   legendaryUpgradeCost: 0
   standardDurability: 30
   epicDurability: 60

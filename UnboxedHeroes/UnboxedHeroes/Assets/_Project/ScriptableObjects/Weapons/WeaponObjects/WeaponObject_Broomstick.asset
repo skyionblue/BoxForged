@@ -29,10 +29,10 @@ MonoBehaviour:
   rawObjectName: Broomstick
   rawObjectPrefab: {fileID: 2315889575884058549, guid: a12cfc3cf0d534805b5961c10eb88f2f, type: 3}
   rawObjectIcon: {fileID: 0}
-  rarity: 0
+  rarity: 1
   weaponType: 0
   forgeCost: 2
-  epicUpgradeCost: 0
+  epicUpgradeCost: 5
   legendaryUpgradeCost: 0
   standardDurability: 30
   epicDurability: 60

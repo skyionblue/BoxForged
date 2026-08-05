@@ -29,10 +29,10 @@ MonoBehaviour:
   rawObjectName: Ruler
   rawObjectPrefab: {fileID: 2765141579587853418, guid: 674f38ca002d04e9bb6237cb8292dbdb, type: 3}
   rawObjectIcon: {fileID: 0}
-  rarity: 0
+  rarity: 1
   weaponType: 1
   forgeCost: 2
-  epicUpgradeCost: 0
+  epicUpgradeCost: 5
   legendaryUpgradeCost: 0
   standardDurability: 30
   epicDurability: 60
