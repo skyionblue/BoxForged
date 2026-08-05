@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f27b336ec1d5479f8fd8a60fb3292ae, type: 3}
+  m_Name: Ability_BoStaff_Epic
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.AbilitySO
+  abilityId: bostaff_epic_morning_sweep
+  displayName: The Morning Sweep
+  flavorDescription: One spin. Every direction. They all felt it.
+  trigger: 1
+  effectType: 1
+  magnitude: 2.5
+  cooldown: 3
+  vfxPrefab: {fileID: 5286665969174920737, guid: d84f2c4f33d0c4ff09801dad131c4e8f, type: 3}
+  sfx: {fileID: 0}
+  behaviour: {fileID: 0}

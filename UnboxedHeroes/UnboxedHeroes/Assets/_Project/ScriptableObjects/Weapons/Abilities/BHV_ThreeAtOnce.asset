@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cba2a66707a4a62b71343b483ca21e9, type: 3}
+  m_Name: BHV_ThreeAtOnce
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.ThreeAtOnceBehaviour
+  _fallbackPrefab: {fileID: 0}
+  _fallbackDamage: 10
+  _projectileSpeed: 18
+  _projectileLifetime: 4

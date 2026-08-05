@@ -53,6 +53,28 @@ namespace Boxhead.Core
             source.Play();
         }
 
+        /// <summary>
+        /// Plays an arbitrary AudioClip through the existing pool at the given volume.
+        /// Used by AbilityExecutor to fire ability SFX without requiring a SoundEvent entry.
+        /// </summary>
+        public void PlayClip(AudioClip clip, float volume = 1f)
+        {
+            if (clip == null) return;
+
+            // Prefer an idle source so we don't cut off an in-progress sound.
+            for (int i = 0; i < _pool.Length; i++)
+            {
+                if (!_pool[i].isPlaying)
+                {
+                    _pool[i].PlayOneShot(clip, volume);
+                    return;
+                }
+            }
+
+            // All sources busy — evict oldest via the existing round-robin index.
+            _pool[_poolIndex % _pool.Length].PlayOneShot(clip, volume);
+        }
+
         private AudioSource GetNextSource()
         {
             for (int i = 0; i < _pool.Length; i++)

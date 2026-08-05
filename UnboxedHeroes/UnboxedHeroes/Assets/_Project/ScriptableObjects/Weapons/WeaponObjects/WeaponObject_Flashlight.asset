@@ -29,11 +29,11 @@ MonoBehaviour:
   rawObjectName: Flashlight
   rawObjectPrefab: {fileID: 5232524296259624683, guid: bf79b06b83d94421397298ed61082648, type: 3}
   rawObjectIcon: {fileID: 0}
-  rarity: 1
+  rarity: 2
   weaponType: 0
   forgeCost: 2
   epicUpgradeCost: 5
-  legendaryUpgradeCost: 0
+  legendaryUpgradeCost: 10
   standardDurability: 30
   epicDurability: 60
   legendaryDurability: 100
@@ -42,5 +42,5 @@ MonoBehaviour:
   epicWeaponPrefab: {fileID: 0}
   legendaryWeaponPrefab: {fileID: 0}
   baseEquippedData: {fileID: 11400000, guid: 61519cfcb64354dcd8f31727fb5eaf8b, type: 2}
-  epicAbilityId: 
-  legendaryAbilityId: 
+  epicAbility: {fileID: 11400000, guid: 17810346048847929e78343f392897b5, type: 2}
+  legendaryAbility: {fileID: 11400000, guid: 03833d3606bd40cdbdab751ab4e2315c, type: 2}

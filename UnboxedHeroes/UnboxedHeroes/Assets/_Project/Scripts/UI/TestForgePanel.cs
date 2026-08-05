@@ -14,6 +14,9 @@ namespace Boxhead.UI
         [SerializeField] private Button          _forgeSlot0Button;
         [SerializeField] private Button          _forgeSlot1Button;
         [SerializeField] private Button          _forgeSlot2Button;
+        [SerializeField] private Button          _upgradeSlot0Button;
+        [SerializeField] private Button          _upgradeSlot1Button;
+        [SerializeField] private Button          _upgradeSlot2Button;
         [SerializeField] private Button          _closeButton;
 
         private ForgeController  _forgeController;
@@ -26,6 +29,9 @@ namespace Boxhead.UI
             if (_forgeSlot0Button != null) _forgeSlot0Button.onClick.AddListener(() => Forge(0));
             if (_forgeSlot1Button != null) _forgeSlot1Button.onClick.AddListener(() => Forge(1));
             if (_forgeSlot2Button != null) _forgeSlot2Button.onClick.AddListener(() => Forge(2));
+            if (_upgradeSlot0Button != null) _upgradeSlot0Button.onClick.AddListener(() => Upgrade(0));
+            if (_upgradeSlot1Button != null) _upgradeSlot1Button.onClick.AddListener(() => Upgrade(1));
+            if (_upgradeSlot2Button != null) _upgradeSlot2Button.onClick.AddListener(() => Upgrade(2));
             // Do NOT set _panel inactive here — the panel starts inactive in the scene.
             // Calling SetActive(false) in Start() would hide it one frame after Open() shows it.
         }
@@ -70,6 +76,11 @@ namespace Boxhead.UI
             _forgeController?.TryForge(bagIndex);
         }
 
+        private void Upgrade(int slotIndex)
+        {
+            _forgeController?.TryUpgrade(slotIndex);
+        }
+
         private void Refresh()
         {
             if (_statusText == null) return;
@@ -93,7 +104,7 @@ namespace Boxhead.UI
             }
 
             sb.AppendLine("");
-            sb.AppendLine("<b>Weapon Slots</b>:");
+            sb.AppendLine("<b>Weapon Slots</b> (Upgrade [0/1/2] to Epic/Legendary):");
             if (_inventory != null)
             {
                 for (int i = 0; i < 3; i++)
@@ -103,7 +114,19 @@ namespace Boxhead.UI
                         ? $"{slot.Data.weaponName} ({slot.Tier}) [{slot.CurrentDurability}/{slot.MaxDurability}]"
                         : "empty";
                     string active = (_inventory.ActiveSlotIndex == i) ? " ◄" : "";
-                    sb.AppendLine($"  [{i}] {info}{active}");
+                    string upgrade = "";
+                    if (slot != null) {
+                        var woso = slot.Data as Boxhead.Systems.WeaponObjectSO;
+                        if (woso != null) {
+                            if (slot.Tier == WeaponTier.Standard && woso.rarity >= WeaponRarity.Rare)
+                                upgrade = $" [Epic costs {woso.epicUpgradeCost}cb]";
+                            else if (slot.Tier == WeaponTier.Epic && woso.rarity == WeaponRarity.Legendary)
+                                upgrade = $" [Leg costs {woso.legendaryUpgradeCost}cb]";
+                            else if (slot.Tier == WeaponTier.Standard && woso.rarity == WeaponRarity.Common)
+                                upgrade = " [Common: no upgrade]";
+                        }
+                    }
+                    sb.AppendLine($"  [{i}] {info}{upgrade}{active}");
                 }
             }
 

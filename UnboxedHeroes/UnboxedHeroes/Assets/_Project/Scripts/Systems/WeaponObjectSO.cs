@@ -40,8 +40,8 @@ namespace Boxhead.Systems
         [Tooltip("V3 base WeaponData asset (e.g. WeaponData_obj_bostaff_equipped). WeaponCycler resolves the correct character variant from this at equip time.")]
         public WeaponData baseEquippedData;
 
-        [Header("Abilities (Sprint 2)")]
-        public string epicAbilityId;
-        public string legendaryAbilityId;
+        [Header("Abilities")]
+        public AbilitySO epicAbility;
+        public AbilitySO legendaryAbility;
     }
 }

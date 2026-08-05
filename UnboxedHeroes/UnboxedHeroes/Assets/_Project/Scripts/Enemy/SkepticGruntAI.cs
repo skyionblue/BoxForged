@@ -69,6 +69,8 @@ namespace Boxhead.Enemy
 
         private bool  _isRooted;
         private float _hitStaggerMultiplier = 1f;
+        private float _baseSpeed;
+        private Coroutine _speedRestoreRoutine;
 
         // ── Precomputed scalars ───────────────────────────────────────────────
 
@@ -119,6 +121,7 @@ namespace Boxhead.Enemy
             _agent.updateRotation   = false;
             _agent.autoBraking      = false;
             _agent.isStopped        = true;
+            _baseSpeed = moveSpeed;
 
             // Precompute squared ranges to avoid per-frame sqrts.
             _chaseRangeSq           = chaseRange * chaseRange;
@@ -161,6 +164,8 @@ namespace Boxhead.Enemy
         private void OnDestroy()
         {
             StopActive();
+            if (_speedRestoreRoutine != null)
+                StopCoroutine(_speedRestoreRoutine);
 
             if (_playerCombat != null)
                 _playerCombat.OnCounterStrike -= OnCounterStrikeLanded;
@@ -235,6 +240,27 @@ namespace Boxhead.Enemy
             _hitStaggerMultiplier = durationMultiplier;
             StopActive();
             StartActive(HitStaggerRoutine());
+        }
+
+        public void SetSpeedMultiplier(float multiplier, float duration)
+        {
+            if (_state == State.Dead || _state == State.PlayerDead) return;
+            if (_speedRestoreRoutine != null)
+                StopCoroutine(_speedRestoreRoutine);
+            _agent.speed = _baseSpeed * multiplier;
+            _speedRestoreRoutine = StartCoroutine(RestoreSpeedAfter(duration));
+        }
+
+        private IEnumerator RestoreSpeedAfter(float duration)
+        {
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            _agent.speed = _baseSpeed;
+            _speedRestoreRoutine = null;
         }
 
         // ── State update methods ──────────────────────────────────────────────

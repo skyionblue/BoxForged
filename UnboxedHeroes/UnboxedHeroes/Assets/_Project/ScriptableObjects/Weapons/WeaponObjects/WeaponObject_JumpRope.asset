@@ -29,11 +29,11 @@ MonoBehaviour:
   rawObjectName: Jump Rope
   rawObjectPrefab: {fileID: 4470496968667261760, guid: 5464c8c4d4f364fa382f33c29f8c6d6c, type: 3}
   rawObjectIcon: {fileID: 0}
-  rarity: 1
+  rarity: 2
   weaponType: 3
   forgeCost: 2
   epicUpgradeCost: 5
-  legendaryUpgradeCost: 0
+  legendaryUpgradeCost: 10
   standardDurability: 30
   epicDurability: 60
   legendaryDurability: 100
@@ -42,5 +42,5 @@ MonoBehaviour:
   epicWeaponPrefab: {fileID: 0}
   legendaryWeaponPrefab: {fileID: 0}
   baseEquippedData: {fileID: 11400000, guid: 00b1e74857fd34a11a9bb85d9c62013a, type: 2}
-  epicAbilityId: 
-  legendaryAbilityId: 
+  epicAbility: {fileID: 11400000, guid: 7aff81b056740480b85d8051358426c5, type: 2}
+  legendaryAbility: {fileID: 11400000, guid: e796ba4b645814eee970a30226530457, type: 2}

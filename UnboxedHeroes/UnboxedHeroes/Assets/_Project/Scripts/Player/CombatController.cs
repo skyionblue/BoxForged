@@ -21,6 +21,7 @@ namespace Boxhead.Player
         [SerializeField] private float dodgeCooldown = 0.8f;
         [SerializeField] private float dodgeDistance = 3f;
         [SerializeField] private float dodgeMovementDelay = 0.2f;
+        private float _dodgeDistanceMultiplier = 1f;
 
         [Header("Parry")]
         [SerializeField] private float parryActiveWindow = 0.4f;
@@ -113,6 +114,9 @@ namespace Boxhead.Player
         /// <summary>Fired when the active fighting style changes (including to null).</summary>
         public event Action<FightingStyleData> OnStyleChanged;
 
+        /// <summary>Fired at the top of SpecialAttackRoutine before any style or weapon ability branch executes. AbilityExecutor subscribes to route OnSpecial-triggered abilities.</summary>
+        public event Action OnSpecialActivated;
+
         public event Action OnDodgeStarted;
         public event Action OnParrySuccess;
         public event Action OnCounterWindowOpened;
@@ -158,6 +162,7 @@ namespace Boxhead.Player
         private WeaponHolder      _weaponHolder;
         private Inventory         _inventory;
         private WeaponInventory   _weaponInventory;
+        private Boxhead.Systems.AbilityExecutor _abilityExecutor;
         private WeaponDurability  _weaponDurability;
         private float             _specialCooldownTimer;
 
@@ -192,6 +197,7 @@ namespace Boxhead.Player
             _inventory       = GetComponent<Inventory>();
             _weaponInventory = GetComponent<WeaponInventory>();
             _weaponDurability = GetComponent<WeaponDurability>();
+            _abilityExecutor = GetComponent<Boxhead.Systems.AbilityExecutor>();
 
             _waitDodge          = new WaitForSeconds(dodgeDuration);
             _waitDodgeDelay     = new WaitForSeconds(dodgeMovementDelay);
@@ -265,6 +271,29 @@ namespace Boxhead.Player
             // Ninja passive (DodgeInvincibility) is enforced inside TryReceiveAttack — no field change needed.
         }
 
+        /// <summary>
+        /// Scales the dodge travel distance by mult. Called by AbilityExecutor when a
+        /// DodgeDistanceMult passive ability is equipped; reset to 1f on unequip.
+        /// </summary>
+        public void SetDodgeDistanceMultiplier(float mult)
+        {
+            _dodgeDistanceMultiplier = Mathf.Max(0.1f, mult);
+        }
+
+        // Crit multiplier state — set by AbilityExecutor for CritMultiplier abilities.
+        // Default 1f (no crit). Consumed and reset to 1f in ApplyAttackDamage.
+        private float _critMultiplier = 1f;
+
+        /// <summary>
+        /// Sets a one-shot critical hit multiplier applied to the very next attack.
+        /// Automatically resets to 1f after the hit lands. Called by AbilityExecutor for
+        /// CritMultiplier-type abilities (e.g. Clean Cut, The First Strike).
+        /// </summary>
+        public void SetNextHitCritMultiplier(float mult)
+        {
+            _critMultiplier = mult;
+        }
+
         // ── Input callbacks (PlayerInput SendMessages) ──────────────────────
 
         public void OnAttack(InputValue value)
@@ -321,6 +350,17 @@ namespace Boxhead.Player
             if (!value.isPressed) return;
             if (_dodgeCooldownTimer > 0f) return;
             if (State == CombatState.Dodging || State == CombatState.Staggered) return;
+
+            // If an OnDodge ability is equipped (e.g. Draw Attack), route the input directly
+            // to the ability and skip the standard dodge coroutine entirely.
+            if (AbilityInterceptsDodge)
+            {
+                _dodgeCooldownTimer = dodgeCooldown;
+                AudioManager.Instance?.Play(SoundEvent.PlayerDodge);
+                _abilityExecutor.FireDodgeAbility();
+                return;
+            }
+
             // transform.forward points opposite to visual facing due to the Y=180° child offset.
             // -transform.forward = the direction the character visually faces.
             _dodgeDirection = _movement.CurrentMoveDirection != Vector3.zero
@@ -332,6 +372,14 @@ namespace Boxhead.Player
             StartActive(DodgeRoutine());
             OnDodgeStarted?.Invoke();
         }
+
+        /// <summary>
+        /// True when the equipped weapon has an OnDodge ability that should replace the
+        /// standard dodge entirely (e.g. Katana Legendary Draw Attack).
+        /// Guards with null check — false when no AbilityExecutor is present.
+        /// </summary>
+        private bool AbilityInterceptsDodge =>
+            _abilityExecutor != null && _abilityExecutor.HasActiveDodgeAbility;
 
         public void OnParry(InputValue value)
         {
@@ -364,6 +412,10 @@ namespace Boxhead.Player
 
         /// <summary>Instantly resets the special ability cooldown. Called by UpgradeScreen for the SpecialCooldownDown card.</summary>
         public void ResetSpecialCooldown() => _specialCooldownTimer = 0f;
+
+        /// <summary>Called by AbilityExecutor after firing a V4 weapon ability so the HUD
+        /// charge meter reflects the ability cooldown rather than staying fully charged.</summary>
+        public void SetSpecialCooldownTimer(float duration) => _specialCooldownTimer = duration;
 
         public void OnWeaponEquipped(WeaponAbilityData ability)
         {
@@ -619,6 +671,13 @@ namespace Boxhead.Player
                 // Apply permanent + in-run attack power bonus from stat overlay
                 damage += Boxhead.Core.ProgressionSystem.Instance?.TotalOverlay.attackPowerBonus ?? 0;
 
+                // Apply one-shot crit multiplier set by AbilityExecutor; resets after first enemy hit.
+                if (_critMultiplier != 1f)
+                {
+                    damage = Mathf.RoundToInt(damage * _critMultiplier);
+                    _critMultiplier = 1f;
+                }
+
                 stats.TakeDamage(damage);
                 _weaponDurability?.RegisterHit(activeWeapon);
 
@@ -643,7 +702,7 @@ namespace Boxhead.Player
             // so the visual step and the character's actual displacement stay in sync.
             yield return _waitDodgeDelay;
             float moveDuration = dodgeDuration - dodgeMovementDelay;
-            float effectiveDodgeDist = dodgeDistance + (Boxhead.Core.ProgressionSystem.Instance?.TotalOverlay.agilityBonus ?? 0f);
+            float effectiveDodgeDist = (dodgeDistance + (Boxhead.Core.ProgressionSystem.Instance?.TotalOverlay.agilityBonus ?? 0f)) * _dodgeDistanceMultiplier;
             float elapsed = 0f;
             while (elapsed < moveDuration)
             {
@@ -692,6 +751,8 @@ namespace Boxhead.Player
 
         private IEnumerator SpecialAttackRoutine(bool fromAttackButton = false)
         {
+            OnSpecialActivated?.Invoke();
+
             // Capture counter-window flag BEFORE changing state — the guard in OnSpecialAttack
             // allows Countering, so wasCounterWindow can legitimately be true here.
             bool wasCounterWindow = (State == CombatState.Countering);
@@ -699,10 +760,11 @@ namespace Boxhead.Player
             _lastAttacker = null;   // clear so destroyed-enemy reference doesn't dangle during the ability
             State = CombatState.SpecialAttacking;
 
-            // Style special fires from the Special button. When the Attack button routes here
-            // (fromAttackButton = true), skip the style and fire the weapon ability directly so
-            // ranged weapons (Six Shooter, Dynamite, Shuriken) always respond to Attack.
-            if (_activeStyle != null && !fromAttackButton)
+            // Style special fires from the Special button — unless an Epic/Legendary weapon ability
+            // handles OnSpecial, in which case the weapon ability replaces the style special entirely.
+            // fromAttackButton=true: ranged weapons (Dynamite, Shuriken) always bypass the style.
+            bool weaponAbilityHandlesSpecial = _abilityExecutor != null && _abilityExecutor.HasActiveSpecialAbility;
+            if (_activeStyle != null && !fromAttackButton && !weaponAbilityHandlesSpecial)
             {
                 yield return ExecuteStyleSpecial();
                 _specialCooldownTimer = _activeStyle.SpecialCooldownDuration;
@@ -828,6 +890,17 @@ namespace Boxhead.Player
             OnCounterStrike?.Invoke(_lastAttacker);
             _lastAttacker = null;
             OnCounterWindowClosed?.Invoke();
+        }
+
+        /// <summary>
+        /// Public wrapper around ExecuteCounterStrike for AbilityBehaviour subclasses
+        /// (e.g. RightBackBehaviour) that need to auto-trigger a counter after a successful block.
+        /// Only fires when the player is in the Counter window; silently no-ops otherwise.
+        /// </summary>
+        public void TriggerCounterStrike()
+        {
+            if (State != CombatState.Countering) return;
+            ExecuteCounterStrike();
         }
 
         private IEnumerator ParryFlashRoutine(GameObject enemy)

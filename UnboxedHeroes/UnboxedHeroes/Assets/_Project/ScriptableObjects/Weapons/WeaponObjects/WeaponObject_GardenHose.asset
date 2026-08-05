@@ -41,5 +41,6 @@ MonoBehaviour:
   legendaryIcon: {fileID: 0}
   epicWeaponPrefab: {fileID: 0}
   legendaryWeaponPrefab: {fileID: 0}
-  epicAbilityId: 
-  legendaryAbilityId: 
+  baseEquippedData: {fileID: 0}
+  epicAbility: {fileID: 11400000, guid: bea04c387e7446ceaa9bbbc6e00eba9b, type: 2}
+  legendaryAbility: {fileID: 11400000, guid: c4228850c6b24c04b1ee3ece9d3d497b, type: 2}

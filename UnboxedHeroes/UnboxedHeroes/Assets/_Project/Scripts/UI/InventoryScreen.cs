@@ -40,6 +40,7 @@ namespace Boxhead.UI
         // Cached component references — resolved in Awake.
         private WeaponInventory   _weaponInventory;
         private CardboardResource _cardboardResource;
+        private WeaponDurability  _weaponDurability;
 
         // Zero-alloc text building.
         private readonly StringBuilder _sb = new StringBuilder(32);
@@ -67,6 +68,7 @@ namespace Boxhead.UI
             {
                 playerGO.TryGetComponent(out _weaponInventory);
                 playerGO.TryGetComponent(out _cardboardResource);
+                playerGO.TryGetComponent(out _weaponDurability);
 
                 if (_weaponInventory == null)
                     Debug.LogWarning("[InventoryScreen] Player has no WeaponInventory.", this);
@@ -175,6 +177,9 @@ namespace Boxhead.UI
 
             if (_cardboardResource != null)
                 _cardboardResource.OnCardboardChanged += OnCardboardChanged;
+
+            if (_weaponDurability != null)
+                _weaponDurability.OnWeaponDamaged += OnWeaponDamaged;
         }
 
         private void UnsubscribeEvents()
@@ -184,11 +189,20 @@ namespace Boxhead.UI
 
             if (_cardboardResource != null)
                 _cardboardResource.OnCardboardChanged -= OnCardboardChanged;
+
+            if (_weaponDurability != null)
+                _weaponDurability.OnWeaponDamaged -= OnWeaponDamaged;
         }
 
         private void OnInventoryChanged()
         {
             RefreshAll();
+        }
+
+        private void OnWeaponDamaged(WeaponInstance weapon)
+        {
+            // Refresh only the weapon slots section so the durability bars update on every hit
+            RefreshWeaponSlots();
         }
 
         private void OnCardboardChanged(int amount)

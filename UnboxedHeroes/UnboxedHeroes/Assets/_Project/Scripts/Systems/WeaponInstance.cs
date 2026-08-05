@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Boxhead.Systems
 {
     public enum WeaponTier { Standard, Epic, Legendary }
@@ -32,6 +34,12 @@ namespace Boxhead.Systems
         public void DecrementDurability()
         {
             if (CurrentDurability > 0) CurrentDurability--;
+        }
+
+        public void RestoreDurability(int amount)
+        {
+            if (IsBroken) return;
+            CurrentDurability = Mathf.Min(CurrentDurability + amount, MaxDurability);
         }
     }
 }

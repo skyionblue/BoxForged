@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 1400737291600152989}
   - component: {fileID: 8198990627560640494}
   - component: {fileID: 3475408475305845411}
+  - component: {fileID: 4830314695846599296}
   m_Layer: 0
   m_Name: pfb_player
   m_TagString: Player
@@ -392,6 +393,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee56228319a5b41fe9b8cb3248767e4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.ForgeController
+--- !u!114 &4830314695846599296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57864372950292774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4958f7a07ffc847f5b615129cdae5408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.AbilityExecutor
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &4465086718402174422
 GameObject:
   m_ObjectHideFlags: 0

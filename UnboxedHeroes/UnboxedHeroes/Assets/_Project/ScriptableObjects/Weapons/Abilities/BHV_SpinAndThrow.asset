@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6177cd752a344b99afecb435f45bfc, type: 3}
+  m_Name: BHV_SpinAndThrow
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.SpinAndThrowBehaviour
+  _grabRadius: 4
+  _targetRadius: 8
+  _throwForce: 15
+  _flightTime: 1
+  _impactRadius: 1
+  _baseDamage: 30
