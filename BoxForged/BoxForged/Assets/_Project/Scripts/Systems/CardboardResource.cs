@@ -9,6 +9,9 @@ namespace Boxhead.Systems
 
         public event Action<int> OnCardboardChanged;
 
+        private void Awake()     => Boxhead.Enemy.EnemyStats.OnEnemyCardboardDrop += Add;
+        private void OnDestroy() => Boxhead.Enemy.EnemyStats.OnEnemyCardboardDrop -= Add;
+
         public void Add(int amount)
         {
             if (amount <= 0) return;

@@ -12,6 +12,10 @@ namespace Boxhead.Enemy
         [SerializeField] private bool _countsForWinCondition = true;
         [SerializeField] private bool _startInvulnerable = false;
 
+        [Header("Drops")]
+        [SerializeField] private int _cardboardDropMin = 1;
+        [SerializeField] private int _cardboardDropMax = 3;
+
         [Header("VFX")]
         [SerializeField] private ParticleSystem hitSparkPrefab;
 
@@ -27,6 +31,10 @@ namespace Boxhead.Enemy
 
         // Fired by any EnemyStats instance on death — subscribe once, hear all kills.
         public static event Action OnAnyEnemyDeath;
+
+        // Carries the cardboard drop amount so CardboardResource can subscribe once and
+        // hear all enemy drops without per-instance wiring in GameManager.
+        public static event Action<int> OnEnemyCardboardDrop;
 
         // Ensures OnAnyEnemyDeath fires exactly once per enemy, even if TakeDamage
         // is re-entered mid-event-chain (e.g. counter strike cascades killing a second enemy
@@ -85,6 +93,8 @@ namespace Boxhead.Enemy
                 {
                     _deathRewardedIP = true;
                     OnAnyEnemyDeath?.Invoke();
+                    int drop = UnityEngine.Random.Range(_cardboardDropMin, _cardboardDropMax + 1);
+                    if (drop > 0) OnEnemyCardboardDrop?.Invoke(drop);
                 }
                 OnDeath?.Invoke();
             }
