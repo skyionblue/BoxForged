@@ -1,4 +1,4 @@
-# Unboxed Heroes: Build In Public
+# BoxForged: Build In Public
 ## Media Kit & Sponsorship Overview
 
 **A live-streamed indie game development show powered entirely by AI tools**
@@ -10,7 +10,7 @@ Contact: unboxedheroes.imagination@gmail.com
 
 ## The Concept
 
-*Unboxed Heroes* is a mobile action game being built in public — from the first line of code to the App Store — by two people with 20+ years in the IT industry and zero prior game development experience.
+*BoxForged* is a mobile action game being built in public — from the first line of code to the App Store — by two people with 20+ years in the IT industry and zero prior game development experience.
 
 The game itself started as a conversation. Not a pitch deck, not a business plan — a conversation between two engineers about an idea Parnez had in Junior High. They tried to build it before. The technology wasn't there. Now it is.
 
@@ -24,7 +24,7 @@ This is not a tutorial. It is a build log — with real blockers, real breakthro
 
 ## Why This Show Is Different
 
-| What most gamedev content looks like | What Unboxed Heroes: Build In Public looks like |
+| What most gamedev content looks like | What BoxForged: Build In Public looks like |
 |---|---|
 | Expert teaching polished techniques | Engineers figuring out a new domain in real time |
 | Cleaned-up demos with finished assets | Raw process — tools failing, decisions reversing |
@@ -75,7 +75,7 @@ The whole thing started with a conversation. They added AI to the conversation. 
 
 ## The Community Mechanic
 
-The Unboxed Heroes audience does not just watch — they co-create the game:
+The BoxForged audience does not just watch — they co-create the game:
 
 1. **Submit** — Anyone can submit a feature request, weapon idea, character concept, or story beat via Discord or the website between episodes.
 2. **Vote** — At the top of each live stream, the most-upvoted ideas go to a real-time audience vote.
@@ -100,7 +100,7 @@ These groups overlap heavily with the user bases of AI creative tools — making
 ## Partnership Opportunities
 
 ### Title Sponsor
-One partner is the official tool that makes the show possible. Every episode opens with *"Unboxed Heroes: Build In Public, powered by [Partner]."*
+One partner is the official tool that makes the show possible. Every episode opens with *"BoxForged: Build In Public, powered by [Partner]."*
 
 Includes: episode intro mention every week, logo on the website homepage and all episode thumbnails, inclusion in every show description across all platforms, and a dedicated quarterly episode built around the partner's product.
 

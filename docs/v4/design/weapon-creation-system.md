@@ -1,4 +1,4 @@
-# Unboxed Heroes — Weapon Creation System Design Document
+# BoxForged — Weapon Creation System Design Document
 
 **Version:** V4 Sprint (to be assigned)
 **Status:** Decisions locked — ready for implementation
@@ -8,7 +8,7 @@
 
 ## Context
 
-The weapon creation system is the crown-jewel mechanic of Unboxed Heroes. The core fantasy: a kid in a post-apocalyptic neighborhood picks up ordinary household objects, wraps them in precious cardboard, and transforms them into legendary weapons. This document defines the full design and implementation plan — from data architecture through the forge UI — so the team can review and align before a single line of V4 code is written.
+The weapon creation system is the crown-jewel mechanic of BoxForged. The core fantasy: a kid in a post-apocalyptic neighborhood picks up ordinary household objects, wraps them in precious cardboard, and transforms them into legendary weapons. This document defines the full design and implementation plan — from data architecture through the forge UI — so the team can review and align before a single line of V4 code is written.
 
 ---
 
@@ -360,7 +360,7 @@ All decisions confirmed by Louie Celli on 2026-08-03.
 
 Follow `docs/migration-guide.md` exactly. Steps in order:
 
-1. Create a fresh Unity 6 LTS project at `UnboxedHeroes/UnboxedHeroes/`
+1. Create a fresh Unity 6 LTS project at `BoxForged/BoxForged/`
 2. Copy `Assets/_Project/` wholesale from the V3 source project — preserves all Unity GUIDs so cross-references between prefabs, materials, and ScriptableObjects remain intact
 3. Copy `Packages/manifest.json` — then open Package Manager and confirm all packages resolved:
 

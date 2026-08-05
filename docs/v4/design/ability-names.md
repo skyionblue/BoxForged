@@ -1,4 +1,4 @@
-# Unboxed Heroes V4 — Canonical Ability Names
+# BoxForged V4 — Canonical Ability Names
 
 **Status:** Locked — ready for AbilitySO asset creation in Sprint 2
 **Written by:** storyteller agent

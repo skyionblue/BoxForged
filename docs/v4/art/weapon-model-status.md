@@ -1,4 +1,4 @@
-# Unboxed Heroes V4 — Weapon Model Status
+# BoxForged V4 — Weapon Model Status
 
 **Last updated:** 2026-08-04  
 **Purpose:** Track which 3D models exist and which need to be created in Meshy for the weapon creation system.

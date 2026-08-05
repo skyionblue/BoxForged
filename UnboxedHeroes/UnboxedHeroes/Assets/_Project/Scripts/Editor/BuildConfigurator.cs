@@ -5,11 +5,11 @@ namespace Boxhead.Editor
 {
     /// <summary>
     /// Menu items for switching between profiling and release iOS build configurations.
-    /// Access via Unboxed Heroes → Build in the Unity menu bar.
+    /// Access via BoxForged → Build in the Unity menu bar.
     /// </summary>
     public static class BuildConfigurator
     {
-        private const string MenuRoot = "Unboxed Heroes/Build/";
+        private const string MenuRoot = "BoxForged/Build/";
 
         // ── Profiling Build ───────────────────────────────────────────────────
 

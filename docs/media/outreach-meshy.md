@@ -9,9 +9,9 @@
 
 Hi [Name / Meshy Team],
 
-My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *Unboxed Heroes* — using a fully AI-assisted development pipeline where Meshy is the source of every 3D asset in the game.
+My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *BoxForged* — using a fully AI-assisted development pipeline where Meshy is the source of every 3D asset in the game.
 
-We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
+We are launching **BoxForged: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
 
 **How we use Meshy:**
 
@@ -35,7 +35,7 @@ We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed gam
 
 **The pipeline context:**
 
-The Unboxed Heroes build pipeline includes Claude Code (architecture and code), Meshy (3D model generation), a custom Blender MCP server with 180+ automation tools (asset processing and standardization), ElevenLabs (voice), and Weave (storyboard and video production). Meshy is the creative entry point for all 3D content. Nothing appears in the game without going through it first. That is not a marketing angle — that is literally how the pipeline is structured.
+The BoxForged build pipeline includes Claude Code (architecture and code), Meshy (3D model generation), a custom Blender MCP server with 180+ automation tools (asset processing and standardization), ElevenLabs (voice), and Weave (storyboard and video production). Meshy is the creative entry point for all 3D content. Nothing appears in the game without going through it first. That is not a marketing angle — that is literally how the pipeline is structured.
 
 **The live production angle:**
 

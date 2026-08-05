@@ -1,8 +1,8 @@
-# Unboxed Heroes — Higgsfield Video Prompts
+# BoxForged — Higgsfield Video Prompts
 
 **For:** Higgsfield AI video generation
 **Purpose:** Zone trailers, character showcases, "What Kid Sees" transformation segments, App Store preview, social clips
-**Game:** Unboxed Heroes V4 — a mobile action roguelite where Kid puts a cardboard box on his head and sees the world transformed by imagination
+**Game:** BoxForged V4 — a mobile action roguelite where Kid puts a cardboard box on his head and sees the world transformed by imagination
 **Last updated:** 2026-08-05
 
 ---
@@ -438,5 +438,5 @@ When in doubt: ask "does this look like it was made with cardboard and markers?"
 
 ---
 
-*Higgsfield Prompts v1.0 — Unboxed Heroes V4 | Created: 2026-08-05*
+*Higgsfield Prompts v1.0 — BoxForged V4 | Created: 2026-08-05*
 *Reference: docs/storyboards/ for in-game cutscene shot breakdowns*

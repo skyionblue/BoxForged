@@ -1,4 +1,4 @@
-# Unboxed Heroes — Meshy HUD Element Prompts
+# BoxForged — Meshy HUD Element Prompts
 
 **Purpose:** AI-generated 3D models for all HUD/UI asset components.
 **Tool:** Meshy (text-to-3D)

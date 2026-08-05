@@ -2,7 +2,7 @@
 
 ## Context
 
-You want to share HUD components, Animation Controllers, and reusable scripts between **Unboxed Heroes** and a future project (**Hard Knocks Workshop**). Unity's proper solution for this is creating a **Unity Package Manager (UPM) custom package** — think of it like creating an npm package for Node.js or a Python package for pip, but for Unity.
+You want to share HUD components, Animation Controllers, and reusable scripts between **BoxForged** and a future project (**Hard Knocks Workshop**). Unity's proper solution for this is creating a **Unity Package Manager (UPM) custom package** — think of it like creating an npm package for Node.js or a Python package for pip, but for Unity.
 
 **Why UPM is the right approach:**
 - Native Unity integration (built-in package management system)
@@ -60,11 +60,11 @@ unboxed-heroes-shared/
 │   ├── Materials/                       # Shared materials (mat_healthbar_fill, HUD materials)
 │   ├── Art/
 │   │   └── UI/                          # UI textures and sprites
-│   └── UnboxedHeroes.Shared.Runtime.asmdef  # Assembly definition
+│   └── BoxForged.Shared.Runtime.asmdef  # Assembly definition
 ├── Editor/                              # Editor-only scripts
 │   ├── Scripts/
 │   │   └── WeaponHolderEditor.cs        # Custom inspector
-│   └── UnboxedHeroes.Shared.Editor.asmdef
+│   └── BoxForged.Shared.Editor.asmdef
 └── .gitignore                           # Ignore .meta files during development
 ```
 
@@ -73,8 +73,8 @@ unboxed-heroes-shared/
 {
   "name": "com.skyionblue.unboxedheroes.shared",
   "version": "0.1.0",
-  "displayName": "Unboxed Heroes - Shared Components",
-  "description": "Shared systems, UI components, and gameplay scripts for Unboxed Heroes and related projects. Includes AudioManager, StatSystem, HUD prefabs, animation controllers, and ScriptableObject definitions.",
+  "displayName": "BoxForged - Shared Components",
+  "description": "Shared systems, UI components, and gameplay scripts for BoxForged and related projects. Includes AudioManager, StatSystem, HUD prefabs, animation controllers, and ScriptableObject definitions.",
   "unity": "6000.0",
   "keywords": [
     "unboxed-heroes",
@@ -100,10 +100,10 @@ unboxed-heroes-shared/
 
 ### 1.4 Create Assembly Definition Files
 
-**`Runtime/UnboxedHeroes.Shared.Runtime.asmdef`:**
+**`Runtime/BoxForged.Shared.Runtime.asmdef`:**
 ```json
 {
-    "name": "UnboxedHeroes.Shared.Runtime",
+    "name": "BoxForged.Shared.Runtime",
     "rootNamespace": "Boxhead",
     "references": [
         "Unity.InputSystem",
@@ -121,13 +121,13 @@ unboxed-heroes-shared/
 }
 ```
 
-**`Editor/UnboxedHeroes.Shared.Editor.asmdef`:**
+**`Editor/BoxForged.Shared.Editor.asmdef`:**
 ```json
 {
-    "name": "UnboxedHeroes.Shared.Editor",
+    "name": "BoxForged.Shared.Editor",
     "rootNamespace": "Boxhead.Editor",
     "references": [
-        "UnboxedHeroes.Shared.Runtime"
+        "BoxForged.Shared.Runtime"
     ],
     "includePlatforms": [
         "Editor"
@@ -147,9 +147,9 @@ unboxed-heroes-shared/
 
 **`README.md`:**
 ```markdown
-# Unboxed Heroes - Shared Components
+# BoxForged - Shared Components
 
-Shared systems, UI components, and gameplay scripts for Unboxed Heroes and related projects.
+Shared systems, UI components, and gameplay scripts for BoxForged and related projects.
 
 ## Features
 
@@ -221,13 +221,13 @@ Thumbs.db
 
 ---
 
-## Phase 2: Extract Core Systems from Unboxed Heroes
+## Phase 2: Extract Core Systems from BoxForged
 
 **Extraction strategy:** Copy files from `Assets/_Project/` into the package's `Runtime/` folder. We'll use `file:` protocol for live development, so changes in the package immediately reflect in Unity.
 
 ### 2.1 Copy Core Systems Scripts
 
-**From Unboxed Heroes → To Package:**
+**From BoxForged → To Package:**
 
 ```
 Assets/_Project/Scripts/Core/AudioManager.cs → Runtime/Scripts/Core/AudioManager.cs
@@ -295,18 +295,18 @@ Assets/_Project/UI/Textures/ (entire folder) → Runtime/UI/Textures/
 ### 2.3 Generate `.meta` Files in Package
 
 After copying files to the package folder:
-1. Open Unity Editor with Unboxed Heroes project
+1. Open Unity Editor with BoxForged project
 2. In Project window, right-click `Assets/` → Reimport All
 3. Unity will generate `.meta` files for all copied assets in the package
 4. Copy those `.meta` files from Unity's `Library/PackageCache/` back to the package repo (if using local `file:` reference, they're already there)
 
 ---
 
-## Phase 3: Configure Unboxed Heroes to Use Package
+## Phase 3: Configure BoxForged to Use Package
 
 ### 3.1 Add Package Reference
 
-**Edit `UnboxedHeroes/UnboxedHeroes/Packages/manifest.json`:**
+**Edit `BoxForged/BoxForged/Packages/manifest.json`:**
 
 Add this line to the `dependencies` object:
 ```json
@@ -319,9 +319,9 @@ Add this line to the `dependencies` object:
 }
 ```
 
-**Path explanation:** Relative to `UnboxedHeroes/UnboxedHeroes/Packages/manifest.json`:
-- `../` = up to `UnboxedHeroes/UnboxedHeroes/`
-- `../../` = up to `UnboxedHeroes/`
+**Path explanation:** Relative to `BoxForged/BoxForged/Packages/manifest.json`:
+- `../` = up to `BoxForged/BoxForged/`
+- `../../` = up to `BoxForged/`
 - `../../../` = up to `boxhead/`
 - `../../../unboxed-heroes-shared` = `boxhead/../unboxed-heroes-shared`
 
@@ -356,7 +356,7 @@ If your project has custom `.asmdef` files (e.g., `Boxhead.Runtime.asmdef`), add
 {
     "name": "Boxhead.Runtime",
     "references": [
-        "UnboxedHeroes.Shared.Runtime"
+        "BoxForged.Shared.Runtime"
     ],
     ...
 }
@@ -366,7 +366,7 @@ This tells Unity that project scripts can use package scripts.
 
 ---
 
-## Phase 4: Verify Shared Package Works in Unboxed Heroes
+## Phase 4: Verify Shared Package Works in BoxForged
 
 ### 4.1 Manual Testing Checklist
 
@@ -420,9 +420,9 @@ git tag v0.1.0 -m "Initial release: core systems, HUD, animations"
 git push --tags
 ```
 
-### 5.4 Update Unboxed Heroes to Use Git Package
+### 5.4 Update BoxForged to Use Git Package
 
-**Edit `UnboxedHeroes/UnboxedHeroes/Packages/manifest.json`:**
+**Edit `BoxForged/BoxForged/Packages/manifest.json`:**
 
 Change the package reference from `file:` to GitHub URL:
 ```json
@@ -450,7 +450,7 @@ Unity will clone the repo into `Library/PackageCache/` and import it like any ot
 1. Open Unity Hub
 2. Create new project: "Hard Knocks Workshop"
 3. Template: 3D URP
-4. Unity version: 6000.0.x (same as Unboxed Heroes)
+4. Unity version: 6000.0.x (same as BoxForged)
 
 ### 6.2 Add Shared Package
 
@@ -520,7 +520,7 @@ Use `MAJOR.MINOR.PATCH` format:
 
 ### Version Locking Strategy
 
-**For production projects (Unboxed Heroes on TestFlight):**
+**For production projects (BoxForged on TestFlight):**
 - Lock to specific tag: `#v1.0.0`
 - Only update when explicitly ready (prevents surprise breakage)
 
@@ -537,11 +537,11 @@ Use `MAJOR.MINOR.PATCH` format:
 - [ ] `package.json` (package manifest)
 - [ ] `README.md` (documentation)
 - [ ] `CHANGELOG.md` (version history)
-- [ ] `Runtime/UnboxedHeroes.Shared.Runtime.asmdef` (assembly definition)
-- [ ] `Editor/UnboxedHeroes.Shared.Editor.asmdef` (editor assembly)
+- [ ] `Runtime/BoxForged.Shared.Runtime.asmdef` (assembly definition)
+- [ ] `Editor/BoxForged.Shared.Editor.asmdef` (editor assembly)
 - [ ] `.gitignore` (ignore .meta during development)
 
-### Files to Copy (from Unboxed Heroes)
+### Files to Copy (from BoxForged)
 
 **Scripts (25 files):**
 - [ ] Core: AudioManager, SoundData, HitStopManager, CameraStackWirer
@@ -586,7 +586,7 @@ Use `MAJOR.MINOR.PATCH` format:
 - [ ] UI/Sprites/ (loading screen, special button)
 - [ ] UI/Textures/ (main screen art)
 
-### Files to Edit (in Unboxed Heroes)
+### Files to Edit (in BoxForged)
 
 - [ ] `Packages/manifest.json` (add package reference)
 - [ ] Fix broken prefab references (if any)
@@ -596,17 +596,17 @@ Use `MAJOR.MINOR.PATCH` format:
 
 ## Verification Steps
 
-### After Phase 3 (Local Package in Unboxed Heroes)
+### After Phase 3 (Local Package in BoxForged)
 
-1. **Open Unboxed Heroes in Unity**
-2. **Check Package Manager:** Window → Package Manager → In Project → "Unboxed Heroes - Shared Components" should appear
+1. **Open BoxForged in Unity**
+2. **Check Package Manager:** Window → Package Manager → In Project → "BoxForged - Shared Components" should appear
 3. **Check Console:** No red compilation errors
 4. **Play Mode Test:** Run main scene, verify HUD/audio/combat work
 5. **Inspector Test:** Open prefabs, verify no pink "Missing Script" warnings
 
 ### After Phase 5 (Git Package)
 
-1. **Clone Unboxed Heroes to new location** (simulate fresh checkout)
+1. **Clone BoxForged to new location** (simulate fresh checkout)
 2. **Open in Unity** → package should auto-install from GitHub
 3. **Play Mode Test:** Verify everything still works
 4. **Build Test:** Try building for iOS/Android — package code should compile into build
@@ -625,7 +625,7 @@ Use `MAJOR.MINOR.PATCH` format:
 
 ### Issue: "The type or namespace 'Boxhead' could not be found"
 **Cause:** Assembly reference missing
-**Fix:** Add `"UnboxedHeroes.Shared.Runtime"` to project's `.asmdef` references
+**Fix:** Add `"BoxForged.Shared.Runtime"` to project's `.asmdef` references
 
 ### Issue: Prefab shows pink "Missing Script"
 **Cause:** Script moved to package but GUID changed
@@ -668,7 +668,7 @@ Use `MAJOR.MINOR.PATCH` format:
 ## Summary
 
 **What we're building:**
-A Unity Package Manager (UPM) custom package containing all reusable components from Unboxed Heroes — HUD, animation controllers, core systems (AudioManager, StatSystem), ScriptableObject definitions, and Input Actions.
+A Unity Package Manager (UPM) custom package containing all reusable components from BoxForged — HUD, animation controllers, core systems (AudioManager, StatSystem), ScriptableObject definitions, and Input Actions.
 
 **Why this approach:**
 - Native Unity package management (like npm for Node.js)
@@ -680,15 +680,15 @@ A Unity Package Manager (UPM) custom package containing all reusable components 
 **Critical files:**
 - `package.json` — package manifest (metadata, dependencies)
 - `.asmdef` files — Unity assembly definitions (compilation control)
-- `Packages/manifest.json` (in Unboxed Heroes) — declares package dependency
+- `Packages/manifest.json` (in BoxForged) — declares package dependency
 
 **Workflow:**
 1. Create package repo with folder structure
-2. Copy scripts/prefabs/assets from Unboxed Heroes
-3. Configure Unboxed Heroes to use package via `file:` reference
+2. Copy scripts/prefabs/assets from BoxForged
+3. Configure BoxForged to use package via `file:` reference
 4. Test thoroughly in Play Mode
 5. Commit package to Git, tag release
-6. Update Unboxed Heroes to use GitHub URL
+6. Update BoxForged to use GitHub URL
 7. Use same package in Hard Knocks Workshop
 
 **Result:**

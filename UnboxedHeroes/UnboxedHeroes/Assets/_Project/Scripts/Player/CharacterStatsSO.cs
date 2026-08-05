@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Boxhead.Player
 {
-    [CreateAssetMenu(menuName = "Unboxed Heroes/Character Stats")]
+    [CreateAssetMenu(menuName = "BoxForged/Character Stats")]
     public class CharacterStatsSO : ScriptableObject
     {
         [Header("Base Stats")]

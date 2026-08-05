@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="BoxForged — A mobile action game where cardboard boxes become helmets and household objects become weapons. Coming to iOS and Android." />
+  <meta property="og:title" content="BoxForged — Coming Soon" />
+  <meta property="og:description" content="Every object is a weapon. Every room is your imagination. Coming to iOS + Android." />
+  <meta property="og:image" content="/assets/images/og-image.png" />
+  <meta property="og:url" content="https://theboxforged.com" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <title>BoxForged — Coming Soon</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --tan:    #E8C97A;
+      --blue:   #4A90D9;
+      --green:  #5CB85C;
+      --red:    #E05A4E;
+      --orange: #F5A623;
+      --gold:   #F7C244;
+      --brown:  #3D2B1F;
+
+      --d1: #C8BFB0;
+      --d2: #A89F94;
+      --d3: #6B6560;
+      --d4: #2A2420;
+
+      --amber:  #FFB84D;
+      --saddle: #A0522D;
+      --sienna: #5C3D2E;
+
+      --bg:      #1E1208;
+      --bg-mid:  #2B1A0C;
+      --cream:   #F5EDD7;
+      --muted:   #A89F94;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: 'Nunito', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Subtle cardboard grain texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(255,255,255,0.012) 3px, rgba(255,255,255,0.012) 4px),
+        repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    * { position: relative; z-index: 1; }
+
+    /* ── NAV ─────────────────────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(30, 18, 8, 0.96);
+      backdrop-filter: blur(4px);
+      border-bottom: 4px solid var(--brown);
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      image-rendering: crisp-edges;
+    }
+
+    .nav-wordmark {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 20px;
+      color: var(--tan);
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--d1);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--tan); }
+
+    .btn {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 16px;
+      text-decoration: none;
+      display: inline-block;
+      padding: 10px 24px;
+      border: 4px solid var(--brown);
+      box-shadow: 4px 4px 0 var(--brown);
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--brown);
+    }
+
+    .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--brown);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--brown);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--tan);
+      border-color: var(--tan);
+      box-shadow: 4px 4px 0 var(--tan);
+    }
+
+    .btn-outline:hover { box-shadow: 6px 6px 0 var(--tan); }
+
+    .btn-lg { font-size: 20px; padding: 16px 40px; border-width: 5px; }
+
+    .coming-soon {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .coming-soon:hover {
+      transform: none;
+      box-shadow: 4px 4px 0 var(--brown);
+    }
+
+    /* ── HERO ────────────────────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+      background:
+        linear-gradient(rgba(30, 18, 8, 0.55), rgba(30, 18, 8, 0.78)),
+        url('/assets/images/hero-bg.jpg') center / cover no-repeat;
+      border-bottom: 5px solid var(--brown);
+      overflow: hidden;
+
+      filter: grayscale(1);
+      transition: filter 1.8s ease;
+    }
+
+    .hero.reclaimed { filter: grayscale(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero { filter: grayscale(0); transition: none; }
+    }
+
+    .hero-mascot {
+      width: 140px;
+      height: 140px;
+      object-fit: contain;
+      margin-bottom: 28px;
+      drop-shadow: 0 0 24px rgba(247,194,68,0.4);
+    }
+
+    .hero-eyebrow {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Permanent Marker', cursive;
+      font-size: clamp(48px, 10vw, 96px);
+      line-height: 1.0;
+      color: var(--cream);
+      text-shadow: 6px 6px 0 var(--brown);
+      max-width: 900px;
+      margin-bottom: 16px;
+    }
+
+    .hero-rule {
+      width: 80px;
+      height: 5px;
+      background: var(--gold);
+      border-radius: 2px;
+      margin: 28px auto;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2.5vw, 22px);
+      color: var(--d1);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .hero-sub strong { color: var(--cream); }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .platform-note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--d3);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    /* ── PITCH STRIP ─────────────────────────────────────────────────────────── */
+    .pitch-strip {
+      background: var(--tan);
+      border-top: 5px solid var(--brown);
+      border-bottom: 5px solid var(--brown);
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    .pitch-strip p {
+      font-family: 'Permanent Marker', cursive;
+      font-size: clamp(20px, 4vw, 32px);
+      color: var(--brown);
+      line-height: 1.3;
+    }
+
+    .pitch-strip span {
+      display: block;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--saddle);
+      margin-top: 10px;
+    }
+
+    /* ── SHARED SECTION ──────────────────────────────────────────────────────── */
+    .wrap { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+    .sec { padding: 88px 0; }
+
+    .eyebrow {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .sec-heading {
+      font-family: 'Permanent Marker', cursive;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.1;
+      color: var(--cream);
+      text-shadow: 4px 4px 0 var(--brown);
+      margin-bottom: 16px;
+    }
+
+    .sec-heading em { color: var(--tan); font-style: normal; }
+
+    .sec-body {
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 640px;
+    }
+
+    .sec-body p + p { margin-top: 16px; }
+    .sec-body strong { color: var(--cream); }
+
+    /* ── TRAILER ─────────────────────────────────────────────────────────────── */
+    .trailer-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .trailer-frame {
+      border: 6px solid var(--brown);
+      box-shadow: 10px 10px 0 var(--brown);
+      background: #000;
+      position: relative;
+      aspect-ratio: 16 / 9;
+    }
+
+    .trailer-frame::before {
+      content: '';
+      position: absolute;
+      inset: -18px;
+      border: 4px dashed rgba(61,43,31,0.4);
+      pointer-events: none;
+    }
+
+    .trailer-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .trailer-label {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 14px;
+      color: var(--d2);
+      text-align: center;
+      margin-top: 24px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── COMMUNITY SUBMISSIONS ───────────────────────────────────────────────── */
+    .submit-section {
+      background: var(--bg);
+      border-top: 5px solid var(--brown);
+      border-bottom: 5px solid var(--brown);
+    }
+
+    .submit-form {
+      margin-top: 44px;
+      max-width: 560px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--d1);
+      margin-bottom: 8px;
+    }
+
+    .form-optional {
+      font-weight: 600;
+      color: var(--d3);
+      letter-spacing: 0;
+      text-transform: none;
+      font-size: 11px;
+    }
+
+    .form-required { color: var(--orange); }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg-mid);
+      border: 4px solid var(--brown);
+      box-shadow: 4px 4px 0 var(--brown);
+      color: var(--cream);
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 4px 4px 0 var(--gold);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--d3); }
+
+    .form-footer {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .form-note {
+      font-size: 12px;
+      color: var(--d3);
+      letter-spacing: 0.06em;
+    }
+
+    .form-status {
+      margin-top: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      min-height: 20px;
+    }
+
+    .form-status.success { color: var(--green); }
+    .form-status.error   { color: var(--red); }
+
+    .form-honeypot {
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* ── BUILD IN PUBLIC ────────────────────────────────────────────────────── */
+    .build-section {
+      background: var(--bg-mid);
+      border-top: 5px solid var(--brown);
+      border-bottom: 5px solid var(--brown);
+    }
+
+    .build-bullets {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 44px;
+    }
+
+    .build-bullet {
+      background: var(--bg);
+      border: 4px solid var(--brown);
+      box-shadow: 5px 5px 0 var(--brown);
+      padding: 24px 22px;
+    }
+
+    .build-bullet-label {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 18px;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .build-bullet p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .build-cta {
+      margin-top: 44px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    @media (max-width: 680px) {
+      .build-bullets { grid-template-columns: 1fr; }
+    }
+
+    /* ── HEROES ──────────────────────────────────────────────────────────────── */
+    .heroes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
+      margin-top: 52px;
+    }
+
+    .char-card {
+      background: var(--cream);
+      border: 5px solid var(--brown);
+      box-shadow: 6px 6px 0 var(--brown);
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .char-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 9px 9px 0 var(--brown);
+    }
+
+    .char-img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: contain;
+      background: #ede4d0;
+      padding: 16px 16px 0;
+      display: block;
+    }
+
+    .char-info {
+      padding: 16px 18px 20px;
+      border-top: 4px solid var(--brown);
+    }
+
+    .char-style {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--saddle);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .char-name {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 22px;
+      color: var(--brown);
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .char-blurb {
+      font-size: 13px;
+      color: #5C4A38;
+      line-height: 1.55;
+    }
+
+    /* ── ENEMIES ─────────────────────────────────────────────────────────────── */
+    .enemies-section {
+      background: var(--d4);
+      border-top: 5px solid #1A1008;
+      border-bottom: 5px solid #1A1008;
+    }
+
+    .enemies-section .eyebrow { color: var(--amber); }
+
+    .enemies-section .sec-heading {
+      color: var(--d1);
+      text-shadow: 4px 4px 0 #0e0a06;
+    }
+
+    .enemies-section .sec-heading em { color: var(--amber); }
+
+    .enemies-section .sec-body { color: var(--d2); }
+
+    .enemies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 16px;
+      margin-top: 52px;
+    }
+
+    .enemy-card {
+      background: #1A1008;
+      border: 4px solid #2a1f14;
+      box-shadow: 5px 5px 0 #0e0a06;
+      overflow: hidden;
+      filter: saturate(0.35) brightness(0.9);
+      transition: filter 0.25s, transform 0.15s, box-shadow 0.15s;
+    }
+
+    .enemy-card:hover {
+      filter: saturate(0.7) brightness(1.05);
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 #0e0a06;
+    }
+
+    .enemy-img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: contain;
+      background: #120d06;
+      padding: 12px 12px 0;
+      display: block;
+    }
+
+    .enemy-info {
+      padding: 12px 14px 14px;
+      border-top: 3px solid #2a1f14;
+    }
+
+    .enemy-rank {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      opacity: 0.7;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .enemy-name {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 16px;
+      color: var(--d1);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .enemy-blurb {
+      font-size: 11px;
+      color: var(--d3);
+      line-height: 1.5;
+    }
+
+    /* ── FOOTER CTA ──────────────────────────────────────────────────────────── */
+    .footer-cta {
+      text-align: center;
+      background: var(--bg-mid);
+      border-top: 5px solid var(--brown);
+    }
+
+    .footer-cta .sec-heading { text-align: center; }
+
+    .store-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin: 40px 0 32px;
+      flex-wrap: wrap;
+    }
+
+    .social-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 48px;
+    }
+
+    .social-link {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--d2);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .social-link:hover { color: var(--tan); }
+
+    /* ── FOOTER ──────────────────────────────────────────────────────────────── */
+    footer {
+      background: var(--bg);
+      border-top: 2px solid #2a1a0a;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 22px;
+      color: var(--tan);
+      margin-bottom: 10px;
+    }
+
+    footer p {
+      font-size: 12px;
+      color: #3a2810;
+      letter-spacing: 0.08em;
+    }
+
+    footer p + p { margin-top: 6px; }
+
+    footer a { color: #3a2810; text-decoration: none; }
+    footer a:hover { color: var(--muted); }
+
+    /* ── SCROLL REVEAL ───────────────────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      nav { padding: 12px 16px; }
+      .nav-links { display: none; }
+      .heroes-grid { grid-template-columns: repeat(2, 1fr); }
+      .enemies-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .heroes-grid { grid-template-columns: 1fr; }
+      .enemies-grid { grid-template-columns: repeat(2, 1fr); }
+      .btn-lg { width: 100%; text-align: center; }
+      .hero-ctas { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="/" class="nav-brand">
+      <span class="nav-wordmark">BoxForged</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#trailer">Trailer</a></li>
+      <li><a href="#build">Build In Public</a></li>
+      <li><a href="#heroes">Heroes</a></li>
+      <li><a href="#community">Submit</a></li>
+    </ul>
+    <a href="#community" class="btn btn-gold">Submit an Idea</a>
+  </nav>
+
+  <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+  <section class="hero" id="top">
+    <p class="hero-eyebrow">Coming to iOS &amp; Android</p>
+    <h1>BoxForged</h1>
+    <div class="hero-rule"></div>
+    <p class="hero-sub">
+      The cardboard box on your head isn't just a hat.<br />
+      <strong>It's a choice.</strong>
+    </p>
+    <div class="hero-ctas">
+      <a href="#community" class="btn btn-gold btn-lg">Submit Your Idea</a>
+      <a href="#trailer" class="btn btn-outline btn-lg">Watch the Trailer</a>
+    </div>
+    <p class="platform-note">iOS · Android · Free to Play</p>
+  </section>
+
+  <!-- ── PITCH STRIP ───────────────────────────────────────────────────────── -->
+  <div class="pitch-strip">
+    <p>Every object is a weapon.<br />Every room is your imagination.</p>
+    <span>A mobile action game — coming soon</span>
+  </div>
+
+  <!-- ── TRAILER ───────────────────────────────────────────────────────────── -->
+  <div class="wrap" id="trailer">
+    <div class="sec">
+      <span class="eyebrow reveal">The Trailer</span>
+      <h2 class="sec-heading reveal">See It in <em>Action.</em></h2>
+      <div class="trailer-wrap reveal">
+        <div class="trailer-frame">
+          <iframe
+            src="https://www.youtube.com/embed/lfLzt8ypLVA"
+            title="BoxForged — Official Teaser"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            style="width:100%;height:100%;border:0;display:block;"
+          ></iframe>
+        </div>
+        <p class="trailer-label">BoxForged — Official Teaser</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BUILD IN PUBLIC ──────────────────────────────────────────────────── -->
+  <section class="build-section" id="build">
+    <div class="wrap">
+      <div class="sec">
+        <span class="eyebrow reveal">Built in Public</span>
+        <h2 class="sec-heading reveal">Your idea ships <em>next episode.</em></h2>
+        <p class="sec-body reveal">
+          BoxForged is built live every week on Twitch — two engineers with zero game dev
+          experience, figuring it out on stream. Between episodes, you submit ideas. At the top
+          of the show, the audience votes. The winning idea gets designed and coded that night,
+          start to finish, while you watch.
+        </p>
+        <div class="build-bullets">
+          <div class="build-bullet reveal">
+            <span class="build-bullet-label">Submit</span>
+            <p>Drop a weapon idea, enemy name, or story beat in the queue between streams.</p>
+          </div>
+          <div class="build-bullet reveal">
+            <span class="build-bullet-label">Vote</span>
+            <p>Top submissions go to a live audience vote at the start of every episode.</p>
+          </div>
+          <div class="build-bullet reveal">
+            <span class="build-bullet-label">See It Built</span>
+            <p>The winner gets designed, coded, and shipped. That night. On stream.</p>
+          </div>
+        </div>
+        <div class="build-cta reveal">
+          <a href="https://www.twitch.tv/boxforged" class="btn btn-gold btn-lg" target="_blank" rel="noopener">Watch on Twitch</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COMMUNITY SUBMISSIONS ──────────────────────────────────────────────── -->
+  <section class="submit-section" id="community">
+    <div class="wrap">
+      <div class="sec">
+        <span class="eyebrow reveal">Shape the Game</span>
+        <h2 class="sec-heading reveal">Got an idea? <em>Submit it.</em></h2>
+        <p class="sec-body reveal">
+          The winning idea from each week's community vote gets built live on Twitch.
+          Drop a weapon concept, enemy name, zone idea, or whatever you think would make
+          BoxForged better. If the audience votes for it, we build it — that night, on stream.
+        </p>
+        <!-- Shown when SUBMISSIONS_OPEN = false -->
+        <div class="submit-closed reveal" id="submissionsClosedMsg" style="display:none">
+          <p class="sec-body" style="margin-top:32px">
+            Community submissions are opening soon. Follow us to know the moment the gates open.
+          </p>
+        </div>
+
+        <form class="submit-form reveal" id="submitForm" novalidate>
+          <!-- Honeypot: invisible to real users, bots fill it in -->
+          <div class="form-honeypot" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="name">Name <span class="form-optional">(optional)</span></label>
+            <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="email">Email <span class="form-required">*</span></label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="idea">Your idea <span class="form-required">*</span></label>
+            <textarea id="idea" name="idea" placeholder="A sprinkler that fires while burrowed underground..." rows="4" required></textarea>
+          </div>
+          <div class="form-footer">
+            <button type="submit" class="btn btn-gold btn-lg" id="submitBtn">Submit Your Idea</button>
+            <p class="form-note">We read every submission. Top ones go to the live vote.</p>
+          </div>
+          <div class="form-status" id="formStatus" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HEROES ────────────────────────────────────────────────────────────── -->
+  <div class="wrap" id="heroes">
+    <div class="sec">
+      <span class="eyebrow reveal">The Heroes</span>
+      <h2 class="sec-heading reveal">Choose Your Box.<br /><em>Choose Your Style.</em></h2>
+      <p class="sec-body reveal">
+        Two fighting styles. Four heroes. The cardboard box you choose changes everything —
+        your moves, your special ability, and how you take on The Unimaginative.
+      </p>
+      <div class="heroes-grid">
+
+        <div class="char-card reveal">
+          <img src="/assets/images/Female-Ninja-concept.png" alt="The Female Ninja" class="char-img" />
+          <div class="char-info">
+            <span class="char-style">Shadow Style</span>
+            <div class="char-name">The Female Ninja</div>
+            <p class="char-blurb">Fast, precise, and untouchable when the dodge connects. Dash through enemies and disappear into the dark.</p>
+          </div>
+        </div>
+
+        <div class="char-card reveal">
+          <img src="/assets/images/Ninja-open-hands-concept.png" alt="The Ninja" class="char-img" />
+          <div class="char-info">
+            <span class="char-style">Shadow Style</span>
+            <div class="char-name">The Ninja</div>
+            <p class="char-blurb">The original. Reads the fight before it starts. Parry the unparryable and counter with everything.</p>
+          </div>
+        </div>
+
+        <div class="char-card reveal">
+          <img src="/assets/images/Female-Cowboy-concept.png" alt="The Cowgirl" class="char-img" />
+          <div class="char-info">
+            <span class="char-style">Tumble Style</span>
+            <div class="char-name">The Cowgirl</div>
+            <p class="char-blurb">Pulls enemies in before they know what hit them. Wider parry window. Every hit is a statement.</p>
+          </div>
+        </div>
+
+        <div class="char-card reveal">
+          <img src="/assets/images/Cowboy-open-hands-concept.png" alt="The Cowboy" class="char-img" />
+          <div class="char-info">
+            <span class="char-style">Tumble Style</span>
+            <div class="char-name">The Cowboy</div>
+            <p class="char-blurb">Tumbleshotting through the Cul-de-Sac since before the Hush. Patient. Accurate. Unimpressed.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ENEMIES ───────────────────────────────────────────────────────────── -->
+  <section class="enemies-section">
+    <div class="wrap">
+      <div class="sec">
+        <span class="eyebrow reveal">The Unimaginative</span>
+        <h2 class="sec-heading reveal">They want your <em>cardboard.</em></h2>
+        <p class="sec-body reveal">
+          After The Great Hush, the World Tree became the last source of raw cardboard.
+          The Unimaginative seized it — because they can't build anything themselves.
+          They want to trade the ability to make for the comfort of consuming.
+          Stop them.
+        </p>
+        <div class="enemies-grid">
+
+          <div class="enemy-card reveal">
+            <img src="/assets/images/Skeptic-grunt-open-hands-concept.png" alt="Skeptic Grunt" class="enemy-img" />
+            <div class="enemy-info">
+              <span class="enemy-rank">Basic Soldier</span>
+              <div class="enemy-name">The Skeptic</div>
+              <p class="enemy-blurb">Doesn't believe kids can fight back. Keeps getting proven wrong.</p>
+            </div>
+          </div>
+
+          <div class="enemy-card reveal">
+            <img src="/assets/images/Gnome-grunt-open-hands-concept.png" alt="Gnome Grunt" class="enemy-img" />
+            <div class="enemy-info">
+              <span class="enemy-rank">Melee Grunt</span>
+              <div class="enemy-name">Gnome Grunt</div>
+              <p class="enemy-blurb">Small. Angry. Hits like he has something to prove.</p>
+            </div>
+          </div>
+
+          <div class="enemy-card reveal">
+            <img src="/assets/images/Hitching-hound-concept.png" alt="Hitching Hound" class="enemy-img" />
+            <div class="enemy-info">
+              <span class="enemy-rank">Chase Unit</span>
+              <div class="enemy-name">Hitching Hound</div>
+              <p class="enemy-blurb">Faster than it looks. Worse in packs. Don't let it flank you.</p>
+            </div>
+          </div>
+
+          <div class="enemy-card reveal">
+            <img src="/assets/images/Milepost-marshal-concept.png" alt="Milepost Marshal" class="enemy-img" />
+            <div class="enemy-info">
+              <span class="enemy-rank">Ranged Threat</span>
+              <div class="enemy-name">Milepost Marshal</div>
+              <p class="enemy-blurb">Calls in backup while you're distracted. Deal with him first.</p>
+            </div>
+          </div>
+
+          <div class="enemy-card reveal">
+            <img src="/assets/images/Sprinkler-sentinel-alert.png" alt="Sprinkler Sentinel" class="enemy-img" />
+            <div class="enemy-info">
+              <span class="enemy-rank">Ambush Unit</span>
+              <div class="enemy-name">Sprinkler Sentinel</div>
+              <p class="enemy-blurb">Burrowed. Waiting. Fires before you see it move.</p>
+            </div>
+          </div>
+
+          <div class="enemy-card reveal">
+            <img src="/assets/images/SpinCycle-open-hands-concept.png" alt="SpinCycle" class="enemy-img" />
+            <div class="enemy-info">
+              <span class="enemy-rank">Boss</span>
+              <div class="enemy-name">SpinCycle</div>
+              <p class="enemy-blurb">The machine at the end of the street. It doesn't stop spinning.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER CTA ─────────────────────────────────────────────────────────── -->
+  <section class="footer-cta" id="notify">
+    <div class="wrap">
+      <div class="sec">
+        <span class="eyebrow reveal">Coming Soon</span>
+        <h2 class="sec-heading reveal">Be the first to <em>play.</em></h2>
+        <p class="sec-body reveal" style="margin: 0 auto 0; text-align: center; max-width: 500px;">
+          Drop your email and we'll notify you the moment BoxForged hits the App Store and Google Play.
+        </p>
+        <div class="store-buttons">
+          <!-- Replace href="#" with real store URLs when available -->
+          <a href="#" class="btn btn-gold btn-lg coming-soon" title="Coming Soon">App Store — Coming Soon</a>
+          <a href="#" class="btn btn-outline btn-lg coming-soon" title="Coming Soon">Google Play — Coming Soon</a>
+        </div>
+        <div class="social-row">
+          <a href="https://instagram.com/boxforged" class="social-link" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://tiktok.com/@boxforged" class="social-link" target="_blank" rel="noopener">TikTok</a>
+          <a href="https://www.youtube.com/@UnBoxedHeroes-c9q" class="social-link" target="_blank" rel="noopener">YouTube</a>
+          <a href="https://www.twitch.tv/boxforged" class="social-link" target="_blank" rel="noopener">Twitch</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-logo">BoxForged</div>
+    <p>theboxforged.com &nbsp;·&nbsp; skyionblue studio</p>
+    <p>&copy; 2026 skyionblue. All rights reserved. &nbsp;·&nbsp; <a href="/privacy/">Privacy Policy</a></p>
+  </footer>
+
+  <script>
+    // ── Toggle this to open/close community submissions ───────────────────────
+    const SUBMISSIONS_OPEN = false;
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Drained → Reclaimed hero reveal on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.querySelector('.hero').classList.add('reclaimed');
+      }, 200);
+    });
+
+    // Scroll reveal via IntersectionObserver
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Show/hide submission form based on flag
+    const submitForm = document.getElementById('submitForm');
+    const closedMsg  = document.getElementById('submissionsClosedMsg');
+    if (submitForm) submitForm.style.display = SUBMISSIONS_OPEN ? '' : 'none';
+    if (closedMsg)  closedMsg.style.display  = SUBMISSIONS_OPEN ? 'none' : '';
+    if (submitForm) {
+      submitForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const statusEl = document.getElementById('formStatus');
+        const email = submitForm.email.value.trim();
+        const idea = submitForm.idea.value.trim();
+
+        if (!email || !idea) {
+          statusEl.className = 'form-status error';
+          statusEl.textContent = 'Email and idea are required.';
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+        statusEl.className = 'form-status';
+        statusEl.textContent = '';
+
+        try {
+          const res = await fetch('/api/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: submitForm.name.value.trim(),
+              email,
+              idea,
+              website: submitForm.website.value, // honeypot — should always be empty
+            }),
+          });
+          if (res.ok) {
+            statusEl.className = 'form-status success';
+            statusEl.textContent = 'Got it! Your idea is in the queue. See you on Twitch.';
+            submitForm.reset();
+          } else {
+            throw new Error('server');
+          }
+        } catch {
+          statusEl.className = 'form-status error';
+          statusEl.textContent = 'Something went wrong — try again or reach us on Instagram.';
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Submit Your Idea';
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

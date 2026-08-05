@@ -9,9 +9,9 @@
 
 Hi [Name / PixVerse Team],
 
-My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *Unboxed Heroes* — using a fully AI-assisted development pipeline where PixVerse generates the cinematic video content that runs inside the game itself.
+My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *BoxForged* — using a fully AI-assisted development pipeline where PixVerse generates the cinematic video content that runs inside the game itself.
 
-We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
+We are launching **BoxForged: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
 
 **How we use PixVerse:**
 
@@ -40,7 +40,7 @@ PixVerse is not just our marketing tool — it is a content pipeline that feeds 
 
 **The pipeline context:**
 
-The Unboxed Heroes build pipeline includes Claude Code (architecture, code, and orchestration), Meshy (3D model generation), a custom Blender MCP server with 180+ automation tools (asset processing), ElevenLabs (voice), Weave (storyboard and video production for the show itself), and PixVerse (in-game cinematic video). PixVerse sits at the intersection of art direction and game production — the assets it generates are not concept art that gets handed off to an animator. They go straight into the game.
+The BoxForged build pipeline includes Claude Code (architecture, code, and orchestration), Meshy (3D model generation), a custom Blender MCP server with 180+ automation tools (asset processing), ElevenLabs (voice), Weave (storyboard and video production for the show itself), and PixVerse (in-game cinematic video). PixVerse sits at the intersection of art direction and game production — the assets it generates are not concept art that gets handed off to an animator. They go straight into the game.
 
 **The live production angle:**
 

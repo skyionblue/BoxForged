@@ -1,4 +1,4 @@
-# Unboxed Heroes — Meshy AI Prompt Reference
+# BoxForged — Meshy AI Prompt Reference
 ## Sprint 6 Art Pass — 3D Model Generation
 
 **Version:** 2.0

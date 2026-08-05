@@ -9,9 +9,9 @@
 
 Hi [Name / Weave Team],
 
-My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *Unboxed Heroes* — using a fully AI-assisted development pipeline where Weave handles all of our storyboard, video, and 2D concept art production.
+My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *BoxForged* — using a fully AI-assisted development pipeline where Weave handles all of our storyboard, video, and 2D concept art production.
 
-We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
+We are launching **BoxForged: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
 
 **How we use Weave:**
 
@@ -34,7 +34,7 @@ We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed gam
 
 **The pipeline context:**
 
-The Unboxed Heroes build pipeline includes Claude Code (architecture and code), Meshy (3D model generation), a custom Blender MCP server (asset processing), ElevenLabs (voice), and Weave (storyboard and video production). Every tool in this stack has a genuine role. Weave is where the visual language of the game gets defined before anything is built in Unity — character concepts, zone mood boards, cutscene sequences, and all video deliverables flow through it.
+The BoxForged build pipeline includes Claude Code (architecture and code), Meshy (3D model generation), a custom Blender MCP server (asset processing), ElevenLabs (voice), and Weave (storyboard and video production). Every tool in this stack has a genuine role. Weave is where the visual language of the game gets defined before anything is built in Unity — character concepts, zone mood boards, cutscene sequences, and all video deliverables flow through it.
 
 **The live production angle:**
 

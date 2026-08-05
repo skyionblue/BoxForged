@@ -1,4 +1,4 @@
-# Unboxed Heroes — Meshy Weapon Prompts
+# BoxForged — Meshy Weapon Prompts
 
 **Purpose:** AI-generated 3D models for all weapon/object assets, ordered by priority.
 **Tool:** Meshy (text-to-3D)

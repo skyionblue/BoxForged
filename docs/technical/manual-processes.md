@@ -1,4 +1,4 @@
-# Manual Processes — Unboxed Heroes
+# Manual Processes — BoxForged
 
 Processes that require manual steps in the Unity Editor and cannot be fully automated.
 

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Boxhead.Core
 {
-    [CreateAssetMenu(menuName = "Unboxed Heroes/Level Data")]
+    [CreateAssetMenu(menuName = "BoxForged/Level Data")]
     public class LevelData : ScriptableObject
     {
         [Header("XP Thresholds")]

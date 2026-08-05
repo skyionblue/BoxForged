@@ -1,4 +1,4 @@
-# Unboxed Heroes — Loading Screen Art Direction
+# BoxForged — Loading Screen Art Direction
 
 **Version:** 1.0
 **Date:** 2026-07-16
@@ -192,7 +192,7 @@ The loading screen background art must leave clear, unobstructed zones for the U
 
 | UI Element | Position | Safe Zone Rule |
 |---|---|---|
-| Game title "Unboxed Heroes" | Top-center, inside top 20% of frame | Keep sky simple and uncluttered in top 20% — no branches, no tree silhouette crossing this band |
+| Game title "BoxForged" | Top-center, inside top 20% of frame | Keep sky simple and uncluttered in top 20% — no branches, no tree silhouette crossing this band |
 | Loading bar | Bottom of frame, full width, inside bottom 10% of frame | Ground in this band should be dark enough (vignette) to ensure the cardboard-strip loading bar reads. Target background value here: `#7A7470` or darker. |
 | Loading progress text | Directly above the loading bar, bottom 12–15% of frame | Same dark-enough ground rule applies. |
 | Studio / publisher logo | Bottom-right corner, bottom 8% of frame | Keep bottom-right foreground ground clear of debris elements. |
@@ -259,7 +259,7 @@ All three can be imported into Unity; the active one is assigned via the Loading
 If final art is not ready before the loading screen needs to go live in a build:
 
 1. Use a flat `#C8BFB0` (drained palette primary) solid fill as the background.
-2. Place the "Unboxed Heroes" title text (Permanent Marker font, `#3D2B1F`) centered in the top quarter.
+2. Place the "BoxForged" title text (Permanent Marker font, `#3D2B1F`) centered in the top quarter.
 3. Use a simple Unity UI Slider styled with the project's cardboard color as the placeholder loading bar.
 4. This placeholder requires zero new assets and can be wired immediately.
 

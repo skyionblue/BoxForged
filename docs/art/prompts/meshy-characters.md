@@ -1,4 +1,4 @@
-# Unboxed Heroes — Meshy Character & Enemy Prompts
+# BoxForged — Meshy Character & Enemy Prompts
 
 **Purpose:** AI-generated 3D models for character and enemy assets.
 **Tool:** Meshy (text-to-3D)
@@ -82,7 +82,7 @@ Not photorealistic. Not smooth plastic. Not flat cartoon.
 
 ### Mascot — Full Hero Image
 
-**Concept:** The Unboxed Heroes brand mascot. A compact chibi child warrior wearing a cardboard box as a helmet/mask, holding a cardboard sword raised in a triumphant hero pose. This is not the gameplay character — it is the logo-facing version, optimized for website hero images, social media headers, and marketing renders. Built once, used everywhere brand presence is needed.
+**Concept:** The BoxForged brand mascot. A compact chibi child warrior wearing a cardboard box as a helmet/mask, holding a cardboard sword raised in a triumphant hero pose. This is not the gameplay character — it is the logo-facing version, optimized for website hero images, social media headers, and marketing renders. Built once, used everywhere brand presence is needed.
 **Type:** Static mesh — render-only, no rig or animation needed
 **Priority:** HIGH (required before any public-facing web or social presence)
 

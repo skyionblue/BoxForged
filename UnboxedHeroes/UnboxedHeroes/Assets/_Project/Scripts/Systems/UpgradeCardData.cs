@@ -15,9 +15,9 @@ namespace Boxhead.Systems
 
     /// <summary>
     /// Describes a single upgrade card offered to the player between rooms.
-    /// Create instances via Assets > Create > Unboxed Heroes > Upgrade Card.
+    /// Create instances via Assets > Create > BoxForged > Upgrade Card.
     /// </summary>
-    [CreateAssetMenu(menuName = "Unboxed Heroes/Upgrade Card")]
+    [CreateAssetMenu(menuName = "BoxForged/Upgrade Card")]
     public class UpgradeCardData : ScriptableObject
     {
         [SerializeField] private string        _displayName;

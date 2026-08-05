@@ -1,4 +1,4 @@
-# Unboxed Heroes — Fighting Style Specials
+# BoxForged — Fighting Style Specials
 
 ## How Specials Work
 

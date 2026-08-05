@@ -1,4 +1,4 @@
-# Unboxed Heroes — Art Style Guide
+# BoxForged — Art Style Guide
 
 **Version:** 1.1
 **Date:** 2026-07-19
@@ -9,7 +9,7 @@
 
 ## 1. Visual Identity in One Sentence
 
-> Unboxed Heroes looks like a child drew a post-apocalyptic world on cardboard with markers — chunky characters, hand-crafted textures, and a world that gets more colorful the more imagination wins.
+> BoxForged looks like a child drew a post-apocalyptic world on cardboard with markers — chunky characters, hand-crafted textures, and a world that gets more colorful the more imagination wins.
 
 ---
 
@@ -382,7 +382,7 @@ so_enemy_gnomesoldier.asset
 
 ## 11. Reference Images & Mood
 
-The following publicly available games and media capture aspects of the Unboxed Heroes art direction. Use these as conversation anchors with artists, not as targets to copy:
+The following publicly available games and media capture aspects of the BoxForged art direction. Use these as conversation anchors with artists, not as targets to copy:
 
 | Reference | What to borrow |
 |---|---|

@@ -1,4 +1,4 @@
-# Unboxed Heroes — ElevenLabs Sound Effects Prompts
+# BoxForged — ElevenLabs Sound Effects Prompts
 
 Paste one prompt at a time into the **Sound Effects → Describe a sound...** box on ElevenLabs.
 Leave duration on **Auto**. Download and rename each file to the label shown before generating the next.
@@ -193,4 +193,4 @@ A short triumphant western fanfare, approximately 2.5 seconds. Three rising bras
 
 **File format** — WAV 44.1 kHz mono for all one-shots. WAV 44.1 kHz stereo for `ambient_desert_wind_loop_01`, mono for mechanical loops. Unity will convert to OGG at import.
 
-**Where to drop files** — `UnboxedHeroes/Assets/_Project/Audio/SFX/` organized by subfolder (Player, Enemies, Combat, Environment, UI).
+**Where to drop files** — `BoxForged/Assets/_Project/Audio/SFX/` organized by subfolder (Player, Enemies, Combat, Environment, UI).

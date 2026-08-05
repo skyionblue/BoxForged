@@ -9,7 +9,7 @@ namespace Boxhead.Editor
 {
     public static class Sprint4SceneSetup
     {
-        [MenuItem("Unboxed Heroes/Setup Sprint 4 Scene")]
+        [MenuItem("BoxForged/Setup Sprint 4 Scene")]
         public static void SetupScene()
         {
             // ── AudioManager ─────────────────────────────────────────────
@@ -173,7 +173,7 @@ namespace Boxhead.Editor
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
                 UnityEngine.SceneManagement.SceneManager.GetActiveScene());
 
-            Debug.Log("[Unboxed Heroes] Sprint 4 scene setup complete. Save the scene (Ctrl+S) to persist.");
+            Debug.Log("[BoxForged] Sprint 4 scene setup complete. Save the scene (Ctrl+S) to persist.");
             EditorUtility.DisplayDialog(
                 "Sprint 4 Setup",
                 "Scene wired!\n\n• AudioManager\n• GameManager\n• HUD Canvas (health bar + counter indicator)\n• GameOver Canvas (overlay + restart button)\n\nSave the scene with Ctrl+S.",

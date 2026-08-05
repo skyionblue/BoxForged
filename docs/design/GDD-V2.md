@@ -1,4 +1,4 @@
-# Unboxed Heroes — Game Design Document V2
+# BoxForged — Game Design Document V2
 
 **Version:** 0.9
 **Date:** 2026-07-23
@@ -24,7 +24,7 @@
 
 ## 1. Game Overview
 
-**Title:** Unboxed Heroes
+**Title:** BoxForged
 **Genre:** Action Roguelite Brawler (incremental scope — prototype → full RPG)
 **Platform:** iOS + Android (Phase 1 release); PC in a later phase
 **Engine:** Unity 6 LTS + URP (Mobile quality tier)
@@ -536,7 +536,7 @@ Kid's parents had never allowed a phone. When the world went quiet, he went outs
 
 ## 10.1 Hard Knocks Workshop — Real-World Skill Mapping
 
-The world of Unboxed Heroes was built by people who made things. The skills Kid and his allies use in the game are not invented for convenience — they are the real skills The Great Hush forced children to rediscover: how to navigate without a phone, how to use an axe, how to start a fire, how to build something by hand.
+The world of BoxForged was built by people who made things. The skills Kid and his allies use in the game are not invented for convenience — they are the real skills The Great Hush forced children to rediscover: how to navigate without a phone, how to use an axe, how to start a fire, how to build something by hand.
 
 **Hard Knocks Workshop** (Lehi, Utah) teaches these exact skills to kids ages 10–15. The mapping below is intentional, not decorative. A kid who completes axe-work at HKW and then unlocks the Splitting Maul in the game should feel that the game recognized what they did in the real world — because it did. These four abilities are designed from the start to serve as Phase 3 real-world unlock rewards (QR codes issued by HKW instructors on skill completion).
 

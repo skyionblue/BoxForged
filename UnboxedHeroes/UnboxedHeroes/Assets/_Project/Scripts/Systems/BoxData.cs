@@ -12,7 +12,7 @@ namespace Boxhead.Systems
         Pirate
     }
 
-    [CreateAssetMenu(fileName = "BoxData_New", menuName = "Unboxed Heroes/Box Data")]
+    [CreateAssetMenu(fileName = "BoxData_New", menuName = "BoxForged/Box Data")]
     public class BoxData : ScriptableObject
     {
         [Header("Identity")]

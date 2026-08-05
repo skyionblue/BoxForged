@@ -1,8 +1,8 @@
-# Cross-Project Integration: Unboxed Heroes × Hard Knocks Workshop
+# Cross-Project Integration: BoxForged × Hard Knocks Workshop
 
 ## Why This Document Exists
 
-Both projects exist for the same reason: kids are spending too much time on screens and not enough time with other people or learning real skills. Unboxed Heroes is the Trojan horse — the only medium that reliably gets a kid's attention. Hard Knocks Workshop is the destination. The game creates the hunger; the workshop feeds it.
+Both projects exist for the same reason: kids are spending too much time on screens and not enough time with other people or learning real skills. BoxForged is the Trojan horse — the only medium that reliably gets a kid's attention. Hard Knocks Workshop is the destination. The game creates the hunger; the workshop feeds it.
 
 ---
 
@@ -24,7 +24,7 @@ The BoxHead elders watched a generation lose the ability to make, fix, or surviv
 
 **The Elders were not ancient sages or sci-fi villains.** They were engineers — Network Engineers, DevOps Engineers, Support Engineers. The people who actually built and maintained the systems that held the Internet together. They had the access, the technical understanding, and eventually the will. The Great Hush was a coordinated act by people who knew exactly what they were doing and did it anyway.
 
-**The timeline is present-day: 2026.** Not a far-future dystopia. The world of Unboxed Heroes is recognizably now — suburban America, minivans, cracked cul-de-sacs — with the Internet simply gone.
+**The timeline is present-day: 2026.** Not a far-future dystopia. The world of BoxForged is recognizably now — suburban America, minivans, cracked cul-de-sacs — with the Internet simply gone.
 
 The world that followed is harder — but it is honest. Kids who grew up after The Great Hush had to learn real things. How to build. How to navigate. How to fix a broken wheel or start a fire without a search engine. These are the heroes.
 
@@ -38,7 +38,7 @@ The Unimaginative are not evil. They are the wound the Elders accidentally made 
 
 ## The Two Projects
 
-| | Unboxed Heroes | Hard Knocks Workshop |
+| | BoxForged | Hard Knocks Workshop |
 |---|---|---|
 | **Type** | Mobile action game (iOS/Android) | Real-world youth skills program |
 | **Location** | Global (digital) | Lehi, Utah (physical) |
@@ -46,7 +46,7 @@ The Unimaginative are not evil. They are the wound the Elders accidentally made 
 | **Status** | Active development (Sprint 16) | Pre-launch viability assessment |
 | **Brand relationship** | **Separate** — intentional connection, not co-branded |
 
-The connection between them is thematic and intentional, but the brands stand alone. A player who loves Unboxed Heroes and later encounters Hard Knocks Workshop should feel immediate recognition — not because logos match, but because the story prepared them for it.
+The connection between them is thematic and intentional, but the brands stand alone. A player who loves BoxForged and later encounters Hard Knocks Workshop should feel immediate recognition — not because logos match, but because the story prepared them for it.
 
 ---
 
@@ -71,7 +71,7 @@ Add the explicit connection. Players discover HKW naturally.
 
 - In the game's pause menu / credits: a subtle "Real Heroes Train Here" section with a link to hardknocks-workshop.com
 - After the final boss / end screen: an unlockable lore page — the elders' manifesto — that ends with "The skills in this game are real. Want to learn them?" with a QR code
-- HKW social content references the game story: "The elders in Unboxed Heroes did what we're trying to do in real life"
+- HKW social content references the game story: "The elders in BoxForged did what we're trying to do in real life"
 - Game social content references HKW philosophy: "The Unimaginative are everywhere. What are you teaching your kids?"
 
 **Outcome:** Warm leads. Players who connect with the story want to know more. The QR code converts curiosity into HKW enrollment interest.
@@ -98,8 +98,8 @@ Real-world participation and in-game rewards create a reinforcing cycle.
 
 The game becomes the digital arm of HKW's brand.
 
-- A "Skill Log" section inside Unboxed Heroes: kids log real-world skills, parents or instructors co-sign completions, logged skills earn in-game collectibles — a digital badge book for real achievements
-- An HKW-exclusive in-game character skin: workshop apron, safety goggles, tool belt layered over the ninja/cowgirl designs — the real-world HKW aesthetic applied to the Unboxed Heroes characters
+- A "Skill Log" section inside BoxForged: kids log real-world skills, parents or instructors co-sign completions, logged skills earn in-game collectibles — a digital badge book for real achievements
+- An HKW-exclusive in-game character skin: workshop apron, safety goggles, tool belt layered over the ninja/cowgirl designs — the real-world HKW aesthetic applied to the BoxForged characters
 - Partner with schools and youth programs in Alpine School District to embed the game + workshop combo into after-school programming
 
 ---

@@ -11,9 +11,9 @@ All prefabs use a shared texture atlas (Atlased variants). The `MaterialsOnly/` 
 
 ## Package Overview
 
-This is a broad low-poly asset library spanning fantasy, RPG, industrial, nature, and suburban use cases. The majority of content is fantasy/medieval, but several categories are directly useful for Unboxed Heroes' post-apocalyptic suburban setting.
+This is a broad low-poly asset library spanning fantasy, RPG, industrial, nature, and suburban use cases. The majority of content is fantasy/medieval, but several categories are directly useful for BoxForged' post-apocalyptic suburban setting.
 
-| Category | Count | Useful for Unboxed Heroes |
+| Category | Count | Useful for BoxForged |
 |---|---|---|
 | Prototype | 501 | ⚠️ Dev/greybox only |
 | Dungeon | 378 | ❌ Wrong theme |
@@ -54,7 +54,7 @@ This is a broad low-poly asset library spanning fantasy, RPG, industrial, nature
 
 ---
 
-## Unboxed Heroes — Recommended by Zone
+## BoxForged — Recommended by Zone
 
 ### The Backyard (Zone 0)
 - **Vegetation:** Common trees, bushes, grass patches, stumps, vines
@@ -337,7 +337,7 @@ This is a broad low-poly asset library spanning fantasy, RPG, industrial, nature
 
 ## Industrial (190 prefabs)
 
-### Junk & Urban Clutter ✅ (best for Unboxed Heroes)
+### Junk & Urban Clutter ✅ (best for BoxForged)
 
 | Prefab | Notes |
 |---|---|
@@ -508,7 +508,7 @@ Most building prefabs are castle/fortress/medieval. The modular facade pieces ar
 
 Full system: beams, platforms, stairs (short/tall/wide), ladders, huts, support joints, upright beams — all timber.
 
-### Castle/Fantasy (not for Unboxed Heroes)
+### Castle/Fantasy (not for BoxForged)
 
 Castle towers, fortress walls, turrets, pyramids, Indian temples, Viking hall, windmill — **skip for this project**.
 

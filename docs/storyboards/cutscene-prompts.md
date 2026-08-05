@@ -1,4 +1,4 @@
-# Unboxed Heroes — Cutscene Production Document
+# BoxForged — Cutscene Production Document
 
 **For:** PixVerse + Gemini AI video generation  
 **Platform:** Mobile (16:9 landscape, 10–20s per cutscene)  
@@ -9,7 +9,7 @@
 ## Art Style Summary
 
 **The Two-Layer World:**  
-Every location in Unboxed Heroes exists in two visual states. The **Drained state** (controlled by The Unimaginative) uses desaturated grey-browns: warm grey `#C8BFB0`, darker grey-brown `#A89F94`, pale grey sky `#D4CFC9`. Everything feels abandoned, flat, lifeless. The **Reclaimed state** (restored by the player's imagination) uses vivid marker colors: craft tan `#E8C97A`, marker blue sky `#4A90D9`, marker green grass `#5CB85C`, marker red `#E05A4E`, marker orange `#F5A623`, marker purple `#9B59B6`, marker gold `#F7C244`. The transition between these states is the emotional core of the game.
+Every location in BoxForged exists in two visual states. The **Drained state** (controlled by The Unimaginative) uses desaturated grey-browns: warm grey `#C8BFB0`, darker grey-brown `#A89F94`, pale grey sky `#D4CFC9`. Everything feels abandoned, flat, lifeless. The **Reclaimed state** (restored by the player's imagination) uses vivid marker colors: craft tan `#E8C97A`, marker blue sky `#4A90D9`, marker green grass `#5CB85C`, marker red `#E05A4E`, marker orange `#F5A623`, marker purple `#9B59B6`, marker gold `#F7C244`. The transition between these states is the emotional core of the game.
 
 **Cardboard & Marker Aesthetic:**  
 Surfaces look like corrugated cardboard or kraft paper with visible grain. Outlines and details are hand-drawn marker strokes (slightly uneven, dark brown `#3D2B1F`). Bright colors mimic Crayola markers on cardboard — vivid but warm, never neon. Characters are chunky (head ~35% of height, stocky proportions). The box on the player's head is a perfect cube, oversized, with marker-drawn details (ninja: dark navy `#1A1A2E` + purple lines; cowboy: leather brown `#8B5E2A` + gold lines). Lighting in URP: drained state uses flat diffuse (no highlights, fog-like ambient); reclaimed state uses warm directional light with soft shadows and vivid saturation. Visual references: Tearaway (craft materials), A Short Hike (warm simplicity), Little Big Planet (craft construction).

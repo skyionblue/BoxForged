@@ -1,4 +1,4 @@
-# Unboxed Heroes — Teaser Trailer Storyboard v1
+# BoxForged — Teaser Trailer Storyboard v1
 
 **Format:** App Store / Website teaser — 60–90 seconds
 **Aspect ratio:** 16:9 landscape (mobile primary)
@@ -326,7 +326,7 @@ The teaser traces a single emotional arc: **grey to vivid.** It opens on the sil
 ---
 
 #### PANEL 20 — ESTABLISH / STATIC → FADE OUT
-**Narrative caption:** "Unboxed Heroes."
+**Narrative caption:** "BoxForged."
 
 **Scene description:** Final panel. The cul-de-sac as seen from the same angle as Panel 01 — the same establishing shot that opened the trailer. But now: every window has warm light inside. The trees are full. The kids are in yards, not stoops. Color saturates the frame completely. The World Tree is faintly visible in the background at the horizon — alive and enormous. Then: the image softens gently as the game logo fades in at center frame. Below it, the tagline in the game's hand-marker font: **"YOUR IMAGINATION IS THE WEAPON."**
 

@@ -9,9 +9,9 @@
 
 Hi [Name / Higgsfield Team],
 
-My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *Unboxed Heroes* — using a fully AI-assisted development pipeline where Higgsfield is our cinematic character engine.
+My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *BoxForged* — using a fully AI-assisted development pipeline where Higgsfield is our cinematic character engine.
 
-We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
+We are launching **BoxForged: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
 
 **How we use Higgsfield:**
 
@@ -39,7 +39,7 @@ Higgsfield handles everything we need characters to actually *do* on camera. Whi
 
 **The pipeline context:**
 
-The Unboxed Heroes build pipeline includes Claude Code (architecture, code, and orchestration), Meshy (3D model generation), a custom Blender MCP server with 180+ automation tools (asset processing), ElevenLabs (voice), Weave (show production), PixVerse (in-game atmospheric video loops), and Higgsfield (character cinematics and trailers). Higgsfield is where the characters come alive — it sits between the 3D game world and the audience.
+The BoxForged build pipeline includes Claude Code (architecture, code, and orchestration), Meshy (3D model generation), a custom Blender MCP server with 180+ automation tools (asset processing), ElevenLabs (voice), Weave (show production), PixVerse (in-game atmospheric video loops), and Higgsfield (character cinematics and trailers). Higgsfield is where the characters come alive — it sits between the 3D game world and the audience.
 
 **The live production angle:**
 

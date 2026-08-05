@@ -11,7 +11,7 @@
 
 ## Context
 
-The weapon creation system is the crown-jewel mechanic of Unboxed Heroes. Before any weapon code is written, the V4 Unity project must be stood up by migrating all V3 assets wholesale. Once migration is verified, the sprint delivers the complete forge pipeline: players pick up raw household objects, carry them to a Forge Workbench, spend cardboard to transform them into named weapons, use them in combat, and watch them break permanently when durability hits zero.
+The weapon creation system is the crown-jewel mechanic of BoxForged. Before any weapon code is written, the V4 Unity project must be stood up by migrating all V3 assets wholesale. Once migration is verified, the sprint delivers the complete forge pipeline: players pick up raw household objects, carry them to a Forge Workbench, spend cardboard to transform them into named weapons, use them in combat, and watch them break permanently when durability hits zero.
 
 This sprint ships Standard tier only. Epic and Legendary abilities are Sprint 2.
 
@@ -32,7 +32,7 @@ All decisions locked. See `docs/design/weapon-creation-system.md` — Locked Dec
 Follow `docs/migration-guide.md` exactly.
 
 **Steps:**
-1. Create a fresh Unity 6 LTS (6000.5.3f1) project at `UnboxedHeroes/UnboxedHeroes/`
+1. Create a fresh Unity 6 LTS (6000.5.3f1) project at `BoxForged/BoxForged/`
 2. Copy `Assets/_Project/` wholesale from the V3 source project — preserves all Unity GUIDs
 3. Copy `Packages/manifest.json` and confirm all packages resolve in Package Manager:
 

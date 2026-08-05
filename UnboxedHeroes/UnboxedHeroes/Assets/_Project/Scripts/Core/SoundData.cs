@@ -15,7 +15,7 @@ namespace Boxhead.Core
         EnemyDeath
     }
 
-    [CreateAssetMenu(fileName = "SoundData_New", menuName = "Unboxed Heroes/Sound Data")]
+    [CreateAssetMenu(fileName = "SoundData_New", menuName = "BoxForged/Sound Data")]
     public class SoundData : ScriptableObject
     {
         [Header("Identity")]

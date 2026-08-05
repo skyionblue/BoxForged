@@ -1,4 +1,4 @@
-# Unboxed Heroes — Meshy Prompts V2: Cul-de-Sac Zone
+# BoxForged — Meshy Prompts V2: Cul-de-Sac Zone
 
 **Version:** 2.0
 **Zone:** The Cul-de-Sac (Phase 2, Zone 1)

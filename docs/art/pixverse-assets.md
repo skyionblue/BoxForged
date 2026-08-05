@@ -1,4 +1,4 @@
-# Unboxed Heroes — PixVerse Video Asset Document
+# BoxForged — PixVerse Video Asset Document
 
 **Version:** 1.0
 **Date:** 2026-07-16

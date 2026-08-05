@@ -1,20 +1,20 @@
-# Unboxed Heroes — Claude Code Project Guide
+# BoxForged — Claude Code Project Guide
 
 ## Project Overview
 
-**Unboxed Heroes** is a mobile-first (iOS + Android) action game built in Unity 6 LTS with URP.
+**BoxForged** is a mobile-first (iOS + Android) action game built in Unity 6 LTS with URP.
 The premise: cardboard boxes become ninja masks and cowboy hats, household objects become weapons.
 Setting: post-apocalyptic — the World Tree is the last source of cardboard; The Unimaginative have seized it.
 
 **Engine:** Unity 6 LTS (6000.5.3f1)
 **Render Pipeline:** URP (mobile quality tier)
 **Language:** C# with namespaces
-**Git remote:** `git@ghtm:skyionblue/TheCardboardChronicles.git`
-**Unity project path:** `UnboxedHeroes/UnboxedHeroes/` (double-nested inside the repo root)
+**Git remote:** `git@ghtm:skyionblue/BoxForged.git`
+**Unity project path:** `BoxForged/BoxForged/` (double-nested inside the repo root)
 
 > **Setup status:** This directory is a greenfield — the Unity project has not been created here yet. The plan is to set up a fresh Unity 6 project and port scripts and assets from the prior work preserved on the `v3/main` branch.
 
-> **Name note:** The game was renamed from *BoxHead Ninjas* to *Unboxed Heroes*. The C# namespaces (`Boxhead.*`) retain the legacy name — namespace renaming is deferred to a future sprint. All folder names, the GitHub repo, and Unity ProjectSettings now reflect *Unboxed Heroes*.
+> **Name note:** The game was renamed from *BoxHead Ninjas* to *BoxForged*. The C# namespaces (`Boxhead.*`) retain the legacy name — namespace renaming is deferred to a future sprint. All folder names, the GitHub repo, and Unity ProjectSettings now reflect *BoxForged*.
 
 ---
 

@@ -1,4 +1,4 @@
-# Unboxed Heroes — Town Square Asset Brief
+# BoxForged — Town Square Asset Brief
 
 **Zone:** The Town Square (Phase 2, Zone 2 — V3 Sprint 07)
 **Prepared:** 2026-07-28

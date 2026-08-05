@@ -1,4 +1,4 @@
-# Unboxed Heroes — Meshy ENV Prop Prompts: Forge Workbench & Cardboard Pile
+# BoxForged — Meshy ENV Prop Prompts: Forge Workbench & Cardboard Pile
 
 **Zone:** The Backyard (Phase 1) — Safe Zone / Crafting Area
 **Prepared:** 2026-08-04
@@ -114,7 +114,7 @@ Solid black shape test: the backing wall must be visible and read as a vertical 
 
 **What it is:** A single flat corrugated cardboard sheet — one piece, not a pile. In Unity, the `pfb_pickup_cardboard` prefab clusters 4–8 instances of this single mesh at varied positions, rotations, and slight scale variation to create the pile appearance. Generating the pile as one model would waste the triangle budget and lose flexibility. The individual piece is what Meshy generates.
 
-**Key insight:** In Unboxed Heroes, cardboard is the most precious resource in the world. A single piece of cardboard should feel like something worth picking up — not trash.
+**Key insight:** In BoxForged, cardboard is the most precious resource in the world. A single piece of cardboard should feel like something worth picking up — not trash.
 
 **Gameplay camera:** Top-down at roughly 45 degrees. The piece needs to read as a distinct physical object from above, not flat ground decal.
 

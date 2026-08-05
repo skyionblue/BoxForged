@@ -1,4 +1,4 @@
-# Unboxed Heroes — Figma Weave AI Image Prompts
+# BoxForged — Figma Weave AI Image Prompts
 
 **Purpose:** 2D illustration and concept art for loading screens, menus, zone mood boards, character references, cutscene panels, and marketing. Weave handles all 2D AI generation — Meshy handles 3D.
 **Tool:** Figma Weave (weave.figma.com) — node-based AI image generation and compositing
@@ -638,7 +638,7 @@ Wide cinematic prompts for promotional use. These images are output at high reso
 
 **Prompt**
 ```
-Cinematic wide key art illustration, 16:9. The hero image for Unboxed Heroes. Center-frame: the
+Cinematic wide key art illustration, 16:9. The hero image for BoxForged. Center-frame: the
 Kid in cardboard-box ninja outfit stands in a confident power pose — chest forward, weight on one foot,
 one arm slightly raised. The World Tree fills the background, alive and vivid in its Reclaimed state:
 warm rich brown corrugated trunk, vivid marker-green cardboard leaf clusters, rising to the top of
@@ -735,7 +735,7 @@ Inpainting is the most powerful Weave tool for controlled iteration. Use it when
 4. Write a focused inpaint prompt describing what should be in that region (not the full image prompt — just the local area).
 5. Run 2–3 inpaint variations and composite the best one back into the base image.
 
-Common inpaint use cases for Unboxed Heroes:
+Common inpaint use cases for BoxForged:
 - Fixing the World Tree silhouette without regenerating the whole landscape
 - Replacing a flat or photorealistic texture region with correct corrugated cardboard grain
 - Swapping a foreground element (wrong debris, wrong prop type)

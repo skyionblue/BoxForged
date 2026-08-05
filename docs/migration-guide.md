@@ -1,8 +1,8 @@
-# Unboxed Heroes — Asset Migration Guide
+# BoxForged — Asset Migration Guide
 
 This document lists every custom asset that needs to move from the current Unity project into a new one. Scenes are excluded — they were test/verification scenes and are not being migrated.
 
-**Source Unity project root:** `boxhead/UnboxedHeroes/`
+**Source Unity project root:** `boxhead/BoxForged/`
 **Custom assets live under:** `Assets/_Project/`
 
 ---

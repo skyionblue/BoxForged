@@ -1,4 +1,4 @@
-# Unboxed Heroes — Pre-Launch Social Media Playbook
+# BoxForged — Pre-Launch Social Media Playbook
 
 **Last updated:** 2026-07-24
 **Status:** Active — update as handles, dates, and assets are confirmed
@@ -55,7 +55,7 @@
 Someone turned off the Internet. Adults went grey.
 Kids found cardboard boxes and didn't miss a step.
 
-This is Unboxed Heroes.
+This is BoxForged.
 
 We're two engineers — 20+ years in IT, zero prior game dev experience — building a mobile action game live on Twitch, one sprint at a time. The teaser is up. Link in bio.
 
@@ -65,7 +65,7 @@ The World Tree needs protecting. A cardboard box is all you need to see why.
 *Hashtags (post in first comment):*
 
 ```
-#UnboxedHeroes #indiegame #indiedev #gamedev #mobilegaming #unity #buildInPublic #actiongame #roguelite #cardboard #imagination #iosGame #androidGame #indiegamedev #twitchdev #devlog #gametrailer #mobileindiegame #comingsoon
+#BoxForged #indiegame #indiedev #gamedev #mobilegaming #unity #buildInPublic #actiongame #roguelite #cardboard #imagination #iosGame #androidGame #indiegamedev #twitchdev #devlog #gametrailer #mobileindiegame #comingsoon
 ```
 
 ---
@@ -79,7 +79,7 @@ That's the whole game. Teaser is live — link in bio.
 
 Two IT guys, zero game dev experience, building this live every week on Twitch. Come watch us figure it out.
 
-#UnboxedHeroes #indiegame #gamedev #buildInPublic #mobilegame #cardboard #indiedev #unity #tiktokgaming #gametrailer
+#BoxForged #indiegame #gamedev #buildInPublic #mobilegame #cardboard #indiedev #unity #tiktokgaming #gametrailer
 ```
 
 ---
@@ -91,7 +91,7 @@ We made a teaser. It's real. It's out.
 
 Watch at: https://youtu.be/lfLzt8ypLVA
 
-Unboxed Heroes — a mobile action brawler about a kid with a cardboard box and something left to fight for.
+BoxForged — a mobile action brawler about a kid with a cardboard box and something left to fight for.
 Built on Twitch. Built in public. Built by two people who knew nothing about game dev when they started.
 
 Come hang. We stream every week. The community votes on what gets built. Come vote.
@@ -118,10 +118,10 @@ The kids who'd never had phones went outside.
 Some of them found cardboard boxes.
 Those are the ones who saved everything.
 
-That's the world of Unboxed Heroes.
+That's the world of BoxForged.
 The game is about what happens next.
 
-#UnboxedHeroes #indiegame #indiedev #gamedev #mobilegaming #storytelling #worldbuilding #cardboard #imagination #roguelite #twitchdev #buildInPublic
+#BoxForged #indiegame #indiedev #gamedev #mobilegaming #storytelling #worldbuilding #cardboard #imagination #roguelite #twitchdev #buildInPublic
 ```
 
 ---
@@ -142,7 +142,7 @@ That's the whole concept. Come vote. Come watch us get it wrong and then fix it.
 
 twitch.tv/unboxedheroes | theunboxedheroes.com
 
-#buildInPublic #indiedev #gamedev #twitchdev #UnboxedHeroes #mobilegaming #indiegame #unity #devlog #livedev
+#buildInPublic #indiedev #gamedev #twitchdev #BoxForged #mobilegaming #indiegame #unity #devlog #livedev
 ```
 
 ---
@@ -163,7 +163,7 @@ That's the lens. The imagination is his.
 The Unimaginative have seized the World Tree — the last source of cardboard on Earth.
 He's going to take it back.
 
-#UnboxedHeroes #indiegame #characterdesign #indiedev #gamedev #mobilegaming #cardboard #roguelite #characterspotlight #comingsoon
+#BoxForged #indiegame #characterdesign #indiedev #gamedev #mobilegaming #cardboard #roguelite #characterspotlight #comingsoon
 ```
 
 ---
@@ -171,7 +171,7 @@ He's going to take it back.
 ### 4. The Drained World and the Reclaimed World
 
 ```
-Every zone in Unboxed Heroes exists in two states at the same time.
+Every zone in BoxForged exists in two states at the same time.
 
 The Unimaginative version: grey, quiet, washed out.
 A cracked cul-de-sac. Dead grass. Empty houses.
@@ -186,7 +186,7 @@ When imagination reclaims a zone, color comes back — not as a visual effect, a
 
 We're building this dual-layer system in Unity right now.
 
-#UnboxedHeroes #gamedev #indiegame #indiedev #unity #mobilegaming #worldbuilding #gamedesign #buildInPublic #twitchdev #cardboard
+#BoxForged #gamedev #indiegame #indiedev #unity #mobilegaming #worldbuilding #gamedesign #buildInPublic #twitchdev #cardboard
 ```
 
 ---
@@ -212,7 +212,7 @@ They just don't stop him.
 
 That's the whole game, really.
 
-#UnboxedHeroes #indiegame #gamedev #enemydesign #indiedev #mobilegaming #characterdesign #storytelling #worldbuilding #roguelite
+#BoxForged #indiegame #gamedev #enemydesign #indiedev #mobilegaming #characterdesign #storytelling #worldbuilding #roguelite
 ```
 
 ---
@@ -222,7 +222,7 @@ That's the whole game, really.
 *Reusable for every stream. Fill in the blanks for each week.*
 
 ```
-WE'RE LIVE TONIGHT — Unboxed Heroes, Episode [EPISODE NUMBER]
+WE'RE LIVE TONIGHT — BoxForged, Episode [EPISODE NUMBER]
 
 Tonight we're building: [ONE-LINE DESCRIPTION OF WHAT'S BEING BUILT]
 
@@ -236,13 +236,13 @@ twitch.tv/unboxedheroes
 
 [Optional: screenshot or in-progress clip of what we're starting with tonight]
 
-#twitchdev #UnboxedHeroes #indiedev #gamedev #buildInPublic #livedev #unity #mobilegame
+#twitchdev #BoxForged #indiedev #gamedev #buildInPublic #livedev #unity #mobilegame
 ```
 
 **Example filled:**
 
 ```
-WE'RE LIVE TONIGHT — Unboxed Heroes, Episode 13
+WE'RE LIVE TONIGHT — BoxForged, Episode 13
 
 Tonight we're building: NavMesh pathfinding so enemies actually walk around walls
 
@@ -254,7 +254,7 @@ Every week: community votes, we build it, something definitely goes wrong.
 LIVE at 8PM ET
 twitch.tv/unboxedheroes
 
-#twitchdev #UnboxedHeroes #indiedev #gamedev #buildInPublic #livedev #unity #mobilegame
+#twitchdev #BoxForged #indiedev #gamedev #buildInPublic #livedev #unity #mobilegame
 ```
 
 ---
@@ -264,7 +264,7 @@ twitch.tv/unboxedheroes
 *Reusable for all devlog episodes and sprint recap videos.*
 
 ```
-Unboxed Heroes | Devlog Episode [EPISODE NUMBER] — [VIDEO TITLE]
+BoxForged | Devlog Episode [EPISODE NUMBER] — [VIDEO TITLE]
 
 [1–2 sentence summary of what shipped this episode and why it matters.]
 
@@ -301,11 +301,11 @@ TikTok: https://tiktok.com/@unboxedheroes
 ---
 
 WHO WE ARE:
-Louie and Parnez — two engineers with 20+ years in IT and zero prior game dev experience. We started with Unity open in front of us and no idea how it worked. We're building Unboxed Heroes live on Twitch, one sprint at a time. Community votes at the start of every stream. Whoever wins, we build it that night.
+Louie and Parnez — two engineers with 20+ years in IT and zero prior game dev experience. We started with Unity open in front of us and no idea how it worked. We're building BoxForged live on Twitch, one sprint at a time. Community votes at the start of every stream. Whoever wins, we build it that night.
 
 ---
 
-#UnboxedHeroes #indiedev #gamedev #devlog #unity #mobilegaming #buildInPublic #indiegame #roguelite #twitchdev
+#BoxForged #indiedev #gamedev #devlog #unity #mobilegaming #buildInPublic #indiegame #roguelite #twitchdev
 ```
 
 ---
@@ -346,7 +346,7 @@ Everything that must be in place before App Store and Google Play submission.
 - [ ] Age rating submitted and confirmed
 - [ ] Privacy policy URL live (required for both stores)
 - [ ] Support URL live (can be a contact form on theunboxedheroes.com)
-- [ ] All App Store metadata reviewed for the name "Unboxed Heroes" — no legacy "BoxHead Ninjas" anywhere
+- [ ] All App Store metadata reviewed for the name "BoxForged" — no legacy "BoxHead Ninjas" anywhere
 
 ### Outreach
 

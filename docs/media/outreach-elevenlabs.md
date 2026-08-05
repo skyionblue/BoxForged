@@ -9,9 +9,9 @@
 
 Hi [Name / ElevenLabs Team],
 
-My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *Unboxed Heroes* — using a fully AI-assisted development pipeline where ElevenLabs provides the voice layer for our characters, narration, and in-game audio.
+My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *BoxForged* — using a fully AI-assisted development pipeline where ElevenLabs provides the voice layer for our characters, narration, and in-game audio.
 
-We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
+We are launching **BoxForged: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
 
 **How we use ElevenLabs:**
 
@@ -34,7 +34,7 @@ We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed gam
 
 **The pipeline context:**
 
-The Unboxed Heroes build pipeline includes Claude Code (architecture and code), Meshy (3D model generation), a custom Blender MCP server (asset processing), Weave (storyboard and video production), and ElevenLabs (voice). Every tool in this stack has a genuine role. ElevenLabs is the voice of the game — literally. That is not a marketing angle; it is how the game is being built.
+The BoxForged build pipeline includes Claude Code (architecture and code), Meshy (3D model generation), a custom Blender MCP server (asset processing), Weave (storyboard and video production), and ElevenLabs (voice). Every tool in this stack has a genuine role. ElevenLabs is the voice of the game — literally. That is not a marketing angle; it is how the game is being built.
 
 **The community angle:**
 

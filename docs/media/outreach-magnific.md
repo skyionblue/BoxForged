@@ -9,9 +9,9 @@
 
 Hi [Name / Magnific Team],
 
-My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *Unboxed Heroes* — using a fully AI-assisted development pipeline where Magnific handles video generation and visual enhancement for our trailers, marketing content, and social media.
+My name is Louie Celli. I am a DevOps Engineer and together with my co-host Parnez Newbill I am building a mobile game called *BoxForged* — using a fully AI-assisted development pipeline where Magnific handles video generation and visual enhancement for our trailers, marketing content, and social media.
 
-We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
+We are launching **BoxForged: Build In Public**, a weekly live-streamed game development show on Twitch (with YouTube VODs, short-form clips, and a podcast) where we build the game in front of an audience that votes on what gets made each week.
 
 **How we use Magnific:**
 
@@ -31,11 +31,11 @@ We are launching **Unboxed Heroes: Build In Public**, a weekly live-streamed gam
 - Reach across Twitch, YouTube, TikTok, Instagram, and a podcast from a single weekly build session
 - Access to a creative-tech audience of aspiring builders and indie developers who are actively choosing their tool stack right now
 - Repurposable content clips showing Magnific solving a real problem — game footage being transformed into trailer-quality video live on stream
-- A highly visual use case: Unboxed Heroes has a bold, stylized aesthetic (low-poly 3D, cardboard-and-marker textures, vibrant color) that makes Magnific's output look striking rather than generic
+- A highly visual use case: BoxForged has a bold, stylized aesthetic (low-poly 3D, cardboard-and-marker textures, vibrant color) that makes Magnific's output look striking rather than generic
 
 **The pipeline context:**
 
-The Unboxed Heroes build pipeline includes Claude Code (architecture and code), Meshy (3D model generation), a custom Blender MCP server with 200+ automation tools (asset processing), ElevenLabs (voice), and Magnific (video generation and visual enhancement). Every tool in this stack has a genuine role. Magnific is how raw game footage becomes the content that builds an audience — from in-engine captures to shareable trailers and clips. That is not a marketing angle; that is literally how the production is structured.
+The BoxForged build pipeline includes Claude Code (architecture and code), Meshy (3D model generation), a custom Blender MCP server with 200+ automation tools (asset processing), ElevenLabs (voice), and Magnific (video generation and visual enhancement). Every tool in this stack has a genuine role. Magnific is how raw game footage becomes the content that builds an audience — from in-engine captures to shareable trailers and clips. That is not a marketing angle; that is literally how the production is structured.
 
 **The live production angle:**
 
