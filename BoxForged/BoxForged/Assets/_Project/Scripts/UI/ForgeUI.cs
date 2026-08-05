@@ -64,8 +64,14 @@ namespace Boxhead.UI
 
         // ── Lifecycle ─────────────────────────────────────────────────────────
 
-        // Awake is intentionally empty — panel starts inactive, so Awake may not run
-        // until the panel is first activated. Button listeners are wired in Start instead.
+        private void Awake()
+        {
+            // Subscribe to WorkbenchProp's static spawn/remove events so ForgeUI
+            // self-registers with any workbench that enters the scene at runtime
+            // (e.g. spawned via LevelBuilder) without needing a bootstrapper script.
+            WorkbenchProp.OnSpawned += RegisterWorkbench;
+            WorkbenchProp.OnRemoved += UnregisterWorkbench;
+        }
 
         private void Start()
         {
@@ -97,6 +103,10 @@ namespace Boxhead.UI
 
         private void OnDestroy()
         {
+            // Unsubscribe from static WorkbenchProp events first.
+            WorkbenchProp.OnSpawned -= RegisterWorkbench;
+            WorkbenchProp.OnRemoved -= UnregisterWorkbench;
+
             // Close unsubscribes events if still open when the object is destroyed.
             Close();
 

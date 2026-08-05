@@ -19,8 +19,8 @@ MonoBehaviour:
   weaponPrefab: {fileID: 1973526712960752720, guid: d0efb63c24d03411e9fc80f1034929f1, type: 3}
   material: {fileID: 2100000, guid: cfa4621446fd6456591b81787d30adf6, type: 2}
   weaponIcon: {fileID: 21300000, guid: cad1c49c98d8e4ed6821f0026a0a4e05, type: 3}
-  gripPositionOffset: {x: -0.0115, y: -0.0454, z: 0.0412}
-  gripRotationOffset: {x: -48.273, y: 14.366, z: 320.408}
+  gripPositionOffset: {x: -0.033, y: -0.119, z: 0.007}
+  gripRotationOffset: {x: 23.936, y: -18.765, z: 274.088}
   gripScale: 0.175
   muzzleLocalOffset: {x: 0, y: 0, z: 0}
   ability: {fileID: 0}

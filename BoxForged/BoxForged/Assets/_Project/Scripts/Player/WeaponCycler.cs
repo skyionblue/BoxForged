@@ -99,16 +99,18 @@ namespace Boxhead.Player
             return baseWeapon;
         }
 
-        // Walks direct children of this transform's parent to find the active character model,
+        // Walks this transform's direct children to find the active character model,
         // then returns the matching weapon set — or defaultWeapons if no match is found.
+        // Always searches `transform` (the player root), never `transform.parent`, so
+        // this works correctly whether the player is at scene root or nested under an
+        // organiser container like [Player].
         private WeaponData[] ResolveWeaponArray()
         {
             if (characterWeaponSets != null && characterWeaponSets.Length > 0)
             {
-                Transform parent = transform.parent != null ? transform.parent : transform;
-                for (int i = 0; i < parent.childCount; i++)
+                for (int i = 0; i < transform.childCount; i++)
                 {
-                    Transform child = parent.GetChild(i);
+                    Transform child = transform.GetChild(i);
                     if (!child.gameObject.activeSelf) continue;
 
                     for (int j = 0; j < characterWeaponSets.Length; j++)

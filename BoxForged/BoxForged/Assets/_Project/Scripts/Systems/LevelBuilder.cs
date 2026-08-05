@@ -16,9 +16,37 @@ namespace Boxhead.Systems
 
         private void Start()
         {
+            SpawnEnvProps();
             SpawnWeaponPickups();
             SpawnCardboardPiles();
             SpawnWorkbenches();
+        }
+
+        private void SpawnEnvProps()
+        {
+            if (_dropTable == null) return;
+
+            EnvPropSpawnEntry[] props = _dropTable.envProps;
+            if (props == null) return;
+
+            for (int i = 0; i < props.Length; i++)
+            {
+                if (props[i].prefab == null)
+                {
+                    Debug.LogWarning($"[LevelBuilder] envProps[{i}] has null prefab — skipping.", this);
+                    continue;
+                }
+                // Use the prefab's baked root rotation so FBX axis corrections are preserved,
+                // then rotate only around world Y to set facing direction.
+                GameObject go = Instantiate(props[i].prefab,
+                                            props[i].worldPosition,
+                                            props[i].prefab.transform.rotation,
+                                            _spawnRoot);
+                if (props[i].eulerRotation.y != 0f)
+                    go.transform.Rotate(0f, props[i].eulerRotation.y, 0f, Space.World);
+                if (props[i].localScale != Vector3.one)
+                    go.transform.localScale = props[i].localScale;
+            }
         }
 
         private void SpawnWeaponPickups()
@@ -119,6 +147,15 @@ namespace Boxhead.Systems
 
             if (_cardboardPilePrefab == null && _dropTable.cardboardPiles != null && _dropTable.cardboardPiles.Length > 0)
                 Debug.LogWarning("[LevelBuilder] _cardboardPilePrefab is not assigned but the drop table has cardboard pile entries.", this);
+
+            if (_dropTable != null && _dropTable.envProps != null)
+            {
+                for (int i = 0; i < _dropTable.envProps.Length; i++)
+                {
+                    if (_dropTable.envProps[i].prefab == null)
+                        Debug.LogWarning($"[LevelBuilder] envProps[{i}] has a null prefab reference.", this);
+                }
+            }
         }
 #endif
     }

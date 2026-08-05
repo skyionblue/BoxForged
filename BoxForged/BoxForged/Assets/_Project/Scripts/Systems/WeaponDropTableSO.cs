@@ -19,6 +19,15 @@ namespace Boxhead.Systems
         public int amount = 3;
     }
 
+    [System.Serializable]
+    public class EnvPropSpawnEntry
+    {
+        public GameObject prefab;
+        public Vector3 worldPosition;
+        public Vector3 eulerRotation;
+        public Vector3 localScale = Vector3.one;
+    }
+
     [CreateAssetMenu(fileName = "WeaponDropTable_", menuName = "Boxhead/Weapon Drop Table")]
     public class WeaponDropTableSO : ScriptableObject
     {
@@ -36,5 +45,9 @@ namespace Boxhead.Systems
         [Header("Workbenches")]
         [Tooltip("World-space positions where workbench prefabs will be instantiated by LevelBuilder.")]
         public Vector3[] workbenchPositions;
+
+        [Header("Environment Props")]
+        [Tooltip("Decorative and cover props spawned by LevelBuilder at runtime. Each entry is one prop instance.")]
+        public EnvPropSpawnEntry[] envProps;
     }
 }

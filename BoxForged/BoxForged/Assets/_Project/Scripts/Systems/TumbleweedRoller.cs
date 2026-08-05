@@ -20,7 +20,13 @@ namespace Boxhead.Systems
             _windDirection = _windDirection.normalized;
             _rollAxis = Vector3.Cross(Vector3.up, _windDirection).normalized;
             _delayRemaining = Random.Range(0f, _startDelayMax);
+        }
 
+        private void Start()
+        {
+            // Calculated in Start, not Awake, because LevelBuilder sets localScale
+            // after Instantiate returns (after Awake). Reading scale in Awake gives 1,
+            // causing a 4× overshoot when the actual spawn scale is 0.25.
             var mf = GetComponentInChildren<MeshFilter>();
             if (mf != null && mf.sharedMesh != null)
             {

@@ -298,25 +298,25 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 03e6c47bc51d44f14bb0b18583ca8d24, type: 2}
   - characterModelName: Cowboy_CharacterModel
     weapons:
-    - {fileID: 11400000, guid: 9bb17e4c96ca54b99ad61ab7a1b6168c, type: 2}
-    - {fileID: 11400000, guid: e1f03f3d20d1543c8af88df8f5c39174, type: 2}
-    - {fileID: 11400000, guid: 585225e58139240018ee71fdba45ac3f, type: 2}
-    - {fileID: 11400000, guid: 74bdc31f126b94bc4939bb8753337c2f, type: 2}
-    - {fileID: 11400000, guid: 1de1870c9af474a0d84e62f31c589250, type: 2}
-    - {fileID: 11400000, guid: e09c746eee14d48eaaf2e17d1a179e9b, type: 2}
-    - {fileID: 11400000, guid: 9e3b313b8dc9740739c0abec09fa6d32, type: 2}
-    - {fileID: 11400000, guid: aafdeacc3d80048e5a2f6cfae97f4738, type: 2}
-    - {fileID: 11400000, guid: d3ea174f097b94d0287670912678883a, type: 2}
-    - {fileID: 11400000, guid: 00b1e74857fd34a11a9bb85d9c62013a, type: 2}
-    - {fileID: 11400000, guid: 61519cfcb64354dcd8f31727fb5eaf8b, type: 2}
-    - {fileID: 11400000, guid: d810df6819bf34b9a893698113338864, type: 2}
-    - {fileID: 11400000, guid: d807f63ace0904351be68b09a60fa904, type: 2}
-    - {fileID: 11400000, guid: d81de2977e409400783ce8664b11675e, type: 2}
-    - {fileID: 11400000, guid: 9051b8c49b68342eb90fbaf1d5f80ab5, type: 2}
-    - {fileID: 11400000, guid: 83f7408e86b29479f8455474119cb220, type: 2}
-    - {fileID: 11400000, guid: 8ebb8f0870e6a4a1f86dca03dfe0d708, type: 2}
-    - {fileID: 11400000, guid: 09262db07842643fa9df3a1481bf15f5, type: 2}
-    - {fileID: 11400000, guid: 03e6c47bc51d44f14bb0b18583ca8d24, type: 2}
+    - {fileID: 11400000, guid: b6a02f5a0f6b041bcbb6554b07f220a0, type: 2}
+    - {fileID: 11400000, guid: a9ccb852c0c0d49b69c38dab08641356, type: 2}
+    - {fileID: 11400000, guid: 89f7992f681e34adbb44bc2d74e798a5, type: 2}
+    - {fileID: 11400000, guid: dcd5da2cb8688491d823a50c420ab796, type: 2}
+    - {fileID: 11400000, guid: cb478b3bd74634837b5904afe9f14c3c, type: 2}
+    - {fileID: 11400000, guid: 07a05b06fca49467daf395c7e11ed1c4, type: 2}
+    - {fileID: 11400000, guid: 27dd2ce1918d04473824e387ee8a9ed6, type: 2}
+    - {fileID: 11400000, guid: defc90edaf9944e75b3132b4fdb36065, type: 2}
+    - {fileID: 11400000, guid: f8ebe9a3ce55e4232a9d87dd5540ac6b, type: 2}
+    - {fileID: 11400000, guid: ac83ec160ad7e4ca2a289e1ac9486dea, type: 2}
+    - {fileID: 11400000, guid: e769ff53b7e8c48648ea2f84ed94a5aa, type: 2}
+    - {fileID: 11400000, guid: 758e0f70fae7a4ed49f7d7207e764c06, type: 2}
+    - {fileID: 11400000, guid: 1b0af65961ae641909fc03a03393fdf8, type: 2}
+    - {fileID: 11400000, guid: 581aca1a6459b4f4e9583c88a92330fa, type: 2}
+    - {fileID: 11400000, guid: 299c7a0ca5abc47649ac5f465fb57d69, type: 2}
+    - {fileID: 11400000, guid: b2683a0fa838749b59c45ac0bbde0b40, type: 2}
+    - {fileID: 11400000, guid: fe67b37105da5431bb2ca08444b300ca, type: 2}
+    - {fileID: 11400000, guid: b45cd2166e3f2412192ed3c747a1f866, type: 2}
+    - {fileID: 11400000, guid: efd5842178dfd409083ccf854057693e, type: 2}
 --- !u!114 &4364794059547319684
 MonoBehaviour:
   m_ObjectHideFlags: 0

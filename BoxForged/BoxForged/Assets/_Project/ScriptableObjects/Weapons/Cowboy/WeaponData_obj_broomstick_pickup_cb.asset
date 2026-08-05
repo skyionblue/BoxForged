@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b48e6af5fac94771a732868c7cf0734, type: 3}
+  m_Name: WeaponData_obj_broomstick_pickup_cb
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponData
+  weaponName: Broomstick
+  description: 
+  damageMultiplier: 1
+  attackRange: 1.8
+  weaponPrefab: {fileID: 8570451680693847683, guid: abb6ed2818ac54c2fbc891040f0407b3, type: 3}
+  material: {fileID: 2100000, guid: e5f6713f72e974a09b76f859bada299a, type: 2}
+  weaponIcon: {fileID: 21300000, guid: 21f341d1d3a2f4d688a8e3690b98a9bb, type: 3}
+  gripPositionOffset: {x: 0.0178, y: 0.2097, z: -0.2099}
+  gripRotationOffset: {x: 145.423, y: -72.806, z: -147.958}
+  gripScale: 0.487
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 

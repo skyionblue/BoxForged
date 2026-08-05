@@ -23,6 +23,24 @@ namespace Boxhead.UI
         private WeaponInventory  _inventory;
         private CardboardResource _cardboard;
 
+        private void Awake()
+        {
+            WorkbenchProp.OnSpawned += OnWorkbenchSpawned;
+            WorkbenchProp.OnRemoved += OnWorkbenchRemoved;
+        }
+
+        private void OnWorkbenchSpawned(WorkbenchProp wb)
+        {
+            wb.OnPlayerEntered += Open;
+            wb.OnPlayerExited  += Close;
+        }
+
+        private void OnWorkbenchRemoved(WorkbenchProp wb)
+        {
+            wb.OnPlayerEntered -= Open;
+            wb.OnPlayerExited  -= Close;
+        }
+
         private void Start()
         {
             if (_closeButton != null) _closeButton.onClick.AddListener(Close);
@@ -38,6 +56,8 @@ namespace Boxhead.UI
 
         private void OnDestroy()
         {
+            WorkbenchProp.OnSpawned -= OnWorkbenchSpawned;
+            WorkbenchProp.OnRemoved -= OnWorkbenchRemoved;
             if (_closeButton != null) _closeButton.onClick.RemoveAllListeners();
             if (_forgeSlot0Button != null) _forgeSlot0Button.onClick.RemoveAllListeners();
             if (_forgeSlot1Button != null) _forgeSlot1Button.onClick.RemoveAllListeners();
@@ -57,6 +77,8 @@ namespace Boxhead.UI
             if (_cardboard != null)  _cardboard.OnCardboardChanged  += OnCardboardChanged;
 
             if (_panel != null) _panel.SetActive(true);
+            Time.timeScale      = 0f;
+            AudioListener.pause = true;
             Refresh();
         }
 
@@ -66,6 +88,8 @@ namespace Boxhead.UI
             if (_cardboard != null)  _cardboard.OnCardboardChanged  -= OnCardboardChanged;
 
             if (_panel != null) _panel.SetActive(false);
+            Time.timeScale      = 1f;
+            AudioListener.pause = false;
             _forgeController = null;
         }
 

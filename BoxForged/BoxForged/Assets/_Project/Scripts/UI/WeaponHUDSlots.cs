@@ -213,9 +213,14 @@ namespace Boxhead.UI
         {
             if (_weaponInventory == null) return;
 
-            WeaponInstance[] slots      = _weaponInventory.WeaponSlots;
-            int              activeIdx  = _weaponInventory.ActiveSlotIndex;
-            int              slotCount  = Mathf.Min(slots.Length, WeaponInventory.WeaponSlotCount);
+            WeaponInstance[] slots = _weaponInventory.WeaponSlots;
+            // WeaponSlots is initialized in WeaponInventory.Awake. If the HUD's Awake runs
+            // first (Unity execution order is not guaranteed across GameObjects), WeaponSlots
+            // will be null on the first OnEnable call. Guard here instead of relying on order.
+            if (slots == null) return;
+
+            int activeIdx  = _weaponInventory.ActiveSlotIndex;
+            int slotCount  = Mathf.Min(slots.Length, WeaponInventory.WeaponSlotCount);
 
             for (int i = 0; i < slotCount; i++)
                 RefreshSlot(i, slots[i], activeIdx == i);
