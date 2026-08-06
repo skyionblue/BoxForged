@@ -40,8 +40,9 @@ namespace Boxhead.Core
     public static class CutsceneCatalog
     {
         // ── Game intro (once ever) ──────────────────────────────────────────────
-        public const string GameIntro       = "boy_putting_box_on.mp4";        // landscape 10s
-        public const string GameIntroAlt     = "boy_putting_box_on_v2.mp4";     // portrait 30s (pillarboxed)
+        public const string GameIntro       = "unboxed_intro.mp4";              // landscape ~2min — game opening
+        public const string GameIntroAlt     = "boy_putting_box_on.mp4";        // landscape 10s (freed alt)
+        public const string GameIntroAlt2    = "boy_putting_box_on_v2.mp4";     // portrait 30s (pillarboxed)
         public const string KeyGameIntro     = "game_intro";
 
         // ── Enter Cul-de-Sac zone (once per zone) ───────────────────────────────
