@@ -197,7 +197,7 @@ namespace Boxhead.Core
                 // Also mark the zone-enter as seen so the intro doesn't immediately chain into a
                 // second cutscene on the very first boot; the zone cut plays on later fresh runs.
                 CutsceneFlags.MarkSeen(CutsceneCatalog.KeyCulDeSacEnter);
-                cutscene.Play(CutsceneCatalog.GameIntro);
+                cutscene.Play(CutsceneCatalog.GameIntro, onFinished: null, skippable: true, showLoadingScreen: true);
                 return;
             }
 

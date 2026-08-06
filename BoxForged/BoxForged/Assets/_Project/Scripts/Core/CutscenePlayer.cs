@@ -37,12 +37,23 @@ namespace Boxhead.Core
         private const float  SkipRevealDelay    = 1f; // seconds (unscaled) before Skip becomes usable
         private const float  VideoVolume        = 0.3f; // cutscene audio level (0-1); source clips are loud, keep low
 
+        // Loading screen tuning (unscaled seconds).
+        private const string LoadingSpriteName  = "loading_screen"; // Resources.Load<Sprite>(...)
+        private const float  LoadingAspect      = 1376f / 768f;     // native aspect of the loading art
+        private const float  LoadingMinHold     = 1.5f;             // min time the loading art stays fully opaque
+        private const float  LoadingFadeDuration = 1f;              // fade-out duration once the hold elapses
+
         // Built-in-code UI
         private Canvas               _canvas;
         private RawImage             _rawImage;
         private AspectRatioFitter    _aspectFitter;
         private Button               _skipButton;
         private CanvasGroup          _skipGroup;
+
+        // Loading screen (shown over the video during Prepare for cutscenes that request it).
+        private Image                _loadingImage;
+        private CanvasGroup          _loadingGroup;
+        private AspectRatioFitter    _loadingFitter;
 
         // Video
         private VideoPlayer          _videoPlayer;
@@ -55,6 +66,8 @@ namespace Boxhead.Core
         private bool                 _playerInputWasEnabled;
         private Coroutine            _skipRevealRoutine;
         private Coroutine            _prepareRoutine;
+        private Coroutine            _loadingRoutine;
+        private float                _loadingShownUnscaledTime; // unscaled timestamp the loading art became visible
         private readonly WaitForSecondsRealtime _skipRevealWait = new WaitForSecondsRealtime(SkipRevealDelay);
 
         // ── Bootstrap ────────────────────────────────────────────────────────────
@@ -109,6 +122,17 @@ namespace Boxhead.Core
         /// </summary>
         public void Play(string fileName, Action onFinished = null, bool skippable = true)
         {
+            Play(fileName, onFinished, skippable, showLoadingScreen: false);
+        }
+
+        /// <summary>
+        /// As <see cref="Play(string, Action, bool)"/>, but when <paramref name="showLoadingScreen"/>
+        /// is true a full-screen loading image covers the video during Prepare() and for a minimum
+        /// hold afterward, then fades out (unscaled). The Skip button is only revealed once the
+        /// loading art has fully faded. Used for the game-intro cutscene on first boot.
+        /// </summary>
+        public void Play(string fileName, Action onFinished, bool skippable, bool showLoadingScreen)
+        {
             if (string.IsNullOrEmpty(fileName))
             {
                 onFinished?.Invoke();
@@ -127,16 +151,19 @@ namespace Boxhead.Core
             ShowOverlay();
             SetSkipInteractable(false, skippable);
 
+            // Bring up the loading art immediately so it covers the black frame during Prepare().
+            if (showLoadingScreen) ShowLoadingScreen();
+
             // Disable player input so screen taps only reach the Skip button.
             DisablePlayerInput();
 
             if (_prepareRoutine != null) StopCoroutine(_prepareRoutine);
-            _prepareRoutine = StartCoroutine(PrepareAndPlay(fileName, skippable));
+            _prepareRoutine = StartCoroutine(PrepareAndPlay(fileName, skippable, showLoadingScreen));
         }
 
         // ── Playback pipeline ───────────────────────────────────────────────────────
 
-        private IEnumerator PrepareAndPlay(string fileName, bool skippable)
+        private IEnumerator PrepareAndPlay(string fileName, bool skippable, bool showLoadingScreen)
         {
             // Resolve the source URL. On Android, StreamingAssets are packed inside the APK
             // (jar:file://...) and VideoPlayer cannot read them directly, so copy to a readable
@@ -194,14 +221,64 @@ namespace Boxhead.Core
 
             _videoPlayer.Play();
 
-            // Fade the Skip button in ~1s after playback starts (unscaled — video runs off timeScale).
+            if (showLoadingScreen)
+            {
+                // The loading art covers the video; hold it for a minimum time (so it's actually
+                // seen even when Prepare was instant in-editor), fade it out, THEN reveal Skip.
+                if (_loadingRoutine != null) StopCoroutine(_loadingRoutine);
+                _loadingRoutine = StartCoroutine(HoldFadeLoadingThenRevealSkip(skippable));
+            }
+            else if (skippable)
+            {
+                // Normal path: fade the Skip button in ~1s after playback starts (unscaled).
+                if (_skipRevealRoutine != null) StopCoroutine(_skipRevealRoutine);
+                _skipRevealRoutine = StartCoroutine(RevealSkipAfterDelay());
+            }
+
+            _prepareRoutine = null;
+        }
+
+        /// <summary>
+        /// Holds the opaque loading art for at least <see cref="LoadingMinHold"/> total (measured from
+        /// when the art actually became visible, so URL-resolve + Prepare time both count toward it),
+        /// fades it out over <see cref="LoadingFadeDuration"/> on the unscaled clock, then — if the
+        /// cutscene is skippable — reveals the Skip button ~1s later. All waits are manual unscaled-time
+        /// accumulator loops yielding null, so no per-frame GC.
+        /// </summary>
+        private IEnumerator HoldFadeLoadingThenRevealSkip(bool skippable)
+        {
+            // Minimum hold: remaining time so the art has been on-screen for LoadingMinHold total.
+            // Using true elapsed on-screen time (covers URL-resolve + Prepare), not just Prepare polling.
+            float shownFor      = Time.unscaledTime - _loadingShownUnscaledTime;
+            float remainingHold = LoadingMinHold - shownFor;
+            float held = 0f;
+            while (held < remainingHold)
+            {
+                held += Time.unscaledDeltaTime;
+                yield return null;
+            }
+
+            // Fade alpha 1 → 0 on the unscaled clock (yielding null allocates nothing).
+            float t = 0f;
+            while (t < LoadingFadeDuration)
+            {
+                t += Time.unscaledDeltaTime;
+                float a = 1f - (t / LoadingFadeDuration);
+                if (a < 0f) a = 0f;
+                if (_loadingGroup != null) _loadingGroup.alpha = a;
+                yield return null;
+            }
+
+            HideLoadingScreen();
+
+            // Only now allow the Skip button to appear (~1s after the fade, matching normal timing).
             if (skippable)
             {
                 if (_skipRevealRoutine != null) StopCoroutine(_skipRevealRoutine);
                 _skipRevealRoutine = StartCoroutine(RevealSkipAfterDelay());
             }
 
-            _prepareRoutine = null;
+            _loadingRoutine = null;
         }
 
         /// <summary>
@@ -291,6 +368,10 @@ namespace Boxhead.Core
 
             if (_skipRevealRoutine != null) { StopCoroutine(_skipRevealRoutine); _skipRevealRoutine = null; }
             if (_prepareRoutine    != null) { StopCoroutine(_prepareRoutine);    _prepareRoutine    = null; }
+            if (_loadingRoutine    != null) { StopCoroutine(_loadingRoutine);    _loadingRoutine    = null; }
+
+            // Reset the loading image so the next (non-loading) cutscene never flashes the art.
+            HideLoadingScreen();
 
             if (_videoPlayer != null)
             {
@@ -402,6 +483,28 @@ namespace Boxhead.Core
             label.fontSize  = 34;
             label.font      = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             StretchFull(label.rectTransform);
+
+            // Full-screen loading image — added LAST so it draws on top of the video AND the Skip
+            // button (uGUI renders in hierarchy order; the last child is topmost). Hidden by default
+            // so non-loading cutscenes never show it.
+            var loadingGO = new GameObject("LoadingImage",
+                typeof(Image), typeof(AspectRatioFitter), typeof(CanvasGroup));
+            loadingGO.transform.SetParent(canvasGO.transform, false);
+
+            _loadingImage = loadingGO.GetComponent<Image>();
+            _loadingImage.color = Color.white;
+            StretchFull(_loadingImage.rectTransform);
+
+            _loadingFitter = loadingGO.GetComponent<AspectRatioFitter>();
+            _loadingFitter.aspectMode  = AspectRatioFitter.AspectMode.FitInParent;
+            _loadingFitter.aspectRatio = LoadingAspect;
+
+            _loadingGroup = loadingGO.GetComponent<CanvasGroup>();
+            _loadingGroup.alpha          = 0f;
+            _loadingGroup.blocksRaycasts = false;
+            _loadingGroup.interactable   = false;
+
+            loadingGO.SetActive(false);
         }
 
         private void BuildVideoPlayer()
@@ -443,6 +546,38 @@ namespace Boxhead.Core
         private void HideOverlay()
         {
             if (_canvas != null) _canvas.gameObject.SetActive(false);
+        }
+
+        /// <summary>Loads the loading sprite, shows the LoadingImage, and sets it fully opaque.</summary>
+        private void ShowLoadingScreen()
+        {
+            if (_loadingImage == null || _loadingGroup == null) return;
+
+            if (_loadingImage.sprite == null)
+            {
+                Sprite loaded = Resources.Load<Sprite>(LoadingSpriteName);
+                if (loaded == null)
+                    Debug.LogWarning("[CutscenePlayer] loading_screen sprite not found in Resources — showing blank white loading screen.");
+                _loadingImage.sprite = loaded; // null is acceptable — degrades to a white full-screen rect, no crash
+            }
+
+            _loadingImage.gameObject.SetActive(true);
+            _loadingGroup.alpha = 1f;
+
+            // Record when the art actually became visible so the min-hold measures true on-screen time
+            // (covers URL-resolve + Prepare), not just the Prepare polling loop.
+            _loadingShownUnscaledTime = Time.unscaledTime;
+        }
+
+        /// <summary>Hides and resets the LoadingImage so a later cutscene never flashes the art.</summary>
+        private void HideLoadingScreen()
+        {
+            if (_loadingGroup != null) _loadingGroup.alpha = 0f;
+            if (_loadingImage != null)
+            {
+                _loadingImage.gameObject.SetActive(false);
+                _loadingImage.sprite = null;
+            }
         }
 
         private void SetSkipInteractable(bool interactable, bool skippable)
