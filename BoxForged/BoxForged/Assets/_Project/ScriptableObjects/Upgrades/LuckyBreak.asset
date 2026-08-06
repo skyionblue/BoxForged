@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e286e9a133314141a4c8e3d80413da3, type: 3}
   m_Name: LuckyBreak
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.UpgradeCardData
-  displayName: Lucky Break
-  description: +5 Luck this run
-  effect: 6
-  magnitude: 5
-  icon: {fileID: 0}
+  _displayName: Lucky Break
+  _description: Luck stat increased.
+  _effect: 6
+  _magnitude: 5
+  _icon: {fileID: 0}

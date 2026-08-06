@@ -118,6 +118,9 @@ namespace Boxhead.UI
         {
             // Clear run selection so the new zone shows the character picker, not a silent restore.
             Boxhead.Core.ProgressionSystem.Instance?.ClearRunSelection();
+            // New zone = fresh run: wipe carried cardboard/weapons so the next zone's
+            // GameManager.Start() does not restore the prior zone's loadout.
+            Boxhead.Core.ProgressionSystem.Instance?.ClearRunLoadout();
             // Restore time before loading — SceneManager.LoadScene does not reset timeScale.
             Hide();
             SceneManager.LoadScene(sceneName);

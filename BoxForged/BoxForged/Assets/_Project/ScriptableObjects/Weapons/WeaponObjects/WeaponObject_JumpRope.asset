@@ -27,7 +27,7 @@ MonoBehaviour:
   specialAbilityName: 
   specialAbilityDescription: 
   rawObjectName: Jump Rope
-  rawObjectPrefab: {fileID: 4470496968667261760, guid: 5464c8c4d4f364fa382f33c29f8c6d6c, type: 3}
+  rawObjectPrefab: {fileID: 1000000001, guid: 849d87a9614fe4defbb3ad4f4410aed1, type: 3}
   rawObjectIcon: {fileID: 0}
   rarity: 2
   weaponType: 3

@@ -17,5 +17,17 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/TownSquare_BossHall.unity
     guid: 749872130950144b896e6d7c6c0a8259
+  - enabled: 1
+    path: Assets/_Project/Scenes/CulDeSac_AmbushAlley.unity
+    guid: 86cae289cab854f409a788a1530995ac
+  - enabled: 1
+    path: Assets/_Project/Scenes/CulDeSac_SaloonFront.unity
+    guid: c4b555940885e4678a1b298a9a1f07e7
+  - enabled: 1
+    path: Assets/_Project/Scenes/CulDeSac_MailboxRow.unity
+    guid: b641bda69ef5a42859a7763fff8cd887
+  - enabled: 1
+    path: Assets/_Project/Scenes/CulDeSac_BossArena.unity
+    guid: 274f6c9110cb14905a040ba9c5b2e019
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e286e9a133314141a4c8e3d80413da3, type: 3}
   m_Name: CombatMedic
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.UpgradeCardData
-  displayName: Combat Medic
-  description: Restore 30 Health immediately
-  effect: 2
-  magnitude: 30
-  icon: {fileID: 0}
+  _displayName: Field Dressing
+  _description: Restore 20 health immediately.
+  _effect: 2
+  _magnitude: 20
+  _icon: {fileID: 0}

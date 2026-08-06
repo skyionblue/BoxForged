@@ -62,9 +62,12 @@ namespace Boxhead.Systems
 
             if (_startupDelay > 0f)
             {
-                _startupDelay -= Time.deltaTime;
+                _startupDelay -= Time.unscaledDeltaTime; // unscaled so delay works while paused
                 return;
             }
+
+            // Do not fire proximity events while game is paused (upgrade/run-end screens showing).
+            if (Time.timeScale == 0f) return;
 
             float dist    = Vector3.Distance(transform.position, _playerTransform.position);
             bool  inRange = dist <= _interactRadius;

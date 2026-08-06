@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e286e9a133314141a4c8e3d80413da3, type: 3}
   m_Name: PowerStrike
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.UpgradeCardData
-  displayName: Power Strike
-  description: +5 Attack Power this run
-  effect: 0
-  magnitude: 5
-  icon: {fileID: 0}
+  _displayName: Power Strike
+  _description: Major attack power boost.
+  _effect: 0
+  _magnitude: 10
+  _icon: {fileID: 0}

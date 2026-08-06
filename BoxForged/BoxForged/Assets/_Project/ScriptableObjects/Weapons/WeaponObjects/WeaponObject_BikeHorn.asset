@@ -27,7 +27,7 @@ MonoBehaviour:
   specialAbilityName: 
   specialAbilityDescription: 
   rawObjectName: Bike Horn
-  rawObjectPrefab: {fileID: 1864690367171053572, guid: 10cf469874c784a26a92bdd32f6d2f37, type: 3}
+  rawObjectPrefab: {fileID: 1000000001, guid: 5ad5e74554c4e4099b92a26ed839a9a7, type: 3}
   rawObjectIcon: {fileID: 0}
   rarity: 2
   weaponType: 3

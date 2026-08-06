@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e286e9a133314141a4c8e3d80413da3, type: 3}
   m_Name: FieldMedic
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.UpgradeCardData
-  displayName: Field Medic
-  description: Restore 50 Health immediately
-  effect: 2
-  magnitude: 50
-  icon: {fileID: 0}
+  _displayName: Battle Recovery
+  _description: Restore 15 health immediately.
+  _effect: 2
+  _magnitude: 15
+  _icon: {fileID: 0}

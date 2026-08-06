@@ -31,6 +31,18 @@ namespace Boxhead.Systems
             };
         }
 
+        /// <summary>
+        /// Restore-path constructor that preserves an explicit durability value rather than
+        /// resetting to full. Used by ProgressionSystem.RestoreRunLoadout so weapon wear
+        /// carries across room transitions. Durability is clamped to [0, MaxDurability].
+        /// </summary>
+        public WeaponInstance(WeaponObjectSO data, WeaponTier tier, int currentDurability)
+        {
+            Data = data;
+            Tier = tier;
+            CurrentDurability = Mathf.Clamp(currentDurability, 0, MaxDurability);
+        }
+
         public void DecrementDurability()
         {
             if (CurrentDurability > 0) CurrentDurability--;

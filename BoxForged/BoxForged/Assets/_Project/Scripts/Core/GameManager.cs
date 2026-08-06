@@ -18,6 +18,10 @@ namespace Boxhead.Core
         internal static readonly Dictionary<string, int> ZoneIndexByScene = new Dictionary<string, int>
         {
             { "CulDeSac_Room1",        0 },
+            { "CulDeSac_AmbushAlley",  0 },
+            { "CulDeSac_SaloonFront",  0 },
+            { "CulDeSac_MailboxRow",   0 },
+            { "CulDeSac_BossArena",    0 },
             { "TownSquare_Room1",      1 },
             { "TownSquare_BossHall",   1 }, // Boss hall counts as same zone as Town Square Room 1
         };
@@ -29,6 +33,20 @@ namespace Boxhead.Core
             { 0, "CulDeSac_Room1"   },
             { 1, "TownSquare_Room1" },
         };
+
+        // ── Random Room Pool (Sprint 3 Phase 2) ──────────────────────────────────
+        // The three CulDeSac random rooms that follow Room 1 via the upgrade screen flow.
+        private static readonly string[] RandomRoomPool = {
+            "CulDeSac_AmbushAlley",
+            "CulDeSac_SaloonFront",
+            "CulDeSac_MailboxRow",
+        };
+
+        // Static so queue state survives scene reloads — GameManager is per-scene.
+        private static List<string> s_roomQueue      = new List<string>();
+        private static int          s_roomQueueIndex = 0;
+        private        List<string> _roomQueue       = new List<string>();
+        private        int          _roomQueueIndex  = 0;
 
         public enum GameState { Playing, Won, Lost }
         public GameState State { get; private set; } = GameState.Playing;
@@ -73,6 +91,16 @@ namespace Boxhead.Core
 
             // Reset per-run progression state
             ProgressionSystem.Instance?.ResetRunState();
+
+            // Build the shuffled random room queue for this run.
+            InitRoomQueue();
+
+            // Subscribe via the singleton instance (not a static event) to avoid
+            // cross-scene delegate accumulation on scene reload.
+            if (_upgradeScreen == null)
+                _upgradeScreen = Object.FindAnyObjectByType<UpgradeScreen>(FindObjectsInactive.Include);
+            if (_upgradeScreen != null)
+                _upgradeScreen.OnUpgradeSelected += OnUpgradePicked;
 
             // Apply permanent stat overlay to player components at run start
             ProgressionSystem.Instance?.ApplyOverlayToPlayer();
@@ -130,6 +158,35 @@ namespace Boxhead.Core
             if (hudController  == null) hudController  = Object.FindAnyObjectByType<HUDController_V2>(FindObjectsInactive.Include);
 
             _runStartUI?.Show();
+
+            // Restore the in-run loadout (cardboard + forged weapons) LAST — after the
+            // player is resolved and after RunStartUI.Show() swaps the character model.
+            // Restoring earlier would equip the active weapon onto an inactive model's
+            // hand bone. Gated on HasRunLoadout so the very first room is untouched.
+            if (playerObj != null && ProgressionSystem.Instance != null
+                && ProgressionSystem.Instance.HasRunLoadout)
+            {
+                var cardboard = playerObj.GetComponent<CardboardResource>();
+                var inventory = playerObj.GetComponent<WeaponInventory>();
+                ProgressionSystem.Instance.RestoreRunLoadout(cardboard, inventory);
+            }
+        }
+
+        /// <summary>
+        /// Snapshots the player's cardboard and forged weapons into ProgressionSystem before
+        /// a scene load so they survive the transition. Called at the top of LoadNextRoom()
+        /// (room→room and room→boss) and by BossHallDoor before loading the boss scene.
+        /// </summary>
+        public void CaptureLoadoutForTransition()
+        {
+            if (ProgressionSystem.Instance == null) return;
+
+            var playerObj = GameObject.FindWithTag("Player");
+            if (playerObj == null) return;
+
+            var cardboard = playerObj.GetComponent<CardboardResource>();
+            var inventory = playerObj.GetComponent<WeaponInventory>();
+            ProgressionSystem.Instance.CaptureRunLoadout(cardboard, inventory);
         }
 
         private void OnTrackedEnemyDeath()
@@ -249,11 +306,8 @@ namespace Boxhead.Core
         /// </summary>
         private void HandleRoomCleared(int roomIndex)
         {
-            // When a BossHallDoor is present, that door is the pacing gate between
-            // the outdoor encounter and the boss — no upgrade/shop screen should appear.
-            // CulDeSac_Room1 has no BossHallDoor and uses the multi-room upgrade flow.
-            if (Object.FindAnyObjectByType<Boxhead.Systems.BossHallDoor>(FindObjectsInactive.Include) != null)
-                return;
+            // Use the cached _bossHallDoor reference — never FindAnyObjectByType at runtime.
+            if (_bossHallDoor != null) return;
 
             if (roomIndex == 0)
                 _upgradeScreen?.Show();
@@ -261,10 +315,73 @@ namespace Boxhead.Core
                 _shopScreen?.Show();
         }
 
+        // ── Random Room Progression ───────────────────────────────────────────────
+
+        /// <summary>
+        /// Builds a Fisher-Yates shuffled queue of the three random CulDeSac rooms.
+        /// Call once at the start of a run (after Room 1 loads).
+        /// </summary>
+        public void InitRoomQueue()
+        {
+            string currentScene = SceneManager.GetActiveScene().name;
+            // Only build a fresh queue when starting from Room 1.
+            // Boss arena and random rooms preserve the existing static queue.
+            if (currentScene == ZoneStartScene[0])
+            {
+                s_roomQueue = new List<string>(RandomRoomPool);
+                for (int i = s_roomQueue.Count - 1; i > 0; i--)
+                {
+                    int j = UnityEngine.Random.Range(0, i + 1);
+                    string tmp = s_roomQueue[i];
+                    s_roomQueue[i] = s_roomQueue[j];
+                    s_roomQueue[j] = tmp;
+                }
+                s_roomQueueIndex = 0;
+            }
+            _roomQueue      = s_roomQueue;
+            _roomQueueIndex = s_roomQueueIndex;
+        }
+
+        /// <summary>
+        /// Loads the next room from the shuffled queue. When all three random rooms
+        /// are exhausted, falls back to CulDeSac_Room1 (loops the zone).
+        /// </summary>
+        public void LoadNextRoom()
+        {
+            // Snapshot cardboard + forged weapons before the scene unloads so they carry
+            // into the next room (and into the boss arena on the exhausted-queue branch).
+            CaptureLoadoutForTransition();
+
+            if (_roomQueueIndex < _roomQueue.Count)
+            {
+                string nextScene = _roomQueue[_roomQueueIndex++];
+                s_roomQueueIndex = _roomQueueIndex; // persist across scene reload
+                SceneManager.LoadScene(nextScene);
+            }
+            else
+            {
+                // All 3 random rooms done — load boss arena and reset queue for next run.
+                s_roomQueue.Clear();
+                s_roomQueueIndex = 0;
+                SceneManager.LoadScene("CulDeSac_BossArena");
+            }
+        }
+
+        /// <summary>Called when the player picks an upgrade card — loads the next queued room.</summary>
+        private void OnUpgradePicked()
+        {
+            LoadNextRoom();
+        }
+
         public void Restart()
         {
+            // Always restart from Room1 so the run queue rebuilds correctly.
+            // Reloading a random room mid-run would strand the player in that room forever.
+            s_roomQueue.Clear();
+            s_roomQueueIndex = 0;
             ProgressionSystem.Instance?.ClearRunSelection();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            ProgressionSystem.Instance?.ClearRunLoadout();
+            SceneManager.LoadScene(ZoneStartScene[0]);
         }
 
         private void OnDestroy()
@@ -280,6 +397,8 @@ namespace Boxhead.Core
 
             EnemyStats.OnAnyEnemyDeath -= OnAnyEnemyDeath;
             RoomManager.OnRoomCleared  -= HandleRoomCleared;
+            if (_upgradeScreen != null)
+                _upgradeScreen.OnUpgradeSelected -= OnUpgradePicked;
 
             if (Instance == this) Instance = null;
         }

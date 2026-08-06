@@ -18,6 +18,13 @@ namespace Boxhead.UI
     {
         public static UpgradeScreen Instance { get; private set; }
 
+        /// <summary>
+        /// Fires after the player picks an upgrade card and the screen hides.
+        /// GameManager subscribes via the singleton instance — not static — to avoid
+        /// cross-scene delegate accumulation.
+        /// </summary>
+        public event System.Action OnUpgradeSelected;
+
         [Header("Panel")]
         [SerializeField] private GameObject _panel;
 
@@ -30,9 +37,10 @@ namespace Boxhead.UI
         [Header("Card Pool")]
         [SerializeField] private UpgradeCardData[] _cardPool;
 
-        private readonly UpgradeCardData[] _offered = new UpgradeCardData[3];
-        private PlayerStats       _playerStats;
-        private CombatController  _combat;
+        private readonly UpgradeCardData[] _offered     = new UpgradeCardData[3];
+        private UpgradeCardData[]          _shufflePool;   // local copy — never mutates _cardPool SO
+        private PlayerStats                _playerStats;
+        private CombatController           _combat;
 
         private void Awake()
         {
@@ -80,13 +88,19 @@ namespace Boxhead.UI
         {
             int poolSize = _cardPool != null ? _cardPool.Length : 0;
 
+            // Shuffle a local copy so the SO-backed _cardPool order is never mutated.
+            // Mutating _cardPool directly corrupts the in-memory order across runs within the same session.
+            if (_shufflePool == null || _shufflePool.Length != poolSize)
+                _shufflePool = new UpgradeCardData[poolSize];
+            System.Array.Copy(_cardPool, _shufflePool, poolSize);
+
             for (int i = 0; i < 3 && i < poolSize; i++)
             {
                 int j = UnityEngine.Random.Range(i, poolSize);
-                UpgradeCardData tmp = _cardPool[i];
-                _cardPool[i] = _cardPool[j];
-                _cardPool[j] = tmp;
-                _offered[i]  = _cardPool[i];
+                UpgradeCardData tmp = _shufflePool[i];
+                _shufflePool[i] = _shufflePool[j];
+                _shufflePool[j] = tmp;
+                _offered[i]     = _shufflePool[i];
             }
 
             for (int i = poolSize; i < 3; i++)
@@ -115,6 +129,7 @@ namespace Boxhead.UI
             if (index >= _offered.Length || _offered[index] == null) return;
             ApplyCard(_offered[index]);
             Hide();
+            OnUpgradeSelected?.Invoke();
         }
 
         private void ApplyCard(UpgradeCardData card)

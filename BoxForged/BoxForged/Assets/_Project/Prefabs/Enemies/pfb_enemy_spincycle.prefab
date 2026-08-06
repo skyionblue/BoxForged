@@ -615,7 +615,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4543446427875284428}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.31827578, y: -0.6328904, z: -0.4654534, w: 0.5305689}
+  m_LocalRotation: {x: -0.70710677, y: -1.4210856e-14, z: 1.4210856e-14, w: 0.70710677}
   m_LocalPosition: {x: -0.0367, y: 0.3877, z: 0.1087}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 0
@@ -692,6 +692,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.LaundryTumbler
   _tumbleSpeed: -120
+  _tumbleAxis: {x: 0, y: 1, z: 0}
 --- !u!1 &4601545134624468496
 GameObject:
   m_ObjectHideFlags: 0
@@ -996,6 +997,8 @@ MonoBehaviour:
   attackDamage: 20
   _countsForWinCondition: 1
   _startInvulnerable: 0
+  _cardboardDropMin: 1
+  _cardboardDropMax: 3
   hitSparkPrefab: {fileID: 0}
 --- !u!114 &3356332026352232365
 MonoBehaviour:
@@ -1040,6 +1043,25 @@ MonoBehaviour:
   _impulseSource: {fileID: 2890417363997758444}
   _imaginationVolume: {fileID: 0}
   _imaginationLerpDuration: 1.5
+  _drumHead: {fileID: 1931828922020664540}
+  _introWalkTarget_X: -4
+  _introWalkTarget_Z: 4
+  _introCameraFoV: 30
+  _normalCameraFoV: 40
+  _introPanDuration: 1
+  _introRunDuration: 2.5
+  _introWalkInDistance: 5
+  _introPostWalkPause: 0.6
+  _saloonNameContains: saloon_facade
+  _porchDeckHeight: 0.5
+  _doorDepthInset: 2.2
+  _saloonFallbackPos: {x: -8, y: 0, z: 8}
+  _saloonFallbackYaw: 135
+  _introCamStartDistance: 8
+  _introCamEndDistance: 14
+  _introCamHeight: 1.8
+  _introCamLookHeight: 2
+  _introCamPriority: 100
   drumWindow: {fileID: 6323822956500389592}
 --- !u!114 &2890417363997758444
 MonoBehaviour:
@@ -1286,7 +1308,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8225716350649503137}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.70710677, y: -1.4210856e-14, z: 1.4210856e-14, w: 0.70710677}
   m_LocalPosition: {x: 0.01, y: 0.366, z: 0.086}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 0
@@ -1363,6 +1385,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.LaundryTumbler
   _tumbleSpeed: 180
+  _tumbleAxis: {x: 0, y: 1, z: 0}
 --- !u!1 &8876758769500886623
 GameObject:
   m_ObjectHideFlags: 0

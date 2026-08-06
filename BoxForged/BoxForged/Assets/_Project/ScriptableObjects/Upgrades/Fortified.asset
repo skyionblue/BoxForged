@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e286e9a133314141a4c8e3d80413da3, type: 3}
   m_Name: Fortified
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.UpgradeCardData
-  displayName: Fortified
-  description: +10 Defense this run
-  effect: 1
-  magnitude: 10
-  icon: {fileID: 0}
+  _displayName: Iron Resolve
+  _description: Defense increased.
+  _effect: 1
+  _magnitude: 5
+  _icon: {fileID: 0}

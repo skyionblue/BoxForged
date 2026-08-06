@@ -27,7 +27,7 @@ MonoBehaviour:
   specialAbilityName: 
   specialAbilityDescription: 
   rawObjectName: Garden Trowel
-  rawObjectPrefab: {fileID: 8086769972809197658, guid: d8f1172a202564cc4bd90316fa7bca01, type: 3}
+  rawObjectPrefab: {fileID: 1000000001, guid: f0aa0a72fb6c742b680e9bae6eb642f1, type: 3}
   rawObjectIcon: {fileID: 0}
   rarity: 1
   weaponType: 0

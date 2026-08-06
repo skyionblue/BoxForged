@@ -89,6 +89,10 @@ namespace Boxhead.UI
                 if (Boxhead.Core.GameManager.ZoneStartScene.TryGetValue(nextZone, out string nextScene))
                 {
                     Boxhead.Core.ProgressionSystem.Instance?.ClearRunSelection();
+                    // New zone = fresh run: wipe carried cardboard/weapons so the next zone's
+                    // GameManager.Start() does not restore the prior zone's loadout before the
+                    // picker's Start click can clear it.
+                    Boxhead.Core.ProgressionSystem.Instance?.ClearRunLoadout();
                     UnityEngine.SceneManagement.SceneManager.LoadScene(nextScene);
                     return;
                 }

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 453eb7d0435a248ad935f39d2f476f31, type: 3}
+  m_Name: WeaponDropTableSO_CulDeSac_BossArena
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponDropTableSO
+  scatteredObjects: []
+  lootZoneObjects: []
+  cardboardPiles: []
+  workbenchPositions: []
+  envProps:
+  - prefab: {fileID: 8071911200585245458, guid: 666a58444c2d5433382397798aceaf80, type: 3}
+    worldPosition: {x: -12, y: 0, z: 10}
+    eulerRotation: {x: 0, y: 160, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 8071911200585245458, guid: 666a58444c2d5433382397798aceaf80, type: 3}
+    worldPosition: {x: 12, y: 0, z: 10}
+    eulerRotation: {x: 0, y: 200, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 5235065477046790290, guid: 90ec209c2c45a4d03896ba2eb4d12086, type: 3}
+    worldPosition: {x: -10, y: 0, z: -4}
+    eulerRotation: {x: 0, y: 20, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 5235065477046790290, guid: 90ec209c2c45a4d03896ba2eb4d12086, type: 3}
+    worldPosition: {x: 10, y: 0, z: -4}
+    eulerRotation: {x: 0, y: -20, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 5097991969732716129, guid: fa6beacecd623485a9779fd4ab3c95df, type: 3}
+    worldPosition: {x: -5, y: 0, z: 11}
+    eulerRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 5097991969732716129, guid: fa6beacecd623485a9779fd4ab3c95df, type: 3}
+    worldPosition: {x: 5, y: 0, z: 11}
+    eulerRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 3885743676524303329, guid: 60484d40af6d94d3cac0337a27bbbaa6, type: 3}
+    worldPosition: {x: -6, y: 0, z: 3}
+    eulerRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.25, y: 0.25, z: 0.25}
+  - prefab: {fileID: 3885743676524303329, guid: 60484d40af6d94d3cac0337a27bbbaa6, type: 3}
+    worldPosition: {x: 6, y: 0, z: -2}
+    eulerRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.25, y: 0.25, z: 0.25}
+  - prefab: {fileID: 155369957166092316, guid: 4a3b64db7f2b243a196f6d9e9dda864d, type: 3}
+    worldPosition: {x: -8, y: 0, z: 8}
+    eulerRotation: {x: 0, y: 135, z: 0}
+    localScale: {x: 1, y: 1, z: 1}

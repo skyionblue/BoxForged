@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
       objectReference: {fileID: 0}
@@ -22,19 +34,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -4.3297806e-17
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -4.3297806e-17
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -51,7 +63,11 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 017d76e371b5c407f8033c60b7eb9360, type: 2}
+      objectReference: {fileID: 2100000, guid: cdc1b957165ae4aafb20d03916d7653d, type: 2}
+    - target: {fileID: -5754084199372789682, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 7027636043351174211, guid: 1906a485a21c24d599f62f7c8be9177d, type: 3}
     - target: {fileID: 919132149155446097, guid: 1fda6feeeb5c54aa49f46a0ad994dd03, type: 3}
       propertyPath: m_Name
       value: pfb_env_bld_twostoryhouse
@@ -96,5 +112,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.4344754, y: 5.1029735, z: 8.54007}
-  m_Center: {x: -0.0041024704, y: -0.011780739, z: 4.744484}
+  m_Size: {x: 0.96668404, y: 1.8978169, z: 1.112767}
+  m_Center: {x: 0.000058978796, y: 0.94890845, z: -0.002639383}

@@ -75,6 +75,41 @@ namespace Boxhead.Enemy
         [SerializeField] private Volume _imaginationVolume;
         [SerializeField] private float _imaginationLerpDuration = 1.5f;
 
+        [Header("Intro")]
+        [SerializeField] private Transform _drumHead;               // assign: SpinCycle_Head child
+        [SerializeField] private float     _introWalkTarget_X     = -4f;
+        [SerializeField] private float     _introWalkTarget_Z     = 4f;
+        [SerializeField] private float     _introCameraFoV        = 30f;  // FoV at peak zoom during spin-up
+        [SerializeField] private float     _normalCameraFoV       = 40f;  // restored after intro
+        [SerializeField] private float     _introPanDuration      = 1f;    // how long to hold on the doorway before he emerges
+        [SerializeField] private float     _introRunDuration      = 2.5f;  // how long SpinCycle takes to walk out
+        [SerializeField] private float     _introWalkInDistance   = 5f;    // how far back inside the saloon the boss starts, behind the doorway
+        [SerializeField] private float     _introPostWalkPause    = 0.6f;  // pause after he is fully out, before the head spins up
+
+        [Header("Intro — Saloon Geometry")]
+        [Tooltip("Substring used to locate the runtime-spawned saloon facade instance. Derives the doorway from its live transform.")]
+        [SerializeField] private string    _saloonNameContains    = "saloon_facade";
+        [Tooltip("Height (world Y) of the raised porch deck the boss stands on before stepping down. Derived from the saloon mesh (~0.5).")]
+        [SerializeField] private float     _porchDeckHeight       = 0.5f;
+        [Tooltip("Distance from the saloon center out to the front wall / doorway plane, along the facade's outward forward. Derived from the mesh (~2.2).")]
+        [SerializeField] private float     _doorDepthInset        = 2.2f;
+        [Tooltip("Fallback saloon world position if the runtime instance cannot be found by name.")]
+        [SerializeField] private Vector3   _saloonFallbackPos     = new Vector3(-8f, 0f, 8f);
+        [Tooltip("Fallback saloon Y rotation (degrees) if the runtime instance cannot be found by name.")]
+        [SerializeField] private float     _saloonFallbackYaw     = 135f;
+
+        [Header("Intro — Cinematic Camera")]
+        [Tooltip("Distance out from the doorway (along the walk-out direction) at the START of the emergence — a tighter establishing shot on the doorway.")]
+        [SerializeField] private float     _introCamStartDistance = 8f;
+        [Tooltip("Distance out from the doorway at the END of the emergence — the camera dollies BACK to this as SpinCycle walks out so his full body stays framed.")]
+        [SerializeField] private float     _introCamEndDistance   = 14f;
+        [Tooltip("World height of the intro camera — near the boss's chest/face for a level, non-top-down angle.")]
+        [SerializeField] private float     _introCamHeight        = 1.8f;
+        [Tooltip("World height the intro camera looks at (boss chest height).")]
+        [SerializeField] private float     _introCamLookHeight    = 2.0f;
+        [Tooltip("Priority given to the dedicated intro vcam while it is active (must exceed the gameplay cam's).")]
+        [SerializeField] private int       _introCamPriority      = 100;
+
         [Header("References")]
         [SerializeField] private DrumWindowRotator drumWindow;
 
@@ -94,6 +129,16 @@ namespace Boxhead.Enemy
         private int _attackIndex;
         private bool _phaseTransitioned;
         private float _attackCooldownTimer;
+        private bool       _introComplete;
+
+        // Dedicated cinematic intro camera — created in Awake so it frames the doorway on
+        // frame 1 (no top-down flash), torn down in Phase 4 when gameplay resumes.
+        private Unity.Cinemachine.CinemachineCamera _introVcam;
+        private GameObject _introVcamGO;
+
+        // Doorway geometry, derived from the saloon's runtime transform in Awake.
+        private Vector3 _doorwayGround;   // world XZ of the doorway threshold at ground level
+        private Vector3 _saloonOutward;   // facade forward (points from saloon out into the arena)
 
         // ── References ────────────────────────────────────────────────────────
 
@@ -140,6 +185,13 @@ namespace Boxhead.Enemy
             _stats    = GetComponent<EnemyStats>();
             _animator = GetComponentInChildren<Animator>();
 
+            // Derive the doorway geometry from the saloon's runtime transform (source of truth),
+            // then stand up a dedicated cinematic intro camera framing that doorway from the
+            // front — created here, before any Start() runs, so frame 1 shows the intro framing
+            // and never the top-down gameplay view of the arena.
+            DeriveDoorwayGeometry();
+            CreateIntroCamera();
+
             var rend = GetComponentInChildren<Renderer>();
             if (rend != null)
             {
@@ -167,6 +219,112 @@ namespace Boxhead.Enemy
                 _impulseSource.ImpulseDefinition.AmplitudeGain = 3f;
         }
 
+        // Locates the runtime-spawned saloon facade by name and computes the doorway threshold
+        // position (front-face center, at ground level) and the facade's outward direction.
+        // Falls back to the serialized saloon transform if the instance is not found yet.
+        private void DeriveDoorwayGeometry()
+        {
+            Vector3 saloonPos;
+            Vector3 outward;
+
+            Transform saloon = FindSaloon();
+            if (saloon != null)
+            {
+                saloonPos = saloon.position;
+                outward   = Vector3.ProjectOnPlane(saloon.forward, Vector3.up).normalized;
+            }
+            else
+            {
+                saloonPos = _saloonFallbackPos;
+                outward   = Quaternion.Euler(0f, _saloonFallbackYaw, 0f) * Vector3.forward;
+            }
+
+            if (outward.sqrMagnitude < 0.0001f) outward = Vector3.forward;
+
+            _saloonOutward = outward;
+            // Doorway threshold: push out from the saloon center to the front wall plane,
+            // horizontally centered on the facade, at ground level.
+            _doorwayGround = new Vector3(
+                saloonPos.x + outward.x * _doorDepthInset,
+                0f,
+                saloonPos.z + outward.z * _doorDepthInset);
+        }
+
+        // Finds the saloon facade instance in the loaded scene by name substring.
+        // Avoids FindObjectsOfTypeAll (which returns prefab assets) — scans root objects only,
+        // once, in Awake; not a per-frame call.
+        private Transform FindSaloon()
+        {
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var roots = scene.GetRootGameObjects();
+            for (int i = 0; i < roots.Length; i++)
+            {
+                Transform hit = SearchByName(roots[i].transform);
+                if (hit != null) return hit;
+            }
+            return null;
+        }
+
+        private Transform SearchByName(Transform t)
+        {
+            if (t.name.IndexOf(_saloonNameContains, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                return t;
+            for (int i = 0; i < t.childCount; i++)
+            {
+                Transform hit = SearchByName(t.GetChild(i));
+                if (hit != null) return hit;
+            }
+            return null;
+        }
+
+        // Builds the dedicated cinematic intro vcam: a front view of the doorway at chest
+        // height, pulled back along the walk-out direction so the whole boss + doorway frame.
+        // The gameplay cam is left untouched; we simply out-prioritize it, then hand back in
+        // Phase 4 by disabling this vcam.
+        private void CreateIntroCamera()
+        {
+            _introVcamGO = new GameObject("CM_BossIntroCam");
+            _introVcam   = _introVcamGO.AddComponent<Unity.Cinemachine.CinemachineCamera>();
+
+            // Position in FRONT of the doorway (arena side) at the START distance, looking back
+            // toward the saloon. BossIntro dollies the camera back to _introCamEndDistance and
+            // pans the look point to follow the boss as he emerges.
+            PositionIntroCamera(_introCamStartDistance, _doorwayGround);
+
+            var lens = _introVcam.Lens;
+            lens.FieldOfView = _normalCameraFoV;
+            _introVcam.Lens  = lens;
+
+            // No Follow/LookAt targets — this is a fixed cinematic shot, driven by transform only.
+            // Priority struct in Cinemachine 3: set the value so the Brain prefers this vcam,
+            // then toggle `enabled` (not priority math) to hand control back later.
+            var prio = _introVcam.Priority;
+            prio.Value       = _introCamPriority;
+            _introVcam.Priority = prio;
+            _introVcam.enabled  = true;
+
+            // The vcam is enabled with the highest priority before the first Brain update, so
+            // the Brain selects it on frame 1 — no top-down flash of the arena. (We intentionally
+            // do NOT call ManualUpdate here: the Brain is in its normal update mode, so that call
+            // is a no-op that only logs a warning.)
+        }
+
+        // Places the intro vcam `distance` metres out in front of the doorway (arena side),
+        // at _introCamHeight, aiming at `lookTargetXZ` raised to _introCamLookHeight. Used both
+        // for the initial placement and for the per-frame dolly-back during the emergence.
+        private void PositionIntroCamera(float distance, Vector3 lookTargetXZ)
+        {
+            if (_introVcamGO == null) return;
+
+            Vector3 camPos = _doorwayGround + _saloonOutward * distance;
+            camPos.y = _introCamHeight;
+            _introVcamGO.transform.position = camPos;
+
+            Vector3 lookAt = lookTargetXZ;
+            lookAt.y = _introCamLookHeight;
+            _introVcamGO.transform.rotation = Quaternion.LookRotation((lookAt - camPos).normalized);
+        }
+
         private void Start()
         {
             var playerObj = GameObject.FindWithTag("Player");
@@ -180,6 +338,8 @@ namespace Boxhead.Enemy
             }
 
             _stats.OnDeath += HandleDeath;
+
+            StartCoroutine(BossIntro());
         }
 
         private void Update()
@@ -193,7 +353,8 @@ namespace Boxhead.Enemy
             switch (_state)
             {
                 case BossState.Idle:
-                    if (Vector3.Distance(transform.position, _player.position) <= chaseRange)
+                    // Do not transition to Approaching until the intro coroutine completes.
+                    if (_introComplete && Vector3.Distance(transform.position, _player.position) <= chaseRange)
                         _state = BossState.Approaching;
                     break;
 
@@ -206,6 +367,170 @@ namespace Boxhead.Enemy
                 ? (_agent != null ? _agent.velocity.magnitude : (_phase == Phase.One ? walkSpeed : runSpeed))
                 : 0f;
             _animator?.SetFloat(AnimSpeed, speed);
+        }
+
+        // ── Boss intro ─────────────────────────────────────────────────────────
+
+        // Boss intro: SpinCycle starts tiny on the saloon porch deck behind the swinging doors,
+        // walks OUT through the doorway growing to full size while STEPPING DOWN off the porch
+        // to ground level, pauses, then spins up before combat begins. A dedicated cinematic
+        // camera frames the doorway head-on for the whole emergence.
+        private IEnumerator BossIntro()
+        {
+            _stats?.SetInvulnerable(true);
+            _state = BossState.Idle;
+            drumWindow?.ResetToForward();
+
+            // Cache the designed full size so we restore it correctly at the end.
+            Vector3 fullScale = transform.localScale;
+
+            // ── Compute intro positions from the DERIVED doorway (source of truth) ──
+            // _doorwayGround / _saloonOutward were computed in Awake from the saloon's runtime
+            // transform. Outward points from the saloon out into the arena.
+            Vector3 outward = _saloonOutward;
+
+            // Start: horizontally centered on the doorway, pushed BACK into the building against
+            // outward, standing UP on the porch deck (deck height) so he begins tiny inside.
+            Vector3 insideStart = _doorwayGround - outward * _introWalkInDistance;
+            insideStart.y = _porchDeckHeight;
+
+            // Doorway threshold, at deck height — the point he passes through as he emerges.
+            Vector3 doorwayTop = _doorwayGround;
+            doorwayTop.y = _porchDeckHeight;
+
+            // End: the walk-out target out in the arena, at GROUND level (steps down off porch).
+            Vector3 walkOutTarget = new Vector3(_introWalkTarget_X, 0f, _introWalkTarget_Z);
+
+            // Teleport the boss onto the deck inside the saloon and shrink to a tiny fraction
+            // BEFORE the first rendered frame, so the intro cam sees him start tiny in the doorway.
+            transform.position   = insideStart;
+            transform.rotation   = Quaternion.LookRotation(outward);
+            transform.localScale = fullScale * 0.02f;
+
+            // ── Phase 1: Hold on the doorway ──
+            // The dedicated intro vcam (created in Awake) is already framing the doorway, so we
+            // simply hold here while the shot settles and the boss stands tiny in the opening.
+            float panTimer = 0f;
+            while (panTimer < _introPanDuration) { panTimer += Time.deltaTime; yield return null; }
+
+            // ── Phase 2: Walk out through the doorway + grow + step down off the porch ──
+            // The start point is on the deck, off the NavMesh — the agent cannot move him from
+            // there. Disable it and drive the walk with a direct transform lerp, then re-enable
+            // + Warp once he is out in the arena at ground level.
+            if (_agent != null) _agent.enabled = false;
+
+            float runDuration = Mathf.Max(0.0001f, _introRunDuration);
+            // Fraction of the walk spent crossing the deck (inside → doorway). During this leg
+            // he stays centered on the doorway and at deck height; afterward he steps down.
+            const float doorwayFrac = 0.45f;
+            float walkTimer = 0f;
+            while (walkTimer < runDuration)
+            {
+                walkTimer += Time.deltaTime;
+                float t = Mathf.Clamp01(walkTimer / runDuration);
+
+                Vector3 pos;
+                if (t <= doorwayFrac)
+                {
+                    // Leg 1 — cross the deck to the doorway, centered on the doorway line, deck height.
+                    float u = t / doorwayFrac;
+                    pos   = Vector3.Lerp(insideStart, doorwayTop, u);
+                    pos.y = _porchDeckHeight;
+                }
+                else
+                {
+                    // Leg 2 — leave the doorway, step down off the porch to ground level in the arena.
+                    float u = (t - doorwayFrac) / (1f - doorwayFrac);
+                    pos   = Vector3.Lerp(doorwayTop, walkOutTarget, u);
+                    pos.y = Mathf.Lerp(_porchDeckHeight, 0f, u); // smooth descent off the deck
+                }
+                transform.position = pos;
+
+                // Grow from tiny to full size, easing in so he "swells" as he approaches.
+                transform.localScale = fullScale * Mathf.Lerp(0.02f, 1f, t * t);
+                // Face the walk-out direction throughout.
+                transform.rotation = Quaternion.LookRotation(outward);
+                _animator?.SetFloat(AnimSpeed, walkSpeed * 1.5f);
+
+                // Dolly the camera BACK as he emerges (start → end distance) and pan its look
+                // point to follow him, so his growing body stays framed and he walks toward us.
+                float dollyDist = Mathf.Lerp(_introCamStartDistance, _introCamEndDistance, t);
+                Vector3 lookXZ = new Vector3(pos.x, 0f, pos.z);
+                PositionIntroCamera(dollyDist, lookXZ);
+
+                yield return null;
+            }
+
+            // Snap to the exact arena target at ground level, full size; stop the walk animation.
+            transform.position   = walkOutTarget;
+            transform.localScale = fullScale;
+            _animator?.SetFloat(AnimSpeed, 0f);
+
+            // Re-enable the agent and Warp it onto the NavMesh at the arena target so
+            // Approach() can path immediately once _introComplete is set.
+            if (_agent != null)
+            {
+                _agent.enabled   = true;
+                _agent.Warp(transform.position);
+                _agent.isStopped = true;
+            }
+
+            // Face the player after stopping.
+            if (_player != null)
+            {
+                Vector3 toPlayer = _player.position - transform.position;
+                toPlayer.y = 0f;
+                if (toPlayer.sqrMagnitude > 0.01f)
+                    transform.rotation = Quaternion.LookRotation(toPlayer.normalized);
+            }
+
+            // Settle the camera at its final pulled-back distance, aimed at the boss, for the
+            // pause and spin-up.
+            PositionIntroCamera(_introCamEndDistance, new Vector3(transform.position.x, 0f, transform.position.z));
+
+            // ── Phase 2.5: Post-walk pause ──
+            // Boss stands at full size, fully out in the arena, before the head spins up.
+            float pauseTimer = 0f;
+            while (pauseTimer < _introPostWalkPause) { pauseTimer += Time.deltaTime; yield return null; }
+
+            // ── Phase 3: Head spins up — intro cam zooms in for the reveal ──
+            drumWindow?.StartIntroBuildUp();
+
+            float startFoV     = _introVcam != null ? _introVcam.Lens.FieldOfView : _normalCameraFoV;
+            float spinTimer    = 0f;
+            float spinDuration = 3.0f;
+            while (spinTimer < spinDuration)
+            {
+                spinTimer += Time.deltaTime;
+                float t = spinTimer / spinDuration;
+                float degPerSec = Mathf.Lerp(30f, 240f, t);
+                _drumHead?.Rotate(0f, degPerSec * Time.deltaTime, 0f, Space.Self);
+                // Zoom the INTRO cam in during the first 60% of spin-up.
+                if (_introVcam != null)
+                {
+                    float zoomT = Mathf.Clamp01(t / 0.6f);
+                    var lens = _introVcam.Lens;
+                    lens.FieldOfView = Mathf.Lerp(startFoV, _introCameraFoV, zoomT * zoomT);
+                    _introVcam.Lens = lens;
+                }
+                if (spinTimer >= spinDuration * 0.5f && spinTimer < spinDuration * 0.5f + Time.deltaTime)
+                    _impulseSource?.GenerateImpulse(0.2f);
+                yield return null;
+            }
+
+            // ── Phase 4: Hand control back to the gameplay camera, combat begins ──
+            drumWindow?.SetSlowPhase(); // settle to slow idle spin during combat
+
+            // Disabling the intro vcam lets the untouched gameplay cam (pfb_CM_FollowCam) win
+            // the Brain again; Cinemachine blends from the intro shot to the gameplay top-down.
+            if (_introVcam != null) _introVcam.enabled = false;
+
+            _introComplete = true;
+            _state         = BossState.Approaching;
+
+            // Drop invulnerability only after the intro is fully torn down (camera handed back,
+            // agent warped, state set) to close a death-race on camera/agent state.
+            _stats?.SetInvulnerable(false);
         }
 
         // ── Movement ──────────────────────────────────────────────────────────
@@ -822,6 +1147,16 @@ namespace Boxhead.Enemy
 
         private void OnDestroy()
         {
+            // Safety net: if the intro was interrupted before Phase 4 disabled the intro vcam,
+            // tear the whole cinematic camera GameObject down here so it cannot leak or keep
+            // out-prioritizing the gameplay camera after the boss is gone.
+            if (_introVcamGO != null)
+            {
+                Destroy(_introVcamGO);
+                _introVcamGO = null;
+                _introVcam   = null;
+            }
+
             // HandleDeath calls StopAllCoroutines; if destroyed without dying, clean up here.
             StopAllCoroutines();
             _activeRoutine = null;

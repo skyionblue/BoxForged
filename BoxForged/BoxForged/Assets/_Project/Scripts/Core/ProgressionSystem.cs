@@ -86,6 +86,105 @@ namespace Boxhead.Core
         /// <summary>Clears the stored run selection so the next scene load shows the character picker.</summary>
         public void ClearRunSelection() => HasRunSelection = false;
 
+        // ── Run loadout persistence (session-scoped, not saved to disk) ───────────
+        // Mirrors the HasRunSelection pattern: snapshot the player's cardboard and forged
+        // weapon slots at each room transition, restore them after the next scene loads.
+        // Cleared only on a brand-new run or a new zone — never on a room→room transition.
+        // NOTE: ResetRunState() must NOT touch these fields — it runs every room load.
+
+        private struct StoredWeapon
+        {
+            public Boxhead.Systems.WeaponObjectSO data;
+            public Boxhead.Systems.WeaponTier     tier;
+            public int                            durability;
+        }
+
+        public bool HasRunLoadout      { get; private set; }
+        public int  RunCardboard       { get; private set; }
+        public int  RunActiveSlotIndex { get; private set; }
+
+        // Sized to WeaponInventory.WeaponSlotCount lazily on first capture.
+        private StoredWeapon[] _runWeaponSlots;
+
+        /// <summary>
+        /// Snapshots the player's cardboard count and forged weapon slots into session state.
+        /// Called at every room transition (via GameManager.CaptureLoadoutForTransition).
+        /// The material bag is deliberately not captured (persistence covers slots only).
+        /// </summary>
+        public void CaptureRunLoadout(Boxhead.Systems.CardboardResource cardboard,
+                                      Boxhead.Systems.WeaponInventory inventory)
+        {
+            if (inventory == null) return;
+
+            RunCardboard = cardboard != null ? cardboard.Current : 0;
+
+            var slots = inventory.WeaponSlots;
+            int count = slots != null ? slots.Length : 0;
+
+            if (_runWeaponSlots == null || _runWeaponSlots.Length != count)
+                _runWeaponSlots = new StoredWeapon[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                var weapon = slots[i];
+                if (weapon != null)
+                {
+                    _runWeaponSlots[i] = new StoredWeapon
+                    {
+                        data       = weapon.Data,
+                        tier       = weapon.Tier,
+                        durability = weapon.CurrentDurability
+                    };
+                }
+                else
+                {
+                    _runWeaponSlots[i] = default;
+                }
+            }
+
+            RunActiveSlotIndex = inventory.ActiveSlotIndex;
+            HasRunLoadout      = true;
+        }
+
+        /// <summary>
+        /// Rebuilds WeaponInstances from the captured snapshot and pushes them, the active
+        /// slot index, and the cardboard count back onto the freshly loaded player.
+        /// Call from GameManager.Start() AFTER the character model swap (RunStartUI.Show)
+        /// so the restored active weapon equips onto the correct hand bone.
+        /// </summary>
+        public void RestoreRunLoadout(Boxhead.Systems.CardboardResource cardboard,
+                                      Boxhead.Systems.WeaponInventory inventory)
+        {
+            if (!HasRunLoadout) return;
+
+            cardboard?.SetCurrent(RunCardboard);
+
+            if (inventory == null || _runWeaponSlots == null) return;
+
+            var restored = new Boxhead.Systems.WeaponInstance[_runWeaponSlots.Length];
+            for (int i = 0; i < _runWeaponSlots.Length; i++)
+            {
+                var stored = _runWeaponSlots[i];
+                restored[i] = stored.data != null
+                    ? new Boxhead.Systems.WeaponInstance(stored.data, stored.tier, stored.durability)
+                    : null;
+            }
+
+            inventory.RestoreState(restored, RunActiveSlotIndex);
+        }
+
+        /// <summary>
+        /// Clears the persisted loadout so the next run/zone starts fresh (no cardboard,
+        /// no forged weapons). Called on Restart(), fresh character pick, and zone advance.
+        /// </summary>
+        public void ClearRunLoadout()
+        {
+            HasRunLoadout      = false;
+            RunCardboard       = 0;
+            RunActiveSlotIndex = 0;
+            _runWeaponSlots    = null;
+        }
+
         // Reserved for V3-06 boss hook — EnemyStats.OnAnyEnemyDeath carries no parameter today.
         public int SparkPerBoss => _sparkPerBoss;
 

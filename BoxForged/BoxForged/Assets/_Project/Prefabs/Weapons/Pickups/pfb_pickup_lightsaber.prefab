@@ -68,7 +68,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6907ba3aacbb24be595d94f9a9ada0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponPickup
-  _weaponData: {fileID: 11400000, guid: 61519cfcb64354dcd8f31727fb5eaf8b, type: 2}
+  _weaponObject: {fileID: 0}
 --- !u!1 &6175079264008152133
 GameObject:
   m_ObjectHideFlags: 0
@@ -80,7 +80,6 @@ GameObject:
   - component: {fileID: 496117650196929835}
   - component: {fileID: 1581126428367483115}
   - component: {fileID: 1234400427563289836}
-  - component: {fileID: 918177052319967358}
   m_Layer: 0
   m_Name: Bubble
   m_TagString: Untagged
@@ -97,7 +96,7 @@ Transform:
   m_GameObject: {fileID: 6175079264008152133}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -160,19 +159,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &918177052319967358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6175079264008152133}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70533d6f5f7174927b867a57a265c8b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponPickupSpinner
-  _spinSpeed: 90
 --- !u!1001 &681300992496691426
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -203,7 +189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8307291588704124041, guid: 151a4dad55c994bd987abd9481289062, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.1
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 8307291588704124041, guid: 151a4dad55c994bd987abd9481289062, type: 3}
       propertyPath: m_LocalPosition.z

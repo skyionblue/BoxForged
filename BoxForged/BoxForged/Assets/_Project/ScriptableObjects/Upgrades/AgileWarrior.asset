@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e286e9a133314141a4c8e3d80413da3, type: 3}
   m_Name: AgileWarrior
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.UpgradeCardData
-  displayName: Agile Warrior
-  description: +0.2 Agility this run
-  effect: 5
-  magnitude: 0.2
-  icon: {fileID: 0}
+  _displayName: Swift Strikes
+  _description: Movement speed increased.
+  _effect: 5
+  _magnitude: 5
+  _icon: {fileID: 0}

@@ -136,6 +136,25 @@ namespace Boxhead.Systems
 
         public void NotifyInventoryChanged() => OnInventoryChanged?.Invoke();
 
+        /// <summary>
+        /// Restores forged weapon slots and the active slot index after a scene load
+        /// (see ProgressionSystem.RestoreRunLoadout). Writes the slot array directly —
+        /// like ForgeController.TryUpgrade — then re-equips the active weapon through
+        /// WeaponHolder via SetActiveSlot so the model attaches to the correct hand bone.
+        /// The material bag is intentionally not restored (persistence covers slots only).
+        /// </summary>
+        public void RestoreState(WeaponInstance[] slots, int activeIndex)
+        {
+            for (int i = 0; i < WeaponSlotCount; i++)
+                WeaponSlots[i] = (slots != null && i < slots.Length) ? slots[i] : null;
+
+            // SetActiveSlot clamps the index, equips (or unequips) through WeaponHolder,
+            // and fires OnInventoryChanged. The explicit NotifyInventoryChanged below is
+            // redundant-safe and guarantees a refresh even if SetActiveSlot's path changes.
+            SetActiveSlot(activeIndex);
+            NotifyInventoryChanged();
+        }
+
         public void ResetForRun()
         {
             for (int i = 0; i < WeaponSlotCount; i++) WeaponSlots[i] = null;

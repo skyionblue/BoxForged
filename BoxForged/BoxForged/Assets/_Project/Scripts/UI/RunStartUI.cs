@@ -260,6 +260,8 @@ namespace Boxhead.UI
                 }
             }
             ProgressionSystem.Instance?.SetRunSelection(_selectedGender, _selectedStyle, _boxSystem?.CurrentBoxIndex ?? 0, _selectedDifficulty);
+            // Fresh character pick = brand-new run: wipe any carried-over cardboard/weapons.
+            ProgressionSystem.Instance?.ClearRunLoadout();
             Hide();
         }
 

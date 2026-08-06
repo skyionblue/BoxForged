@@ -37,5 +37,15 @@ namespace Boxhead.Systems
             Current = 0;
             OnCardboardChanged?.Invoke(Current);
         }
+
+        /// <summary>
+        /// Overwrites the current cardboard count and fires OnCardboardChanged so any
+        /// live UI refreshes. Used by ProgressionSystem.RestoreRunLoadout on scene load.
+        /// </summary>
+        public void SetCurrent(int value)
+        {
+            Current = Mathf.Max(0, value);
+            OnCardboardChanged?.Invoke(Current);
+        }
     }
 }

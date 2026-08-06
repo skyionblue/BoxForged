@@ -88,6 +88,9 @@ namespace Boxhead.Systems
                 return;
             }
 
+            // Snapshot cardboard + forged weapons so the loadout carries into the boss hall.
+            Boxhead.Core.GameManager.Instance?.CaptureLoadoutForTransition();
+
             // Ensure timeScale is normal before the scene loads (it may have been paused)
             Time.timeScale = 1f;
             SceneManager.LoadScene(_bossSceneName);

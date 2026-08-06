@@ -16,13 +16,15 @@ namespace Boxhead.Systems
         private void Awake()
         {
             _speedMult = Random.Range(0.6f, 1.4f);
-            // Randomise starting rotation so bubbles don't all begin aligned.
-            transform.Rotate(0f, Random.Range(0f, 360f), 0f, Space.Self);
+            // Randomise starting rotation so pickups don't all begin aligned.
+            transform.Rotate(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f), Space.World);
         }
 
         private void Update()
         {
-            transform.Rotate(_spinSpeed * _speedMult * Time.deltaTime, 0f, 0f, Space.Self);
+            // Spin on all three axes for a floating tumble effect.
+            float delta = _spinSpeed * _speedMult * Time.deltaTime;
+            transform.Rotate(delta, delta * 0.7f, delta * 0.4f, Space.World);
         }
     }
 }
