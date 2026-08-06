@@ -34,6 +34,14 @@ namespace Boxhead.Systems
             _weaponInventory.RemoveFromMaterialBag(bagIndex);
 
             OnWeaponForged?.Invoke(instance);
+
+            // First successful forge ever → play the forge tutorial cutscene once.
+            if (!Boxhead.Core.CutsceneFlags.HasSeen(Boxhead.Core.CutsceneCatalog.KeyForgeFirst))
+            {
+                Boxhead.Core.CutsceneFlags.MarkSeen(Boxhead.Core.CutsceneCatalog.KeyForgeFirst);
+                Boxhead.Core.CutscenePlayer.Instance?.Play(Boxhead.Core.CutsceneCatalog.ForgeFirst);
+            }
+
             return true;
         }
 

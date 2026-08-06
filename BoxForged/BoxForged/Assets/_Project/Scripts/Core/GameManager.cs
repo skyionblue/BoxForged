@@ -170,6 +170,44 @@ namespace Boxhead.Core
                 var inventory = playerObj.GetComponent<WeaponInventory>();
                 ProgressionSystem.Instance.RestoreRunLoadout(cardboard, inventory);
             }
+
+            TryPlayEntryCutscenes();
+        }
+
+        /// <summary>
+        /// Plays boot / zone-entry cutscenes on scene load. Runs once at the end of Start():
+        ///   • First boot ever → game intro (once ever).
+        ///   • Entering the Cul-de-Sac zone start room → the wild-west transform (once per zone).
+        /// Cutscenes render above the RunStartUI picker (which is paused via timeScale = 0) and
+        /// play on the video's own clock, so no gameplay flow is blocked. There's no boot/menu
+        /// scene, so the first playable room doubles as the intro trigger point.
+        /// </summary>
+        private void TryPlayEntryCutscenes()
+        {
+            var cutscene = CutscenePlayer.Instance;
+            if (cutscene == null) return;
+
+            string currentScene = SceneManager.GetActiveScene().name;
+
+            // Game intro — first boot ever, at the first playable room (zone-0 start room).
+            if (currentScene == ZoneStartScene[0]
+                && !CutsceneFlags.HasSeen(CutsceneCatalog.KeyGameIntro))
+            {
+                CutsceneFlags.MarkSeen(CutsceneCatalog.KeyGameIntro);
+                // Also mark the zone-enter as seen so the intro doesn't immediately chain into a
+                // second cutscene on the very first boot; the zone cut plays on later fresh runs.
+                CutsceneFlags.MarkSeen(CutsceneCatalog.KeyCulDeSacEnter);
+                cutscene.Play(CutsceneCatalog.GameIntro);
+                return;
+            }
+
+            // Enter Cul-de-Sac zone — once per zone, at its start room.
+            if (currentScene == ZoneStartScene[0]
+                && !CutsceneFlags.HasSeen(CutsceneCatalog.KeyCulDeSacEnter))
+            {
+                CutsceneFlags.MarkSeen(CutsceneCatalog.KeyCulDeSacEnter);
+                cutscene.Play(CutsceneCatalog.CulDeSacEnter);
+            }
         }
 
         /// <summary>

@@ -268,7 +268,34 @@ namespace Boxhead.UI
             ProgressionSystem.Instance?.SetRunSelection(_selectedGender, _selectedStyle, _boxSystem?.CurrentBoxIndex ?? 0, _selectedDifficulty);
             // Fresh character pick = brand-new run: wipe any carried-over cardboard/weapons.
             ProgressionSystem.Instance?.ClearRunLoadout();
-            Hide();
+
+            // Play a once-per-character showcase cutscene before the run begins, then Hide().
+            // The video plays on its own clock (unaffected by Show()'s timeScale = 0), and Hide()
+            // runs on the cutscene callback so the run only starts after the showcase completes.
+            // 0 = Ninja → ninja_skills; 1 = Cowboy → cowboy_ninja_skills showcase.
+            string showcaseFile = _selectedStyle == 0
+                ? Boxhead.Core.CutsceneCatalog.NinjaShowcase
+                : Boxhead.Core.CutsceneCatalog.CowboyNinjaShowcase;
+            string showcaseKey = _selectedStyle == 0
+                ? Boxhead.Core.CutsceneCatalog.KeyNinjaShowcase
+                : Boxhead.Core.CutsceneCatalog.KeyCowboyShowcase;
+
+            // Only play the character showcase at a genuine run-start room (a zone start scene).
+            // The picker can still appear mid-run — e.g. loading the boss arena directly for
+            // testing with no saved selection — but the showcase must NOT play before a boss fight.
+            string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            bool atRunStartRoom = Boxhead.Core.GameManager.ZoneStartScene.ContainsValue(sceneName);
+
+            var cutscene = Boxhead.Core.CutscenePlayer.Instance;
+            if (atRunStartRoom && cutscene != null && !Boxhead.Core.CutsceneFlags.HasSeen(showcaseKey))
+            {
+                Boxhead.Core.CutsceneFlags.MarkSeen(showcaseKey);
+                cutscene.Play(showcaseFile, onFinished: Hide, skippable: true);
+            }
+            else
+            {
+                Hide();
+            }
         }
 
         // ── Apply selections ─────────────────────────────────────────────────────

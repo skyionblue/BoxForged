@@ -17,7 +17,6 @@
 *.dylib filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 *.unitypackage filter=lfs diff=lfs merge=lfs -text
-
 # Unity text-based files — NOT tracked by LFS (they are YAML text)
 *.unity -text
 *.prefab -text
@@ -41,3 +40,4 @@
 *.spriteatlas -text
 *.terrainlayer -text
 *.signal -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
