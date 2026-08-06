@@ -1097,10 +1097,20 @@ namespace Boxhead.Enemy
 
             // Shrink over the full defeatHoldDuration so the death animation plays
             // simultaneously with the boss disappearing — not before it.
-            // TriggerWin MUST be called before Destroy — Destroy would end the coroutine
-            // immediately, preventing TriggerWin from ever executing.
             yield return StartCoroutine(ShrinkAndVanish(defeatHoldDuration));
-            GameManager.Instance?.TriggerWin();
+
+            // If _imaginationVolume wasn't assigned in the Inspector, find it by name at runtime.
+            if (_imaginationVolume == null)
+                _imaginationVolume = GameObject.Find("ImaginationRestore_Volume")
+                    ?.GetComponent<UnityEngine.Rendering.Volume>();
+
+            // Lerp the imagination-restore volume in, then TriggerWin (called inside LerpImagination).
+            // If the volume is still null, fall back to TriggerWin directly.
+            if (_imaginationVolume != null)
+                yield return StartCoroutine(LerpImagination(_imaginationLerpDuration));
+            else
+                GameManager.Instance?.TriggerWin();
+
             Destroy(gameObject);
         }
 

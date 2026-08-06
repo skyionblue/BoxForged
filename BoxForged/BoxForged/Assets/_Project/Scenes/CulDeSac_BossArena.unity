@@ -510,6 +510,55 @@ Transform:
   - {fileID: 1215225305}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &308588676
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 308588678}
+  - component: {fileID: 308588677}
+  m_Layer: 0
+  m_Name: ImaginationRestore_Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &308588677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308588676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 10
+  blendDistance: 0
+  weight: 0
+  sharedProfile: {fileID: 11400000, guid: 9c77ae4236ddc4313b73531f9e52638c, type: 2}
+--- !u!4 &308588678
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308588676}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &356418254
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1854,6 +1903,10 @@ PrefabInstance:
       value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3356332026352232365, guid: 1d07d77009af447fcb9c90b06e8533ed, type: 3}
+      propertyPath: _imaginationVolume
+      value: 
+      objectReference: {fileID: 308588677}
+    - target: {fileID: 3356332026352232365, guid: 1d07d77009af447fcb9c90b06e8533ed, type: 3}
       propertyPath: _introWalkTarget_X
       value: -3
       objectReference: {fileID: 0}
@@ -2344,3 +2397,4 @@ SceneRoots:
   - {fileID: 1869993811}
   - {fileID: 1377929753}
   - {fileID: 1492017590}
+  - {fileID: 308588678}
