@@ -30,6 +30,20 @@ namespace Boxhead.Core
             PlayerPrefs.DeleteKey(Prefix + key);
             PlayerPrefs.Save();
         }
+
+        /// <summary>
+        /// Clears every one-shot cutscene flag so all "first time" cutscenes play again.
+        /// Called by the pause-screen Reset Progression button for a true fresh-start.
+        /// </summary>
+        public static void ClearAll()
+        {
+            PlayerPrefs.DeleteKey(Prefix + CutsceneCatalog.KeyGameIntro);
+            PlayerPrefs.DeleteKey(Prefix + CutsceneCatalog.KeyCulDeSacEnter);
+            PlayerPrefs.DeleteKey(Prefix + CutsceneCatalog.KeyNinjaShowcase);
+            PlayerPrefs.DeleteKey(Prefix + CutsceneCatalog.KeyCowboyShowcase);
+            PlayerPrefs.DeleteKey(Prefix + CutsceneCatalog.KeyForgeFirst);
+            PlayerPrefs.Save();
+        }
     }
 
     /// <summary>

@@ -117,6 +117,9 @@ namespace Boxhead.UI
             save.Data.permanentUnlocks = new string[0];
             save.Save();
 
+            // A fresh start also replays the one-shot cutscenes (intro, showcases, first forge).
+            Core.CutsceneFlags.ClearAll();
+
             // Rebuild the in-memory stat overlay from the now-zeroed save data so the
             // next run starts clean without requiring a full app restart.
             // ProgressionSystem is DontDestroyOnLoad — its Awake only runs once, so
