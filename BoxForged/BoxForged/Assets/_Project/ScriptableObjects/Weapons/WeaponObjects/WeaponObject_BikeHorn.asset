@@ -18,7 +18,7 @@ MonoBehaviour:
   attackRange: 1.8
   weaponPrefab: {fileID: 1379029868672781591, guid: 427de2a9f4fb042c5810dd0c5a628e91, type: 3}
   material: {fileID: 2100000, guid: 29cd1eb546e234033beae33073890ecf, type: 2}
-  weaponIcon: {fileID: 21300000, guid: a8f47e554f71d42b78bc3e97f6a93101, type: 3}
+  weaponIcon: {fileID: 21300000, guid: 51e027a3eeb1e4241b0a17d5b59cca91, type: 3}
   gripPositionOffset: {x: 0.0925, y: 0.2216, z: -0.0716}
   gripRotationOffset: {x: -11.693, y: 191.46, z: 284.942}
   gripScale: 0.192
@@ -28,7 +28,7 @@ MonoBehaviour:
   specialAbilityDescription: 
   rawObjectName: Bike Horn
   rawObjectPrefab: {fileID: 1000000001, guid: 5ad5e74554c4e4099b92a26ed839a9a7, type: 3}
-  rawObjectIcon: {fileID: 0}
+  rawObjectIcon: {fileID: 21300000, guid: 51e027a3eeb1e4241b0a17d5b59cca91, type: 3}
   rarity: 2
   weaponType: 3
   forgeCost: 2

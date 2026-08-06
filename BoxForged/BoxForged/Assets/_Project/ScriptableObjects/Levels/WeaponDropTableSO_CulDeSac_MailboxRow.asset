@@ -35,49 +35,49 @@ MonoBehaviour:
   - {x: -6, y: 0, z: -11}
   envProps:
   - prefab: {fileID: 4710844490967981459, guid: 04fc54ba09eaf4d58979fea3b63692d8, type: 3}
-    worldPosition: {x: -14, y: 0, z: 5}
-    eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: 13.171, y: 0, z: 4.9998}
+    eulerRotation: {x: 0, y: 270, z: 0}
+    localScale: {x: 4.55805, y: 4.55805, z: 4.55805}
   - prefab: {fileID: 4710844490967981459, guid: 04fc54ba09eaf4d58979fea3b63692d8, type: 3}
-    worldPosition: {x: -14, y: 0, z: -4}
+    worldPosition: {x: -14.004, y: 0, z: -7.8801}
     eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 3.3648, y: 3.3648, z: 3.3648}
   - prefab: {fileID: 1452125302859916324, guid: 3ae22023c16e3449ba0d19eaeb5d9881, type: 3}
-    worldPosition: {x: 14, y: 0, z: 5}
-    eulerRotation: {x: 0, y: -90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: -16.2, y: 1.37, z: 1.1483}
+    eulerRotation: {x: 0, y: 90, z: 0}
+    localScale: {x: 0.64645, y: 0.64645, z: 0.64645}
   - prefab: {fileID: 1452125302859916324, guid: 3ae22023c16e3449ba0d19eaeb5d9881, type: 3}
-    worldPosition: {x: 14, y: 0, z: -4}
+    worldPosition: {x: 14, y: 0, z: -3.9987}
     eulerRotation: {x: 0, y: -90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 0.726, y: 0.726, z: 0.726}
   - prefab: {fileID: 5235065477046790290, guid: 90ec209c2c45a4d03896ba2eb4d12086, type: 3}
-    worldPosition: {x: -9, y: 0, z: 8}
-    eulerRotation: {x: 0, y: 20, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: -0.2396, y: 0, z: 7.9994}
+    eulerRotation: {x: 0, y: 20.000002, z: 0}
+    localScale: {x: 0.63761, y: 0.63761, z: 0.63761}
   - prefab: {fileID: 7120532893547957287, guid: 88ffa08a9dddd490d922505fc5fb2f6e, type: 3}
-    worldPosition: {x: -10, y: 0, z: 4}
+    worldPosition: {x: -7.91, y: 0, z: 6.1213}
     eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 1.5303, y: 1.5303, z: 1.5303}
   - prefab: {fileID: 7120532893547957287, guid: 88ffa08a9dddd490d922505fc5fb2f6e, type: 3}
-    worldPosition: {x: -10, y: 0, z: 0}
+    worldPosition: {x: -7.91, y: 0, z: 0}
     eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 1.5303, y: 1.5303, z: 1.5303}
   - prefab: {fileID: 7120532893547957287, guid: 88ffa08a9dddd490d922505fc5fb2f6e, type: 3}
-    worldPosition: {x: -10, y: 0, z: -4}
+    worldPosition: {x: -7.91, y: 0, z: -6.1213}
     eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 1.5303, y: 1.5303, z: 1.5303}
   - prefab: {fileID: 7120532893547957287, guid: 88ffa08a9dddd490d922505fc5fb2f6e, type: 3}
-    worldPosition: {x: 10, y: 0, z: 4}
-    eulerRotation: {x: 0, y: -90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: 5.28, y: 0, z: 6.1213}
+    eulerRotation: {x: 0, y: 270, z: 0}
+    localScale: {x: 1.5303, y: 1.5303, z: 1.5303}
   - prefab: {fileID: 7120532893547957287, guid: 88ffa08a9dddd490d922505fc5fb2f6e, type: 3}
-    worldPosition: {x: 10, y: 0, z: 0}
-    eulerRotation: {x: 0, y: -90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: 5.28, y: 0, z: 0}
+    eulerRotation: {x: 0, y: 270, z: 0}
+    localScale: {x: 1.5303, y: 1.5303, z: 1.5303}
   - prefab: {fileID: 7120532893547957287, guid: 88ffa08a9dddd490d922505fc5fb2f6e, type: 3}
-    worldPosition: {x: 10, y: 0, z: -4}
-    eulerRotation: {x: 0, y: -90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: 5.28, y: 0, z: -6.1213}
+    eulerRotation: {x: 0, y: 270, z: 0}
+    localScale: {x: 1.5303, y: 1.5303, z: 1.5303}
   - prefab: {fileID: 105027219294750644, guid: b17b8fc4bc5f944c69c823ce469cdc82, type: 3}
     worldPosition: {x: -11, y: 0, z: 3}
     eulerRotation: {x: 0, y: 0, z: 0}
@@ -95,29 +95,9 @@ MonoBehaviour:
     eulerRotation: {x: 0, y: 0, z: 0}
     localScale: {x: 1, y: 1, z: 1}
   - prefab: {fileID: 474931756869021181, guid: 280ff95d882604969b86250d1c256e53, type: 3}
-    worldPosition: {x: -10, y: 0, z: 9}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 474931756869021181, guid: 280ff95d882604969b86250d1c256e53, type: 3}
-    worldPosition: {x: -8, y: 0, z: 7}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 5097991969732716129, guid: fa6beacecd623485a9779fd4ab3c95df, type: 3}
-    worldPosition: {x: -5, y: 0, z: 2}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 5097991969732716129, guid: fa6beacecd623485a9779fd4ab3c95df, type: 3}
-    worldPosition: {x: 5, y: 0, z: 2}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 7689856023564746193, guid: e5b3dc551f95f434ab56ded721283219, type: 3}
-    worldPosition: {x: -13.5, y: 1.5, z: -3}
-    eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 7689856023564746193, guid: e5b3dc551f95f434ab56ded721283219, type: 3}
-    worldPosition: {x: 13.5, y: 1.5, z: -3}
-    eulerRotation: {x: 0, y: -90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: -3.72, y: 0, z: 7}
+    eulerRotation: {x: 0, y: 337.23242, z: 0}
+    localScale: {x: 0.60225, y: 0.60225, z: 0.60225}
   - prefab: {fileID: 3959801039612376936, guid: d59bdab86f4d046fab2dd3d329865d85, type: 3}
     worldPosition: {x: -8, y: 0, z: -2}
     eulerRotation: {x: 0, y: 0, z: 0}
@@ -138,3 +118,11 @@ MonoBehaviour:
     worldPosition: {x: 4, y: 0, z: 11}
     eulerRotation: {x: 0, y: 0, z: 0}
     localScale: {x: 0.25, y: 0.25, z: 0.25}
+  - prefab: {fileID: 818035136133972877, guid: aa80768c5bb284cb78ba5c76f233a441, type: 3}
+    worldPosition: {x: 10.81, y: 0, z: 12}
+    eulerRotation: {x: 0, y: 226.42897, z: 0}
+    localScale: {x: 4, y: 4, z: 4}
+  - prefab: {fileID: 7201435401782279493, guid: d28d5ff08369a403397d08f24b2f4b0f, type: 3}
+    worldPosition: {x: -10.07, y: -1.2661002, z: 14.18}
+    eulerRotation: {x: 0, y: 149.42802, z: 0}
+    localScale: {x: 6.6516, y: 6.6516, z: 6.6516}

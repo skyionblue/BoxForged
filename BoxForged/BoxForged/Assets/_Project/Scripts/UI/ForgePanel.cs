@@ -5,9 +5,9 @@ using Boxhead.Systems;
 
 namespace Boxhead.UI
 {
-    // Minimal forge panel for the test scene.
-    // Replace with the full ForgeUI when scene wiring is complete.
-    public class TestForgePanel : MonoBehaviour
+    // The player's forge / weapon-management panel (Forge + Upgrade weapon slots).
+    // Opened at a workbench (proximity) or via the HUD bag button (ToggleFromHUD).
+    public class ForgePanel : MonoBehaviour
     {
         [SerializeField] private GameObject      _panel;
         [SerializeField] private TextMeshProUGUI _statusText;
@@ -18,6 +18,8 @@ namespace Boxhead.UI
         [SerializeField] private Button          _upgradeSlot1Button;
         [SerializeField] private Button          _upgradeSlot2Button;
         [SerializeField] private Button          _closeButton;
+        [Tooltip("Optional HUD bag button that toggles this panel open/closed from anywhere.")]
+        [SerializeField] private Button          _openButton;
 
         private ForgeController  _forgeController;
         private WeaponInventory  _inventory;
@@ -44,6 +46,7 @@ namespace Boxhead.UI
         private void Start()
         {
             if (_closeButton != null) _closeButton.onClick.AddListener(Close);
+            if (_openButton  != null) _openButton.onClick.AddListener(ToggleFromHUD);
             if (_forgeSlot0Button != null) _forgeSlot0Button.onClick.AddListener(() => Forge(0));
             if (_forgeSlot1Button != null) _forgeSlot1Button.onClick.AddListener(() => Forge(1));
             if (_forgeSlot2Button != null) _forgeSlot2Button.onClick.AddListener(() => Forge(2));
@@ -59,6 +62,7 @@ namespace Boxhead.UI
             WorkbenchProp.OnSpawned -= OnWorkbenchSpawned;
             WorkbenchProp.OnRemoved -= OnWorkbenchRemoved;
             if (_closeButton != null) _closeButton.onClick.RemoveAllListeners();
+            if (_openButton  != null) _openButton.onClick.RemoveAllListeners();
             if (_forgeSlot0Button != null) _forgeSlot0Button.onClick.RemoveAllListeners();
             if (_forgeSlot1Button != null) _forgeSlot1Button.onClick.RemoveAllListeners();
             if (_forgeSlot2Button != null) _forgeSlot2Button.onClick.RemoveAllListeners();
@@ -91,6 +95,19 @@ namespace Boxhead.UI
             Time.timeScale      = 1f;
             AudioListener.pause = false;
             _forgeController = null;
+        }
+
+        /// <summary>
+        /// HUD bag-button entry point. Closes the panel if it is open; otherwise resolves the
+        /// player's ForgeController and opens it. Lets the player manage/forge weapons anywhere,
+        /// not only when standing at a workbench.
+        /// </summary>
+        public void ToggleFromHUD()
+        {
+            if (_panel != null && _panel.activeSelf) { Close(); return; }
+            var player = GameObject.FindWithTag("Player");
+            var fc = player != null ? player.GetComponent<ForgeController>() : null;
+            Open(fc); // Open() null-guards a missing ForgeController
         }
 
         private void OnCardboardChanged(int _) => Refresh();

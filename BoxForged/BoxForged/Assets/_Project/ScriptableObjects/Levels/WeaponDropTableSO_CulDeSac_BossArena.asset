@@ -18,29 +18,17 @@ MonoBehaviour:
   workbenchPositions: []
   envProps:
   - prefab: {fileID: 8071911200585245458, guid: 666a58444c2d5433382397798aceaf80, type: 3}
-    worldPosition: {x: -12, y: 0, z: 10}
-    eulerRotation: {x: 0, y: 160, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 8071911200585245458, guid: 666a58444c2d5433382397798aceaf80, type: 3}
-    worldPosition: {x: 12, y: 0, z: 10}
+    worldPosition: {x: 9.24, y: 0, z: 9.9975}
     eulerRotation: {x: 0, y: 200, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 2.2551, y: 2.2551, z: 2.2551}
   - prefab: {fileID: 5235065477046790290, guid: 90ec209c2c45a4d03896ba2eb4d12086, type: 3}
-    worldPosition: {x: -10, y: 0, z: -4}
-    eulerRotation: {x: 0, y: 20, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: -7.9668, y: 0, z: -4.0002}
+    eulerRotation: {x: 0, y: 20.000002, z: 0}
+    localScale: {x: 0.79671, y: 0.79671, z: 0.79671}
   - prefab: {fileID: 5235065477046790290, guid: 90ec209c2c45a4d03896ba2eb4d12086, type: 3}
-    worldPosition: {x: 10, y: 0, z: -4}
-    eulerRotation: {x: 0, y: -20, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 5097991969732716129, guid: fa6beacecd623485a9779fd4ab3c95df, type: 3}
-    worldPosition: {x: -5, y: 0, z: 11}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 5097991969732716129, guid: fa6beacecd623485a9779fd4ab3c95df, type: 3}
-    worldPosition: {x: 5, y: 0, z: 11}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: 7.9674, y: 0, z: -4.0002}
+    eulerRotation: {x: 0, y: 340, z: 0}
+    localScale: {x: 0.79671, y: 0.79671, z: 0.79671}
   - prefab: {fileID: 3885743676524303329, guid: 60484d40af6d94d3cac0337a27bbbaa6, type: 3}
     worldPosition: {x: -6, y: 0, z: 3}
     eulerRotation: {x: 0, y: 0, z: 0}
@@ -53,3 +41,7 @@ MonoBehaviour:
     worldPosition: {x: -8, y: 0, z: 8}
     eulerRotation: {x: 0, y: 135, z: 0}
     localScale: {x: 1, y: 1, z: 1}
+  - prefab: {fileID: 818035136133972877, guid: aa80768c5bb284cb78ba5c76f233a441, type: 3}
+    worldPosition: {x: 0, y: 0, z: 12}
+    eulerRotation: {x: 0, y: 180, z: 0}
+    localScale: {x: 4, y: 4, z: 4}

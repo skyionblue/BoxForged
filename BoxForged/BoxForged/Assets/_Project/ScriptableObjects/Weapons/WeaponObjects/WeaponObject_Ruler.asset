@@ -18,7 +18,7 @@ MonoBehaviour:
   attackRange: 1.8
   weaponPrefab: {fileID: 4914642808261207403, guid: 0180684f5780945799e8d5b1fcd1a43c, type: 3}
   material: {fileID: 2100000, guid: a7cacc407765b4922a5deeb9117708e9, type: 2}
-  weaponIcon: {fileID: 21300000, guid: 5524aadefb406444e8c0f2cdb4c919ab, type: 3}
+  weaponIcon: {fileID: 21300000, guid: 1e1a3d9ff62404432b9fe0ab98c9b6f7, type: 3}
   gripPositionOffset: {x: 0.051, y: 0.168, z: -0.065}
   gripRotationOffset: {x: -7.835, y: -84.379, z: 0.146}
   gripScale: 0.09
@@ -28,7 +28,7 @@ MonoBehaviour:
   specialAbilityDescription: 
   rawObjectName: Ruler
   rawObjectPrefab: {fileID: 2765141579587853418, guid: 674f38ca002d04e9bb6237cb8292dbdb, type: 3}
-  rawObjectIcon: {fileID: 0}
+  rawObjectIcon: {fileID: 21300000, guid: 1e1a3d9ff62404432b9fe0ab98c9b6f7, type: 3}
   rarity: 1
   weaponType: 1
   forgeCost: 2

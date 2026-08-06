@@ -18,7 +18,7 @@ MonoBehaviour:
   attackRange: 1.8
   weaponPrefab: {fileID: 6719726776243900323, guid: 91ac576918d2a447aa390c61da409eab, type: 3}
   material: {fileID: 2100000, guid: 7a53ca60c221e4c198a43f457e77070d, type: 2}
-  weaponIcon: {fileID: 21300000, guid: 488bb4accaa054252b38c2be7648860a, type: 3}
+  weaponIcon: {fileID: 21300000, guid: 682058a1261ce4c03add381c79a0201c, type: 3}
   gripPositionOffset: {x: 0.032, y: 0.248, z: -0.207}
   gripRotationOffset: {x: -53.119, y: -336.399, z: 69.581}
   gripScale: 0.35
@@ -28,7 +28,7 @@ MonoBehaviour:
   specialAbilityDescription: 
   rawObjectName: Cardboard Tube
   rawObjectPrefab: {fileID: 4099901832792793746, guid: 11f59016e494949d888c822bfcc40900, type: 3}
-  rawObjectIcon: {fileID: 0}
+  rawObjectIcon: {fileID: 21300000, guid: 682058a1261ce4c03add381c79a0201c, type: 3}
   rarity: 1
   weaponType: 0
   forgeCost: 2

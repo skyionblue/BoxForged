@@ -5,7 +5,7 @@ using Boxhead.UI;
 
 namespace Boxhead.Core
 {
-    // Wires the test scene's runtime-spawned workbenches to the TestForgePanel.
+    // Wires the test scene's runtime-spawned workbenches to the ForgePanel.
     // Does NOT touch character selection — let the player pick normally via RunStartUI.
     // Remove from scenes before shipping — test use only.
     public class TestSceneStarter : MonoBehaviour
@@ -15,7 +15,7 @@ namespace Boxhead.Core
             // Wait one frame so LevelBuilder.Start() has finished spawning all props
             yield return null;
 
-            var forgePanel = FindAnyObjectByType<TestForgePanel>(FindObjectsInactive.Include);
+            var forgePanel = FindAnyObjectByType<ForgePanel>(FindObjectsInactive.Include);
             var workbenches = FindObjectsByType<WorkbenchProp>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             for (int i = 0; i < workbenches.Length; i++)

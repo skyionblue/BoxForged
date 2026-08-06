@@ -1,4 +1,7 @@
+using System.Collections;
+using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Boxhead.Systems
 {
@@ -14,12 +17,63 @@ namespace Boxhead.Systems
         [Header("Spawn Container")]
         [SerializeField] private Transform _spawnRoot;
 
+        private NavMeshSurface _navMeshSurface;
+        private Coroutine _buildNavMeshRoutine;
+
         private void Start()
         {
             SpawnEnvProps();
             SpawnWeaponPickups();
             SpawnCardboardPiles();
             SpawnWorkbenches();
+
+            _buildNavMeshRoutine = StartCoroutine(BuildNavMeshDeferred());
+        }
+
+        private void OnDestroy()
+        {
+            if (_buildNavMeshRoutine != null)
+            {
+                StopCoroutine(_buildNavMeshRoutine);
+                _buildNavMeshRoutine = null;
+            }
+        }
+
+        // Runtime NavMesh bake. Deferred by one frame because freshly-Instantiated
+        // colliders/meshes are not fully registered on the same frame they spawn.
+        private IEnumerator BuildNavMeshDeferred()
+        {
+            yield return null;
+
+            if (_navMeshSurface == null)
+            {
+                Transform parent = _spawnRoot != null ? _spawnRoot : transform;
+                var surfaceGo = new GameObject("RuntimeNavMeshSurface");
+                surfaceGo.transform.SetParent(parent, false);
+                _navMeshSurface = surfaceGo.AddComponent<NavMeshSurface>();
+            }
+
+            // Collect the whole scene from physics colliders. RenderMeshes requires every
+            // source mesh to be Read/Write enabled (FBX meshes usually are not, so they get
+            // silently skipped and props fail to carve). PhysicsColliders bakes from colliders,
+            // and the ENV building MeshColliders back the walkable/obstacle geometry.
+            _navMeshSurface.collectObjects = CollectObjects.All;
+            _navMeshSurface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
+
+            // Make this runtime bake the sole navmesh: strip any legacy baked data from the
+            // scene so agents cannot path through props via stale navmesh geometry.
+            NavMesh.RemoveAllNavMeshData();
+
+            _navMeshSurface.BuildNavMesh();
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Diagnostic only. CalculateTriangulation allocates managed arrays and the string
+            // interpolation allocates, so keep both out of shipping mobile builds.
+            NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
+            Debug.Log($"[LevelBuilder] Runtime NavMesh baked: {tri.vertices.Length} verts, {tri.indices.Length / 3} tris.");
+#endif
+
+            _buildNavMeshRoutine = null;
         }
 
         private void SpawnEnvProps()

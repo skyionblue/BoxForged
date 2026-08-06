@@ -28,7 +28,7 @@ MonoBehaviour:
   specialAbilityDescription: 
   rawObjectName: Lunchbox
   rawObjectPrefab: {fileID: 2953279333668777965, guid: 1dd533856efa84a52879ac0248468a22, type: 3}
-  rawObjectIcon: {fileID: 0}
+  rawObjectIcon: {fileID: 21300000, guid: de8618df075dd4855b85908563ac76b2, type: 3}
   rarity: 2
   weaponType: 2
   forgeCost: 2
@@ -42,7 +42,5 @@ MonoBehaviour:
   epicWeaponPrefab: {fileID: 0}
   legendaryWeaponPrefab: {fileID: 0}
   baseEquippedData: {fileID: 11400000, guid: d810df6819bf34b9a893698113338864, type: 2}
-  epicAbilityId:
-  legendaryAbilityId:
   epicAbility: {fileID: 11400000, guid: 94dfd53b86b94554bda4980760d243f7, type: 2}
   legendaryAbility: {fileID: 11400000, guid: 71d7afcf88174d4ca496670bbdb27e1e, type: 2}

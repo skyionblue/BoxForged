@@ -39,25 +39,21 @@ MonoBehaviour:
     eulerRotation: {x: 0, y: 90, z: 0}
     localScale: {x: 1, y: 1, z: 1}
   - prefab: {fileID: 1452125302859916324, guid: 3ae22023c16e3449ba0d19eaeb5d9881, type: 3}
-    worldPosition: {x: 15, y: 0, z: 5}
+    worldPosition: {x: 15, y: 0, z: 8.95}
     eulerRotation: {x: 0, y: -90, z: 0}
     localScale: {x: 1, y: 1, z: 1}
   - prefab: {fileID: 1452125302859916324, guid: 3ae22023c16e3449ba0d19eaeb5d9881, type: 3}
-    worldPosition: {x: 15, y: 0, z: -3}
+    worldPosition: {x: 15, y: 0, z: -8.74}
     eulerRotation: {x: 0, y: -90, z: 0}
     localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 4209694907691504182, guid: 9673f55ee320b4a3883b890f99d94f1a, type: 3}
-    worldPosition: {x: -15, y: 3, z: 5}
-    eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
   - prefab: {fileID: 5235065477046790290, guid: 90ec209c2c45a4d03896ba2eb4d12086, type: 3}
-    worldPosition: {x: 11, y: 0, z: 3}
-    eulerRotation: {x: 0, y: -20, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: -8.79, y: 0, z: -3.8302}
+    eulerRotation: {x: 0, y: 340, z: 0}
+    localScale: {x: 0.65529, y: 0.65529, z: 0.65529}
   - prefab: {fileID: 5235065477046790290, guid: 90ec209c2c45a4d03896ba2eb4d12086, type: 3}
-    worldPosition: {x: 11, y: 0, z: -3}
-    eulerRotation: {x: 0, y: 15, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: 5.5304, y: 0, z: -3.0006}
+    eulerRotation: {x: 0, y: 15.000001, z: 0}
+    localScale: {x: 0.6253521, y: 0.6253521, z: 0.6253521}
   - prefab: {fileID: 105027219294750644, guid: b17b8fc4bc5f944c69c823ce469cdc82, type: 3}
     worldPosition: {x: -13, y: 0, z: 3}
     eulerRotation: {x: 0, y: 0, z: 0}
@@ -75,45 +71,25 @@ MonoBehaviour:
     eulerRotation: {x: 0, y: 0, z: 0}
     localScale: {x: 1, y: 1, z: 1}
   - prefab: {fileID: 474931756869021181, guid: 280ff95d882604969b86250d1c256e53, type: 3}
-    worldPosition: {x: -13, y: 0, z: 5}
-    eulerRotation: {x: 0, y: 0, z: 0}
+    worldPosition: {x: -10.81, y: 0, z: 8.09}
+    eulerRotation: {x: 0, y: 271.94354, z: 0}
     localScale: {x: 1, y: 1, z: 1}
   - prefab: {fileID: 474931756869021181, guid: 280ff95d882604969b86250d1c256e53, type: 3}
-    worldPosition: {x: -13, y: 0, z: 1}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: -10.41, y: 0, z: -8.2}
+    eulerRotation: {x: 0, y: 274.00003, z: 0}
+    localScale: {x: 0.60225, y: 0.60225, z: 0.60225}
   - prefab: {fileID: 474931756869021181, guid: 280ff95d882604969b86250d1c256e53, type: 3}
-    worldPosition: {x: 12, y: 0, z: 1}
-    eulerRotation: {x: 0, y: 0, z: 0}
+    worldPosition: {x: 8.38, y: 0, z: 1}
+    eulerRotation: {x: 0, y: 88.06297, z: 0}
     localScale: {x: 1, y: 1, z: 1}
   - prefab: {fileID: 5573557739779503031, guid: 3f534f092066344b6ab4c19c4706f222, type: 3}
     worldPosition: {x: -11, y: 0, z: 2}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 5097991969732716129, guid: fa6beacecd623485a9779fd4ab3c95df, type: 3}
-    worldPosition: {x: -5, y: 0, z: 9}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 5097991969732716129, guid: fa6beacecd623485a9779fd4ab3c95df, type: 3}
-    worldPosition: {x: 5, y: 0, z: 9}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 7689856023564746193, guid: e5b3dc551f95f434ab56ded721283219, type: 3}
-    worldPosition: {x: -14.5, y: 1.5, z: 4}
-    eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 7689856023564746193, guid: e5b3dc551f95f434ab56ded721283219, type: 3}
-    worldPosition: {x: -14.5, y: 1.5, z: -2}
-    eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 7689856023564746193, guid: e5b3dc551f95f434ab56ded721283219, type: 3}
-    worldPosition: {x: 14.5, y: 1.5, z: 4}
-    eulerRotation: {x: 0, y: -90, z: 0}
+    eulerRotation: {x: 0, y: 271.23608, z: 0}
     localScale: {x: 1, y: 1, z: 1}
   - prefab: {fileID: 8071911200585245458, guid: 666a58444c2d5433382397798aceaf80, type: 3}
-    worldPosition: {x: 16, y: 0, z: 9}
-    eulerRotation: {x: 0, y: 160, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    worldPosition: {x: -3.2406206, y: 0, z: 12.4}
+    eulerRotation: {x: 0, y: 173.35359, z: 0}
+    localScale: {x: 2.1844, y: 2.1844, z: 2.1844}
   - prefab: {fileID: 3885743676524303329, guid: 60484d40af6d94d3cac0337a27bbbaa6, type: 3}
     worldPosition: {x: -7, y: 0, z: -5}
     eulerRotation: {x: 0, y: 0, z: 0}
@@ -122,3 +98,11 @@ MonoBehaviour:
     worldPosition: {x: 6, y: 0, z: -8}
     eulerRotation: {x: 0, y: 0, z: 0}
     localScale: {x: 0.25, y: 0.25, z: 0.25}
+  - prefab: {fileID: 7013400608069184296, guid: cada579446a5748f59ce98c9a9d834e8, type: 3}
+    worldPosition: {x: -17, y: 0, z: 12}
+    eulerRotation: {x: 0, y: 90, z: 0}
+    localScale: {x: 4, y: 4, z: 4}
+  - prefab: {fileID: 7201435401782279493, guid: d28d5ff08369a403397d08f24b2f4b0f, type: 3}
+    worldPosition: {x: -16.17, y: 0, z: -5.49}
+    eulerRotation: {x: 0, y: 85.59665, z: 0}
+    localScale: {x: 5.5204, y: 5.5204, z: 5.5204}

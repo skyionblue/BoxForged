@@ -184,6 +184,10 @@ namespace Boxhead.UI
             gameObject.SetActive(true);
             if (_playerInput != null) _playerInput.enabled = false;
             if (_cachedPlayerAnimator != null) _cachedPlayerAnimator.speed = 0f;
+            // Pause the whole background (enemies, spawners, boss intro) while the player
+            // is choosing sex / style / difficulty. Restored in Hide(). UI buttons still work
+            // at timeScale 0 since the EventSystem is not time-gated.
+            Time.timeScale = 0f;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[RunStartUI] Show — player input disabled");
 #endif
@@ -191,6 +195,8 @@ namespace Boxhead.UI
 
         public void Hide()
         {
+            // Un-pause the background (see Show()).
+            Time.timeScale = 1f;
             if (_playerInput != null) _playerInput.enabled = true;
             if (_cachedPlayerAnimator != null) _cachedPlayerAnimator.speed = 1f;
             gameObject.SetActive(false);
