@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b48e6af5fac94771a732868c7cf0734, type: 3}
+  m_Name: WeaponData_Crane_duelist_spear
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponData
+  weaponName: Crane Duelist Spear
+  description: 
+  damageMultiplier: 1.2
+  attackRange: 2.5
+  weaponPrefab: {fileID: 5482237160997021080, guid: 0919ec798472c4260add6d1f596fd9e2, type: 3}
+  material: {fileID: 2100000, guid: 072e8958aee844da09ff8916c43297de, type: 2}
+  weaponIcon: {fileID: 0}
+  gripPositionOffset: {x: 0, y: 0, z: 0}
+  gripRotationOffset: {x: 0, y: 0, z: 0}
+  gripScale: 0.35
+  muzzleLocalOffset: {x: 0, y: 0, z: 0}
+  ability: {fileID: 0}
+  specialAbilityName: 
+  specialAbilityDescription: 
