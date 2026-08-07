@@ -35,3 +35,6 @@ BoxForged/BoxForged/Assets/Screenshots/
 
 # Raw Assets
 raw-assets/
+
+# Models working directory (raw Meshy extracts + Blender files — 941 MB, not committed)
+/models/

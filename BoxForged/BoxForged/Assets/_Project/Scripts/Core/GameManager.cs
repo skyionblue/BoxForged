@@ -76,6 +76,11 @@ namespace Boxhead.Core
         // timeScale is 0 (which TryPlayEntryCutscenes sets before firing the coroutine).
         private readonly WaitForSecondsRealtime _cutsceneStartDelay = new WaitForSecondsRealtime(0.5f);
 
+        // Victory beat — pause between the last enemy death and the card/shop screen appearing.
+        // Realtime so the delay is unaffected if timeScale is ever 0 at this moment.
+        [SerializeField] private float _roomClearShowDelay = 1.5f;
+        private WaitForSecondsRealtime _waitRoomClearShow;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -86,6 +91,7 @@ namespace Boxhead.Core
             Instance = this;
             QualitySettings.vSyncCount  = 0;  // must be 0 for targetFrameRate to work on iOS
             Application.targetFrameRate = 30;
+            _waitRoomClearShow = new WaitForSecondsRealtime(_roomClearShowDelay);
         }
 
         private void Start()
@@ -424,14 +430,19 @@ namespace Boxhead.Core
 
         /// <summary>
         /// Invoked by RoomManager.OnRoomCleared when a non-boss room is fully cleared.
-        /// Room 0 (first combat room) → show upgrade screen.
-        /// Room 1 (second combat room) → show shop before the boss.
-        /// Higher indices are boss-owned and never fire this event.
+        /// Starts a short victory-beat delay before showing the upgrade or shop screen
+        /// so the player can see the last enemy fall before the UI interrupts.
         /// </summary>
         private void HandleRoomCleared(int roomIndex)
         {
             // Use the cached _bossHallDoor reference — never FindAnyObjectByType at runtime.
             if (_bossHallDoor != null) return;
+            StartCoroutine(ShowRoomClearScreenDelayed(roomIndex));
+        }
+
+        private IEnumerator ShowRoomClearScreenDelayed(int roomIndex)
+        {
+            yield return _waitRoomClearShow;
 
             if (roomIndex == 0)
                 _upgradeScreen?.Show();
