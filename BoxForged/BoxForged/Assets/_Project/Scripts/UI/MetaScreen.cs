@@ -79,25 +79,10 @@ namespace Boxhead.UI
         {
             Hide();
 
-            // If there is a next zone unlocked, load it with a fresh character picker.
-            // e.g. winning CulDeSac (highestZone=1) → loads TownSquare_Room1.
-            // If no next zone is mapped (final zone), fall back to restarting the current zone.
-            var save = Boxhead.Core.SaveSystem.Instance;
-            if (save != null)
-            {
-                int nextZone = save.Data.highestZoneReached;
-                if (Boxhead.Core.GameManager.ZoneStartScene.TryGetValue(nextZone, out string nextScene))
-                {
-                    Boxhead.Core.ProgressionSystem.Instance?.ClearRunSelection();
-                    // New zone = fresh run: wipe carried cardboard/weapons so the next zone's
-                    // GameManager.Start() does not restore the prior zone's loadout before the
-                    // picker's Start click can clear it.
-                    Boxhead.Core.ProgressionSystem.Instance?.ClearRunLoadout();
-                    UnityEngine.SceneManagement.SceneManager.LoadScene(nextScene);
-                    return;
-                }
-            }
-
+            // Always restart from zone 0. highestZoneReached is saved for world-map unlock
+            // purposes only — auto-advancing to the next zone from this screen caused the game
+            // to load TownSquare (unfinished) after every CulDeSac boss defeat, leaving the
+            // player in a broken state. Zone selection happens via the world map, not here.
             Boxhead.Core.GameManager.Instance?.Restart();
         }
 

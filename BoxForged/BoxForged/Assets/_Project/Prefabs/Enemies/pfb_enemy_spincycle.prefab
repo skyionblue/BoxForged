@@ -1032,6 +1032,9 @@ MonoBehaviour:
   fullSpinRadius: 3
   phaseTransitionPause: 1.5
   defeatHoldDuration: 2.5
+  _deathBurstVFX: {fileID: 0}
+  _defeatStumbleDuration: 0.4
+  _defeatWobbleDuration: 0.5
   counterStrikeDamage: 40
   _clothesTossPrefab: {fileID: 6366448541330671547, guid: a2c6ab1ecb71645168a9bb070a6a617a, type: 3}
   _sudsBlobPrefab: {fileID: 8838756793054604171, guid: a95e8edb3c69841dfb870399c463c8cc, type: 3}

@@ -71,6 +71,11 @@ namespace Boxhead.Core
         private int _totalEnemyCount; // Total that need to be killed to win
         private int _deadCount;
 
+        // Cached yield instruction — used in PlayCutsceneAfterDelay to hold 0.5s before
+        // the cutscene starts. WaitForSecondsRealtime is unscaled so it works even when
+        // timeScale is 0 (which TryPlayEntryCutscenes sets before firing the coroutine).
+        private readonly WaitForSecondsRealtime _cutsceneStartDelay = new WaitForSecondsRealtime(0.5f);
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -89,8 +94,18 @@ namespace Boxhead.Core
             // complete before any Start() runs, so SaveSystem.Instance is guaranteed non-null.
             _saveSystem = SaveSystem.Instance;
 
-            // Reset per-run progression state
-            ProgressionSystem.Instance?.ResetRunState();
+            // Reset per-run progression state only when entering the first room of a zone.
+            // Room-to-room transitions must NOT reset, or IP/kills earned in earlier rooms
+            // are wiped and never reach the RunEndScreen. ZoneStartScene maps each zone index
+            // to its entry scene; any scene NOT in that map is a mid-run transition.
+            string loadedScene = SceneManager.GetActiveScene().name;
+            bool isZoneStart = false;
+            foreach (var kvp in ZoneStartScene)
+            {
+                if (kvp.Value == loadedScene) { isZoneStart = true; break; }
+            }
+            if (isZoneStart)
+                ProgressionSystem.Instance?.ResetRunState();
 
             // Build the shuffled random room queue for this run.
             InitRoomQueue();
@@ -157,7 +172,15 @@ namespace Boxhead.Core
             if (_metaScreen    == null) _metaScreen    = Object.FindAnyObjectByType<MetaScreen>(FindObjectsInactive.Include);
             if (hudController  == null) hudController  = Object.FindAnyObjectByType<HUDController_V2>(FindObjectsInactive.Include);
 
-            _runStartUI?.Show();
+            // Try to play intro/zone-entry cutscenes BEFORE showing RunStartUI. If an opening
+            // cutscene fires, it returns true and calls _runStartUI.Show() in its onFinished
+            // callback — so enemies are frozen (timeScale = 0) for the whole sequence.
+            // If no cutscene plays, ShowRunStartUI() is called immediately below.
+            bool cutscenePlaying = TryPlayEntryCutscenes();
+            if (!cutscenePlaying)
+            {
+                ShowRunStartUI();
+            }
 
             // Restore the in-run loadout (cardboard + forged weapons) LAST — after the
             // player is resolved and after RunStartUI.Show() swaps the character model.
@@ -170,22 +193,24 @@ namespace Boxhead.Core
                 var inventory = playerObj.GetComponent<WeaponInventory>();
                 ProgressionSystem.Instance.RestoreRunLoadout(cardboard, inventory);
             }
-
-            TryPlayEntryCutscenes();
         }
 
         /// <summary>
-        /// Plays boot / zone-entry cutscenes on scene load. Runs once at the end of Start():
-        ///   • First boot ever → game intro (once ever).
+        /// Plays boot / zone-entry cutscenes on scene load. Called at the end of Start() BEFORE
+        /// RunStartUI.Show() so no enemies are active or attacking when the intro plays.
+        ///
+        ///   • First boot ever → game intro (once ever). Enemies are frozen by setting
+        ///     timeScale = 0 for the duration; ShowRunStartUI() fires in the onFinished callback.
         ///   • Entering the Cul-de-Sac zone start room → the wild-west transform (once per zone).
-        /// Cutscenes render above the RunStartUI picker (which is paused via timeScale = 0) and
-        /// play on the video's own clock, so no gameplay flow is blocked. There's no boot/menu
-        /// scene, so the first playable room doubles as the intro trigger point.
+        ///     Also chains into ShowRunStartUI() on completion.
+        ///
+        /// Returns true if a cutscene started playing (caller must NOT call ShowRunStartUI()
+        /// directly — the callback owns that). Returns false when no cutscene fires.
         /// </summary>
-        private void TryPlayEntryCutscenes()
+        private bool TryPlayEntryCutscenes()
         {
             var cutscene = CutscenePlayer.Instance;
-            if (cutscene == null) return;
+            if (cutscene == null) return false;
 
             string currentScene = SceneManager.GetActiveScene().name;
 
@@ -197,8 +222,14 @@ namespace Boxhead.Core
                 // Also mark the zone-enter as seen so the intro doesn't immediately chain into a
                 // second cutscene on the very first boot; the zone cut plays on later fresh runs.
                 CutsceneFlags.MarkSeen(CutsceneCatalog.KeyCulDeSacEnter);
-                cutscene.Play(CutsceneCatalog.GameIntro, onFinished: null, skippable: true, showLoadingScreen: true);
-                return;
+
+                // Freeze all enemy AI and physics for the duration of the intro by zeroing
+                // timeScale. The VideoPlayer uses unscaledTime internally so the clip plays
+                // normally. ShowRunStartUI() restores timeScale = 1f on finish;
+                // RunStartUI.Show() then immediately re-applies 0f for the picker.
+                Time.timeScale = 0f;
+                StartCoroutine(PlayCutsceneAfterDelay(CutsceneCatalog.GameIntro, onFinished: ShowRunStartUI, skippable: true, showLoadingScreen: true));
+                return true;
             }
 
             // Enter Cul-de-Sac zone — once per zone, at its start room.
@@ -206,8 +237,57 @@ namespace Boxhead.Core
                 && !CutsceneFlags.HasSeen(CutsceneCatalog.KeyCulDeSacEnter))
             {
                 CutsceneFlags.MarkSeen(CutsceneCatalog.KeyCulDeSacEnter);
-                cutscene.Play(CutsceneCatalog.CulDeSacEnter);
+
+                // Same freeze pattern: hold timeScale = 0 until the zone-enter clip ends,
+                // then ShowRunStartUI() takes over the timescale for the picker.
+                Time.timeScale = 0f;
+                StartCoroutine(PlayCutsceneAfterDelay(CutsceneCatalog.CulDeSacEnter, onFinished: ShowRunStartUI));
+                return true;
             }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Waits <see cref="_cutsceneStartDelay"/> (0.5 s, unscaled) so the loading screen is
+        /// visible before the cutscene video begins, then hands off to CutscenePlayer.Play.
+        /// Uses WaitForSecondsRealtime — safe when timeScale is 0.
+        /// </summary>
+        private IEnumerator PlayCutsceneAfterDelay(
+            string fileName,
+            System.Action onFinished        = null,
+            bool          skippable         = true,
+            bool          showLoadingScreen = false)
+        {
+            yield return _cutsceneStartDelay;
+            var cutscene = CutscenePlayer.Instance;
+            if (cutscene == null)
+            {
+                onFinished?.Invoke();
+                yield break;
+            }
+            cutscene.Play(fileName, onFinished, skippable, showLoadingScreen);
+        }
+
+        /// <summary>
+        /// Shows the RunStartUI picker. Used as the onFinished callback for entry cutscenes
+        /// (so the picker only appears after the cutscene ends) and called directly when no
+        /// cutscene plays. Restores timeScale to 1 first so RunStartUI.Show() can correctly
+        /// set it to 0 for the picker; Hide() restores it to 1 at run-start.
+        /// </summary>
+        private void ShowRunStartUI()
+        {
+            // Guard: CutscenePlayer is DontDestroyOnLoad and fires this callback after the
+            // clip ends. If GameManager was destroyed before then (e.g. a competing scene
+            // load), bail out — accessing serialized fields on a destroyed MonoBehaviour
+            // will throw a MissingReferenceException.
+            if (this == null) return;
+
+            // Undo the cutscene-period freeze. RunStartUI.Show() will immediately re-apply
+            // timeScale = 0 when it displays the picker, so this 1f window is never observable.
+            // When no cutscene fired, timeScale is already 1 — this is a safe no-op.
+            Time.timeScale = 1f;
+            _runStartUI?.Show();
         }
 
         /// <summary>
@@ -255,11 +335,17 @@ namespace Boxhead.Core
             // BossHallDoor owns progression in TownSquare — killing outdoor enemies only opens the door.
             if (_bossHallDoor != null) return;
 
+            // If a RoomManager is present it owns all win and room-clear logic via OnRoomCleared
+            // and TriggerWin(). Calling TriggerWin() here would fire it in every non-boss room
+            // that has an exit gate (after clearing grunts), showing RunEndScreen/MetaScreen
+            // between rooms instead of only after the boss.
+            if (RoomManager.Instance != null) return;
+
             // Use counter-based check — no per-frame FindGameObjectsWithTag allocation.
             // _deadCount tracks all enemy deaths (bosses + spawned grunts via OnAnyEnemyDeath).
             if (_deadCount < _totalEnemyCount) return;
 
-            // All enemies dead
+            // All enemies dead — no RoomManager present, safe to trigger win directly.
             TriggerWin();
         }
 

@@ -51,6 +51,10 @@ namespace Boxhead.Enemy
 
         [Header("Defeat")]
         [SerializeField] private float defeatHoldDuration = 2.5f;
+        [Tooltip("Particle burst spawned at SpinCycle's position the moment he starts to vanish. Assign ExplosionVFX or any burst prefab.")]
+        [SerializeField] private ParticleSystem _deathBurstVFX;
+        [SerializeField] private float _defeatStumbleDuration = 0.4f;
+        [SerializeField] private float _defeatWobbleDuration  = 0.5f;
 
         [Header("Counter Strike")]
         [SerializeField] private int counterStrikeDamage = 40;
@@ -146,6 +150,7 @@ namespace Boxhead.Enemy
         private CombatController _playerCombat;
         private EnemyStats _stats;
         private Animator _animator;
+        private Renderer _renderer;
         private Material _material;
         private Color _baseColor;
         private Coroutine _activeRoutine;
@@ -177,6 +182,7 @@ namespace Boxhead.Enemy
         private WaitForSeconds _waitStagger;
         private WaitForSeconds _waitPhaseTransition;
         private WaitForSeconds _waitDefeatHold;
+        private WaitForSeconds _waitDefeatStumble;
 
         // ── Unity lifecycle ───────────────────────────────────────────────────
 
@@ -192,11 +198,11 @@ namespace Boxhead.Enemy
             DeriveDoorwayGeometry();
             CreateIntroCamera();
 
-            var rend = GetComponentInChildren<Renderer>();
-            if (rend != null)
+            _renderer = GetComponentInChildren<Renderer>();
+            if (_renderer != null)
             {
-                _material  = rend.material;
-                _baseColor = _material.color;
+                _material  = _renderer.material;
+                _baseColor = _material.GetColor("_BaseColor");
             }
 
             _waitWindUp          = new WaitForSeconds(windUpDuration);
@@ -204,6 +210,7 @@ namespace Boxhead.Enemy
             _waitStagger         = new WaitForSeconds(staggerDuration);
             _waitPhaseTransition = new WaitForSeconds(phaseTransitionPause);
             _waitDefeatHold      = new WaitForSeconds(defeatHoldDuration);
+            _waitDefeatStumble   = new WaitForSeconds(_defeatStumbleDuration);
 
             _agent = GetComponent<NavMeshAgent>();
             if (_agent != null)
@@ -1095,10 +1102,29 @@ namespace Boxhead.Enemy
         {
             drumWindow?.BeginStopDrum();
 
-            // Shrink over the full defeatHoldDuration so the death animation plays
-            // simultaneously with the boss disappearing — not before it.
-            yield return StartCoroutine(ShrinkAndVanish(defeatHoldDuration));
+            // ── Step 1: Stumble pause — let the player see him "fail" before he disappears ──
+            // The drum spins down (BeginStopDrum above), SpinCycle freezes mid-motion.
+            SetColor(Color.gray);
+            yield return _waitDefeatStumble;
 
+            // ── Step 2: Wobble — brief shake so the defeat feels physical, not clean ──
+            yield return StartCoroutine(WobbleRoutine(_defeatWobbleDuration));
+
+            // ── Step 3: Burst VFX at the moment he starts to vanish ──
+            if (_deathBurstVFX != null)
+            {
+                ParticleSystem burst = Instantiate(_deathBurstVFX, transform.position, Quaternion.identity);
+                burst.Play();
+                // Auto-destroy the VFX after its duration so it does not leak.
+                Destroy(burst.gameObject, burst.main.duration + burst.main.startLifetime.constantMax + 0.5f);
+            }
+
+            // ── Step 4: Shrink to zero AND fade alpha simultaneously over defeatHoldDuration ──
+            // MaterialPropertyBlock drives the alpha without touching shader keywords — the
+            // material asset stays opaque, so no URP surface-type switch can reset _BaseColor.
+            yield return StartCoroutine(ShrinkAndFade(defeatHoldDuration));
+
+            // ── Step 5: ImaginationRestore effect, then TriggerWin ──
             // If _imaginationVolume wasn't assigned in the Inspector, find it by name at runtime.
             if (_imaginationVolume == null)
                 _imaginationVolume = GameObject.Find("ImaginationRestore_Volume")
@@ -1114,10 +1140,41 @@ namespace Boxhead.Enemy
             Destroy(gameObject);
         }
 
-        private IEnumerator ShrinkAndVanish(float duration)
+        /// <summary>
+        /// Oscillates SpinCycle's Y rotation back and forth — simulates a stumble/wobble
+        /// without DOTween. Rotation resets to the pre-wobble value when done.
+        /// </summary>
+        private IEnumerator WobbleRoutine(float duration)
+        {
+            float elapsed     = 0f;
+            float startAngleY = transform.eulerAngles.y;
+            const float wobbleAmplitude = 15f;
+            const float wobbleFrequency = 12f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float angle = Mathf.Sin(elapsed * wobbleFrequency) * wobbleAmplitude
+                              * (1f - elapsed / duration); // dampen toward zero
+                transform.rotation = Quaternion.Euler(0f, startAngleY + angle, 0f);
+                yield return null;
+            }
+
+            transform.rotation = Quaternion.Euler(0f, startAngleY, 0f);
+        }
+
+        /// <summary>
+        /// Shrinks scale to zero over <paramref name="duration"/> seconds using a smooth-step
+        /// curve. Alpha fade via MaterialPropertyBlock was removed because the SpinCycle material
+        /// uses URP Surface Type = Opaque, which ignores _BaseColor.a entirely — the geometry
+        /// stayed fully opaque regardless of the alpha value written. The shrink alone (wobble
+        /// + particle burst + scale-to-zero) provides sufficient visual payoff.
+        /// </summary>
+        private IEnumerator ShrinkAndFade(float duration)
         {
             Vector3 startScale = transform.localScale;
             float elapsed = 0f;
+
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
@@ -1125,6 +1182,10 @@ namespace Boxhead.Enemy
                 transform.localScale = Vector3.Lerp(startScale, Vector3.zero, t);
                 yield return null;
             }
+
+            // Guarantee exact zero — floating-point lerp may not land exactly.
+            transform.localScale = Vector3.zero;
+
             // Do NOT call Destroy here — DefeatSequence must invoke TriggerWin first.
         }
 

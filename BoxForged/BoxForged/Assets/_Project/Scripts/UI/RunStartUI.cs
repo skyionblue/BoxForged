@@ -146,36 +146,59 @@ namespace Boxhead.UI
             // Scene transition: silently restore prior selection rather than showing the picker.
             var ps = ProgressionSystem.Instance;
             Debug.LogWarning($"[RunStartUI] Show() — PS={(ps != null ? "found" : "NULL")} HasSelection={(ps != null ? ps.HasRunSelection.ToString() : "N/A")}");
-            if (ps != null && ps.HasRunSelection)
+
+            // Boss arenas and mid-run scenes are never valid run-start screens.
+            // If we land here without a prior selection (e.g. dev entering the boss arena
+            // directly from the editor), silently apply defaults so timeScale is never set
+            // to 0 and the boss intro / DefeatSequence can run unobstructed.
+            bool atRunStartRoom = Boxhead.Core.GameManager.ZoneStartScene.ContainsValue(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+
+            if ((ps != null && ps.HasRunSelection) || !atRunStartRoom)
             {
-                _selectedGender     = ps.RunGender;
-                _selectedStyle      = ps.RunStyle;
-                _selectedDifficulty = ps.RunDifficulty;
-                Debug.LogWarning($"[RunStartUI] Silent restore — gender={_selectedGender} style={_selectedStyle} NinjaMaleRef={(_modelNinjaMale != null ? "found" : "NULL")}");
-                ApplyGender();
-                ApplyStyle();
-                ApplyDifficulty();
-                if (_boxSystem != null)
+                if (ps != null && ps.HasRunSelection)
                 {
-                    _boxSystem.ForceApplyBox(ps.RunBoxIndex);
-                    _boxSystem.NotifyModelChanged();
+                    // Restore the saved selection and re-apply it to the character model.
+                    // This is the only code path that should ever call ApplyGender/Style/Difficulty
+                    // during a silent restore — it only runs when we have a confirmed prior selection.
+                    _selectedGender     = ps.RunGender;
+                    _selectedStyle      = ps.RunStyle;
+                    _selectedDifficulty = ps.RunDifficulty;
+
+                    Debug.LogWarning($"[RunStartUI] Silent restore — gender={_selectedGender} style={_selectedStyle} NinjaMaleRef={(_modelNinjaMale != null ? "found" : "NULL")}");
+                    ApplyGender();
+                    ApplyStyle();
+                    ApplyDifficulty();
+                    if (_boxSystem != null)
+                    {
+                        _boxSystem.ForceApplyBox(ps.RunBoxIndex);
+                        _boxSystem.NotifyModelChanged();
+                    }
+                    else
+                    {
+                        var rf = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                        var playerObj = _playerCombat?.gameObject;
+                        if (playerObj != null)
+                        {
+                            playerObj.GetComponent<CombatController>()
+                                     ?.GetType().GetMethod("RefreshAnimator", rf)
+                                     ?.Invoke(playerObj.GetComponent<CombatController>(), null);
+                            playerObj.GetComponent<PlayerController>()
+                                     ?.GetType().GetMethod("RefreshAnimator", rf)
+                                     ?.Invoke(playerObj.GetComponent<PlayerController>(), null);
+                            playerObj.GetComponent<Boxhead.Player.WeaponHolder>()
+                                     ?.GetType().GetMethod("OnModelChanged", rf)
+                                     ?.Invoke(playerObj.GetComponent<Boxhead.Player.WeaponHolder>(), null);
+                        }
+                    }
                 }
                 else
                 {
-                    var rf = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
-                    var playerObj = _playerCombat?.gameObject;
-                    if (playerObj != null)
-                    {
-                        playerObj.GetComponent<CombatController>()
-                                 ?.GetType().GetMethod("RefreshAnimator", rf)
-                                 ?.Invoke(playerObj.GetComponent<CombatController>(), null);
-                        playerObj.GetComponent<PlayerController>()
-                                 ?.GetType().GetMethod("RefreshAnimator", rf)
-                                 ?.Invoke(playerObj.GetComponent<PlayerController>(), null);
-                        playerObj.GetComponent<Boxhead.Player.WeaponHolder>()
-                                 ?.GetType().GetMethod("OnModelChanged", rf)
-                                 ?.Invoke(playerObj.GetComponent<Boxhead.Player.WeaponHolder>(), null);
-                    }
+                    // Not at a run-start room and no prior selection (e.g. dev loaded boss arena
+                    // directly). Do NOT apply any gender/style defaults — that would overwrite
+                    // whichever model is currently active with the Female-Ninja class-level default.
+                    // Just enable player input and let the scene run as-is.
+                    Debug.LogWarning("[RunStartUI] Silent pass-through — no saved selection and not at run-start room. Skipping character apply to avoid clobbering active model.");
                 }
                 if (_playerInput != null) _playerInput.enabled = true;
                 return;
