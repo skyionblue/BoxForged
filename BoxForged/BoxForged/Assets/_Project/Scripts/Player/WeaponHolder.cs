@@ -72,6 +72,13 @@ namespace Boxhead.Player
             if (handBone == null)
                 handBone = FindHandBone();
 
+            // Skip the default equip if a weapon was already restored by ProgressionSystem
+            // before this Start() ran (execution order is not guaranteed between GameManager
+            // and WeaponHolder). If _currentData is non-null, EquipWeapon was already called
+            // by WeaponInventory.RestoreState — overwriting it here would discard the forged
+            // loadout and replace it with the starting default every scene load.
+            if (_currentData != null) return;
+
             // defaultWeaponData uses the full WeaponData grip values (position, rotation, scale).
             // weaponPrefab / weaponPool are legacy fallbacks that use hardcoded defaults.
             if (defaultWeaponData != null)

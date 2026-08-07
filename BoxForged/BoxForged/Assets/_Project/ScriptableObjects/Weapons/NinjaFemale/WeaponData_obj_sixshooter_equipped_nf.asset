@@ -18,7 +18,7 @@ MonoBehaviour:
   attackRange: 1.8
   weaponPrefab: {fileID: 2309583287919785438, guid: c2d51788abe714e5aa9d50b8750aa691, type: 3}
   material: {fileID: 2100000, guid: a282b7940cd5043e598e989741917126, type: 2}
-  weaponIcon: {fileID: 21300000, guid: 7835ee45ab5e24647948ecf7ec7f993f, type: 3}
+  weaponIcon: {fileID: 21300000, guid: 78fec3b60a31e4c84acfa8905f4c0391, type: 3}
   gripPositionOffset: {x: 0.042, y: 0.229, z: 0.035}
   gripRotationOffset: {x: 2.04, y: 131.582, z: 97.346}
   gripScale: 0.169

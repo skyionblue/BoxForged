@@ -25,7 +25,15 @@ MonoBehaviour:
     worldPosition: {x: 0, y: 0, z: -5}
     useRarityOverride: 0
     rarityOverride: 0
-  lootZoneObjects: []
+  lootZoneObjects:
+  - weaponObject: {fileID: 11400000, guid: 9f7be8a4e51544621a90be5a6012834d, type: 2}
+    worldPosition: {x: -3, y: 0, z: 5}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 73cf61de7813740d681a7456e87a44bf, type: 2}
+    worldPosition: {x: 3, y: 0, z: 5}
+    useRarityOverride: 0
+    rarityOverride: 0
   cardboardPiles:
   - worldPosition: {x: -8, y: 0, z: 0}
     amount: 5

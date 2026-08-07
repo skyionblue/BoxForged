@@ -19,6 +19,7 @@
 | 0.7 | 2026-07-19 | Phase 2 Cul-de-Sac design locked. V2 enemy roster confirmed: WagonWheelRoller, HitchingHound, MilepostMarshal (melee brawler), SprinklerSentinel V2. V2 weapons added: Jump Rope (Lasso), Bike Horn (Dynamite Bundle), Garden Trowel (Quickdraw Blade), Watering Can (Six-Shooter). Cul-de-Sac zone detail added. Button layout positions finalized: JUMP=North, PARRY=West (corrects v0.6). |
 | 0.8 | 2026-07-22 | Lore and character canon locked. Inciting event named **The Great Hush** (present-day; engineers coordinated Internet shutdown). Elders confirmed as infrastructure/DevOps people — not villains; morally complex. Full character lore added for Kid, Cowgirl, Female Ninja, The Skeptic, The Elders. Enemy lore entries added for all Phase 1 + Phase 2 enemies. Zone lore, weapon flavor text, UI copy, World Tree lore, and ending narrative authored. All story content in `docs/story/`. Tumbleweed Roller removed from enemy roster (not in game). |
 | 0.9 | 2026-07-23 | Cross-project integration: Section 10.1 added — Hard Knocks Workshop real-world skill mapping (Navigation → Compass Dash, Axe-work → Splitting Maul, Fire-starting → Ember Charge, Woodworking → Craftsman Skin Tier). Abilities designed for Phase 3 QR code unlock system. |
+| 1.0 | 2026-08-06 | World order corrected: Cul-de-Sac is now World 1 (already built); Backyard/Dojo is World 2. SpinCycle defeat moment updated to match Cul-de-Sac setting (tumbleweed + warm gold bloom, not cherry blossoms). Backyard SpinCycle variant retains cherry blossoms. Phase numbering replaced with World numbering in Section 10. |
 
 ---
 
@@ -377,7 +378,7 @@ Full character lore: `docs/story/characters/the-female-ninja.md`
 | Double Haymaker | Both arms — two-part timing | Parry first, dodge second |
 | Jump Charge | Run and Jump across arena | Dodge hard lateral |
 
-**Defeat moment:** The drum slows, grinds, stops. Cherry blossoms drift in. Imagination Restore fires — full color blooms across the Backyard.
+**Defeat moment:** The drum slows, grinds, stops. A tumbleweed drifts across the arena. Imagination Restore fires — warm gold floods back into the street, then full vivid color blooms across the Cul-de-Sac.
 
 ---
 
@@ -480,25 +481,7 @@ Kid's parents had never allowed a phone. When the world went quiet, he went outs
 
 **The World Tree** is three hundred years old — the last living tree on Earth, the last source of cardboard. The Unimaginative didn't cut it down; they built mills around it and left it standing because a dead tree produces dead cardboard, and a dead box is just packaging. They needed it alive. The player's journey is a march toward the World Tree — zone by zone, restoring imagination to a world that forgot. Full World Tree lore in `docs/story/narrative/world-tree.md`.
 
-### Phase 1 Zone — The Backyard
-
-**Room 1 — The Dojo Courtyard**
-- Feudal Japanese training ground. Stone walls, training dummies, cherry blossom apple tree, paper lanterns.
-- Enemies: 2–3 Gnome Soldiers
-- Objects: Broomstick (Bo Staff), Ruler (Shurikens)
-
-**Room 2 — The Garden Gauntlet**
-- Zen rock garden. Animated water features, paper cranes, elevated stone pathways.
-- Enemies: 1 Sprinkler Sentinel + Leaf Pile Lurkers + 1–2 Gnome Soldiers
-- Objects: Garden Hose (Water Whip), Cardboard Tube (Katana)
-- Safe Zone: box cosmetic switch + IP shop before boss
-
-**Room 3 — The Spin Arena (Boss)**
-- Circular colosseum of stacked washing machine drums. Spinning mosaic floor. Raised center platform + lower outer ring.
-- Boss: SpinCycle (2-phase)
-- Win: defeat SpinCycle → Imagination Restore → full color blooms
-
-### Phase 2 Zone 1 — The Cul-de-Sac
+### World 1 — The Cul-de-Sac
 
 **Reality:** A curved suburban dead-end. Cracked asphalt, dark-windowed houses with for-sale signs, abandoned minivans, empty mailboxes, a cracked stone birdbath on the center island — the Unimaginative's Command Node, broadcasting grey static across the block.
 
@@ -520,17 +503,34 @@ Kid's parents had never allowed a phone. When the world went quiet, he went outs
 
 ---
 
-### Phase 2+ Zones
+### World 2 — The Backyard (Dojo)
 
-| Zone | Phase | Reality | Imagination | Story Beat |
-|---|---|---|---|---|
-| **The Garage** | 2 | Collapsed workshop | Dungeon with forge weapons | First Unimaginative factory outpost |
-| **The School Hallway** | 2 | Crumbling school corridor | Castle gauntlet hall | The Unimaginative tried to end education here |
-| **The Basement** | 2 | Flooded ruins | Underground dungeon / cave | Hidden cache of old cardboard |
-| **The Attic** | 2 | Collapsed attic, junk | Wizard's tower | Clues about the Elder BoxHead |
-| **The Cul-de-Sac** | 2 | Cracked streets | Wild West main street | Mid-Phase 2 showdown climax |
-| **The Cardboard Mill** | 2 (late) | Seized factory | Industrial dungeon | Phase 2 climax; first glimpse of World Tree |
-| **The World Tree** | 3 | Last living tree | Enormous living fortress | Final zone — Elder BoxHead mystery resolved |
+**Room 1 — The Dojo Courtyard**
+- Feudal Japanese training ground. Stone walls, training dummies, cherry blossom apple tree, paper lanterns.
+- Enemies: 2–3 Gnome Soldiers
+- Objects: Broomstick (Bo Staff), Ruler (Shurikens)
+
+**Room 2 — The Garden Gauntlet**
+- Zen rock garden. Animated water features, paper cranes, elevated stone pathways.
+- Enemies: 1 Sprinkler Sentinel + Leaf Pile Lurkers + 1–2 Gnome Soldiers
+- Objects: Garden Hose (Water Whip), Cardboard Tube (Katana)
+- Safe Zone: box cosmetic switch + IP shop before boss
+
+**Room 3 — The Spin Arena (Boss)**
+- Circular colosseum of stacked washing machine drums. Spinning mosaic floor. Raised center platform + lower outer ring.
+- Boss: SpinCycle (World 2 variant — same move set, escalated timing)
+- Win: defeat SpinCycle → Imagination Restore → cherry blossoms drift in, full color blooms across the Backyard
+
+### World 3+ Zones
+
+| Zone | Reality | Imagination | Story Beat |
+|---|---|---|---|
+| **The Garage** | Collapsed workshop | Dungeon with forge weapons | First Unimaginative factory outpost |
+| **The School Hallway** | Crumbling school corridor | Castle gauntlet hall | The Unimaginative tried to end education here |
+| **The Basement** | Flooded ruins | Underground dungeon / cave | Hidden cache of old cardboard |
+| **The Attic** | Collapsed attic, junk | Wizard's tower | Clues about the Elder BoxHead |
+| **The Cardboard Mill** | Seized factory | Industrial dungeon | Phase 2 climax; first glimpse of World Tree |
+| **The World Tree** | Last living tree | Enormous living fortress | Final zone — Elder BoxHead mystery resolved |
 
 ---
 

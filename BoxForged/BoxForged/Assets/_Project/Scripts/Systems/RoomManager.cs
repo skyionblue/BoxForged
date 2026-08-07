@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Boxhead.Enemy;
@@ -59,6 +60,16 @@ namespace Boxhead.Systems
         // room transition or RoomManager destruction — mirrors the legacy path's tracking.
         private readonly List<EnemyStats> _activeSpawnedStats = new List<EnemyStats>();
 
+        // ─── Room-clear delay ─────────────────────────────────────────────────────
+        // Delay before firing OnRoomCleared — lets the last enemy's death animation
+        // finish before the upgrade/shop screen appears. Matches BasicEnemyAI.DieRoutine
+        // (0.5 s) plus a small buffer. Allocated once in Awake, never re-allocated.
+        [SerializeField] private float _roomClearedDelay = 0.7f;
+        private WaitForSeconds _waitRoomCleared;
+        // True while the delayed RoomCleared coroutine is in flight — prevents a
+        // second call from double-firing OnRoomCleared if two deaths occur on the same frame.
+        private bool _roomClearedPending;
+
         // ─── Legacy pre-placed path state ────────────────────────────────────────
 
         // Active tracking — parallel lists, indices always in sync.
@@ -79,6 +90,7 @@ namespace Boxhead.Systems
                 return;
             }
             Instance = this;
+            _waitRoomCleared = new WaitForSeconds(_roomClearedDelay);
         }
 
         private void Start()
@@ -211,24 +223,40 @@ namespace Boxhead.Systems
 
             var room = _rooms[index];
 
-            // Boss room — SpinCycleAI owns the win trigger via DefeatSequence.
-            // Evaluated first so a boss room that also has an exitGate never
-            // bypasses this guard and never double-triggers TriggerWin.
+            // Boss room — SpinCycleAI / PermitPulperBossAI owns the win trigger via
+            // DefeatSequence. Evaluated first so a boss room that also has an exitGate
+            // never bypasses this guard and never double-triggers TriggerWin.
             if (room.bossOwnedWin) return;
 
-            // Fire before opening the gate — GameManager listens to pause the game
-            // and show the upgrade screen or shop before the player can proceed.
+            // Guard against re-entrant calls — two deaths on the same frame or the
+            // edge-case guard firing while a prior clear is already pending.
+            if (_roomClearedPending) return;
+            _roomClearedPending = true;
+
+            StartCoroutine(RoomClearedDelayed(index));
+        }
+
+        /// <summary>
+        /// Waits for the last enemy's death animation to finish before signalling
+        /// the upgrade/shop screen. The delay matches BasicEnemyAI.DieRoutine (0.5 s)
+        /// plus a small buffer so the corpse fades before the UI appears.
+        /// </summary>
+        private IEnumerator RoomClearedDelayed(int index)
+        {
+            yield return _waitRoomCleared;
+
+            if (index < 0 || index >= _rooms.Count) yield break;
+            var room = _rooms[index];
+
+            // Fire before opening the gate — GameManager listens to show the
+            // upgrade screen or shop before the player can advance.
             OnRoomCleared?.Invoke(index);
 
             if (room.exitGate != null)
-            {
                 room.exitGate.Open();
-                return;
-            }
 
-            // Signal win only for the final non-boss room (no gate and no boss override).
-            if (index == _rooms.Count - 1)
-                Boxhead.Core.GameManager.Instance?.TriggerWin();
+            // TriggerWin is NEVER called from RoomManager. Win is triggered exclusively
+            // by boss AI (SpinCycleAI, PermitPulperBossAI) via their own DefeatSequence.
         }
 
         // ─── Private helpers — spawn-point path ──────────────────────────────────
@@ -335,6 +363,11 @@ namespace Boxhead.Systems
 
         private void UnsubscribeAllActive()
         {
+            // Cancel any in-flight room-clear delay so it does not fire after the room
+            // has been reset (e.g. ResetForRestart or a future room-transition).
+            StopAllCoroutines();
+            _roomClearedPending = false;
+
             // Spawn-point path — unsubscribe all live spawned enemies.
             // Prevents stale delegates firing into a destroyed RoomManager on scene reload.
             if (_onSpawnedEnemyDeath != null)
