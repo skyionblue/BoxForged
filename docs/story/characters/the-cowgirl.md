@@ -30,7 +30,7 @@ Things the Cowgirl thinks but doesn't say out loud:
 
 "I had pictures of this street on my phone. I remember how it looked when it was alive. That's what I'm putting back."
 
-"He just runs toward things. I don't know if that's brave or if he hasn't learned to be careful yet. Probably both."
+"She just runs toward things. I don't know if that's brave or if she hasn't learned to be careful yet. Probably both."
 
 "The rope has weight. When you throw it, you know where it's going. I like that. I like things that go where you put them."
 

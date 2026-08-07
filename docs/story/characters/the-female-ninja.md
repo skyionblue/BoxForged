@@ -18,7 +18,7 @@ She is the quietest of the three. Not shy — quiet is different. She speaks whe
 
 Her way of seeing is precise. She notices the load-bearing thing, the structural truth, the hinge point of a situation. In a fight, she reads the enemy's rhythm before it swings. In a room, she reads the exits before the threats. She does not explain her process. She just moves correctly.
 
-She admires the Kid, though she would not use that word, or any word. What she'd think, looking at him: he goes. He just goes. She's spent years cultivating stillness, but she recognizes that his kind of forward movement is its own skill, not a deficit. She suspects he doesn't know that yet.
+She admires the Kid, though she would not use that word, or any word. What she'd think, looking at her: she goes. She just goes. She's spent years cultivating stillness, but she recognizes that her kind of forward movement is its own skill, not a deficit. She suspects she doesn't know that yet.
 
 The Cowgirl she trusts. That's rarer. She can't always articulate why she trusts someone, but she trusts the Cowgirl's observation — she knows the Cowgirl sees things before acting, and that's the quality she respects most.
 
@@ -30,7 +30,7 @@ Things the Female Ninja thinks but doesn't say out loud:
 
 "I knew what I was doing. I didn't know what it was for. Now I do. That's enough."
 
-"He moves like he's not afraid of being wrong. I've been trying to unlearn that training for years. Maybe I've been training the wrong thing."
+"She moves like she's not afraid of being wrong. I've been trying to unlearn that training for years. Maybe I've been training the wrong thing."
 
 "The pattern has a gap. It always has a gap. Be still. Find the gap. Move."
 

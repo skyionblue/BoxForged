@@ -1,5 +1,15 @@
 # The Elders
 
+## Canonical Facts — For All Writers
+
+- **Exactly two.** Not a committee, not a movement. Two people.
+- **Friends since junior high school.** This is how they knew each other well enough to have the conversation that changed the world. They had been calling each other wrong without losing each other since they were thirteen.
+- **Worked multiple jobs together as adults.** Not just in the same industry — the same workplaces, the same overnight maintenance windows, the same document trails. The trust between them was professional as well as personal.
+- **No names. No descriptions. No faces.** They are infrastructure people. The kind who kept the websites running while everyone else looked at the websites. Do not name them. Do not describe their appearance. Do not give them dialogue except in the form of documents and fragments written before the Hush.
+- **Morally complex — not villains, not heroes.** The game does not resolve whether they were right. Do not resolve it.
+
+---
+
 ## Collective Portrait
 
 They were the people who knew where the actual wires went.

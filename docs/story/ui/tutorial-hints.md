@@ -1,6 +1,6 @@
 # Tutorial Hints
 
-*Written in the Kid's voice — talking to himself, or maybe to the box.*
+*Written in the Kid's voice — talking to herself, or maybe to the box.*
 
 ---
 

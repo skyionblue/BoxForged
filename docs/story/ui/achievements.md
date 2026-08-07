@@ -1,6 +1,6 @@
 # Achievement Descriptions
 
-*Named and described as if the Kid wrote them himself.*
+*Named and described as if the Kid wrote them herself.*
 
 ---
 
