@@ -137,7 +137,7 @@ MonoBehaviour:
   _apexGravityScale: 0.3
   _maxFallSpeed: 25
   _fastFallSpeed: -15
-  _arenaBoundaryRadius: 18
+  _arenaBoundaryRadius: 8.5
   _arenaCenter: {x: 0, y: 0, z: 0}
   _deathAnimSpeed: 1.8
   _autoFaceEnemy: 1

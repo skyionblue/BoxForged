@@ -146,6 +146,9 @@ MonoBehaviour:
   maxHealth: 60
   attackDamage: 20
   _countsForWinCondition: 1
+  _startInvulnerable: 0
+  _cardboardDropMin: 1
+  _cardboardDropMax: 3
   hitSparkPrefab: {fileID: 0}
 --- !u!114 &1686412388027317784
 MonoBehaviour:
@@ -160,8 +163,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.EnemyHealthBar
   _offset: {x: 0, y: 2.5, z: 0}
-  _barWidth: 1.4
-  _barHeight: 0.3
+  _barWidth: 0.8
+  _barHeight: 0.17
 --- !u!54 &7209980346785650447
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -226,9 +229,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.SprinklerSentinelAI
   _jumpHeight: 3
   _jumpForwardSpeed: 8
-  _flipSpeed: 360
-  _minJumpWait: 2
-  _maxJumpWait: 5
   _windUpDuration: 0.3
   _burrowDepth: -0.35
   _burrowSpeed: 4

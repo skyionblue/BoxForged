@@ -1,8 +1,8 @@
 # BoxForged — Game Design Document V2
 
-**Version:** 0.9
-**Date:** 2026-07-23
-**Status:** Active — prototype design locked; Phase 2 Cul-de-Sac design locked; lore and character canon locked; HKW skill mapping added
+**Version:** 1.3
+**Date:** 2026-08-19
+**Status:** Active — discovery locked, pre-production underway. Prototype design locked; Phase 2 Cul-de-Sac design locked; lore and character canon locked; HKW skill mapping added; Kid confirmed girl; Elders confirmed as two people; world boss assignments corrected; Skeptics/Gnomes confirmed as recurring cross-zone enemy types; Elder BoxHead identity resolved; Grasscutter locked as World 2 boss; camera spec technically validated (ADR-0001) and coupled to new attack-telegraph system (ADR-0003); full scene rebuild directive recorded (ADR-0002)
 
 ---
 
@@ -13,13 +13,14 @@
 | 0.1 | 2026-07-13 | Initial draft |
 | 0.2 | 2026-07-13 | Locked all open questions. Added full World Tree lore and post-apocalyptic setting. Updated combat to dodge-parry. Added co-op architecture direction. Updated Skeptic to permanent antagonist. |
 | 0.3 | 2026-07-13 | Locked all Phase 2 decisions. Separate co-op IP pools. Skeptic confirmed nameless archetype. Cardboard Mill moved to late Phase 2. Elder BoxHead confirmed as late-game mystery. NGO confirmed as netcode library. |
-| 0.4 | 2026-07-16 | Revised core premise: screen addiction + internet collapse replaces deforestation as the world-breaking event. Kid is now a boy whose parents kept him phone-free — the box is a lens for his imagination. Added The Friend (locked, future introduction). Updated elevator pitch and lore accordingly. |
+| 0.4 | 2026-07-16 | Revised core premise: screen addiction + internet collapse replaces deforestation as the world-breaking event. Kid's parents kept her phone-free — the box is a lens for her imagination. Added The Friend (locked, future introduction). Updated elevator pitch and lore accordingly. |
 | 0.5 | 2026-07-16 | Combat update: enemies attack constantly; Option C stagger adopted. Backyard redesigned as 3-room layout. SpinCycle confirmed as Phase 1 boss (2-phase fight). Sprinkler Sentinel added as new Phase 1 enemy type. Sprint plan 7–10 locked. |
 | 0.6 | 2026-07-18 | Roguelite run structure added. Jump + aerial attacks locked. Box System restructured — boxes are cosmetic-only; Fighting Styles system introduced as the gameplay layer. Two-pool IP system defined (in-run IP + meta Spark, phased rollout). Monetization model locked (ads + IAP). Control layout updated with Jump button (diamond arrangement). Phase 1 prototype run structure defined. Camera confirmed fixed top-down — no rotation. Section numbering corrected. |
 | 0.7 | 2026-07-19 | Phase 2 Cul-de-Sac design locked. V2 enemy roster confirmed: WagonWheelRoller, HitchingHound, MilepostMarshal (melee brawler), SprinklerSentinel V2. V2 weapons added: Jump Rope (Lasso), Bike Horn (Dynamite Bundle), Garden Trowel (Quickdraw Blade), Watering Can (Six-Shooter). Cul-de-Sac zone detail added. Button layout positions finalized: JUMP=North, PARRY=West (corrects v0.6). |
 | 0.8 | 2026-07-22 | Lore and character canon locked. Inciting event named **The Great Hush** (present-day; engineers coordinated Internet shutdown). Elders confirmed as infrastructure/DevOps people — not villains; morally complex. Full character lore added for Kid, Cowgirl, Female Ninja, The Skeptic, The Elders. Enemy lore entries added for all Phase 1 + Phase 2 enemies. Zone lore, weapon flavor text, UI copy, World Tree lore, and ending narrative authored. All story content in `docs/story/`. Tumbleweed Roller removed from enemy roster (not in game). |
 | 0.9 | 2026-07-23 | Cross-project integration: Section 10.1 added — Hard Knocks Workshop real-world skill mapping (Navigation → Compass Dash, Axe-work → Splitting Maul, Fire-starting → Ember Charge, Woodworking → Craftsman Skin Tier). Abilities designed for Phase 3 QR code unlock system. |
-| 1.0 | 2026-08-06 | World order corrected: Cul-de-Sac is now World 1 (already built); Backyard/Dojo is World 2. SpinCycle defeat moment updated to match Cul-de-Sac setting (tumbleweed + warm gold bloom, not cherry blossoms). Backyard SpinCycle variant retains cherry blossoms. Phase numbering replaced with World numbering in Section 10. |
+| 1.0 | 2026-08-06 | World order corrected: Cul-de-Sac is now World 1 (already built); Backyard/Dojo is World 2. SpinCycle defeat moment updated to match Cul-de-Sac setting (tumbleweed + warm gold bloom, not cherry blossoms). Phase numbering replaced with World numbering in Section 10. |
+| 1.1 | 2026-08-18 | Kid confirmed as a girl (she/her) — GDD corrected throughout. Elders confirmed as exactly two people (lifelong friends since junior high; worked multiple IT jobs together). SpinCycle confirmed as World 1 (Cul-de-Sac/Western) boss only — no longer appears as World 2 boss. Grasscutter added as World 2 (Backyard/Dojo) boss candidate. Skeptics and Gnome Soldiers confirmed as recurring cross-zone enemy types (appear in all levels). Elder BoxHead identity resolved: The Two Elders. Cowgirl's missing best friend confirmed as The Female Ninja. PermitPulper, NoticePusher, LaundryTumbler retained as candidate enemy thoughts, not canon. |
 
 ---
 
@@ -33,7 +34,7 @@
 
 ### Elevator Pitch
 
-> Everyone was addicted to screens. Then the Internet broke — everywhere, all at once. The world didn't know what to do with its hands. But one kid's parents never allowed a phone in the first place. So when everything went quiet, he went outside, found a cardboard box, put it on his head — and saw everything. The box doesn't create the world. It lets him see what was always there: the backyard is a dojo, the shed is a fortress, the cracked cul-de-sac is a Wild West showdown waiting to happen. The Unimaginative want to end it. They've seized the World Tree — the last source of cardboard on Earth — because without boxes, the lens goes dark forever. But they forgot about the kids.
+> Everyone was addicted to screens. Then the Internet broke — everywhere, all at once. The world didn't know what to do with its hands. But one kid's parents never allowed a phone in the first place. So when everything went quiet, she went outside, found a cardboard box, put it on her head — and saw everything. The box doesn't create the world. It lets her see what was always there: the backyard is a dojo, the shed is a fortress, the cracked cul-de-sac is a Wild West showdown waiting to happen. The Unimaginative want to end it. They've seized the World Tree — the last source of cardboard on Earth — because without boxes, the lens goes dark forever. But they forgot about the kids.
 
 ### Tone
 
@@ -317,13 +318,15 @@ Everyday objects found in the environment become weapons through imagination. Th
 ### Player Character — The Kid
 
 **Default Name:** Kid (player-named at start)
-**Appearance:** A boy (~8–12), wearing a cardboard box on his head. Jeans, sneakers, a t-shirt — slightly scruffy. The box is marked up with the active cosmetic's design using crayon and marker.
+**Appearance:** A girl (~8–12), wearing a cardboard box on her head. Jeans, sneakers, a t-shirt — slightly scruffy. The box is marked up with the active cosmetic's design using crayon and marker.
 
-**Backstory:** Before the box, he was already the kind of kid who made things. His parents never bought him a tablet — they'd redirect him outside, to the kitchen table, here's some tape. The day The Great Hush happened, he was in the backyard building a trebuchet from PVC pipe. He didn't fully understand what had happened. He went back to the trebuchet. Two days later he found the box in the recycling, put it on his head, and saw the backyard differently. He ran inside for markers. He's been running somewhere ever since.
+**Backstory:** Before the box, she was already the kind of kid who made things. Her parents never bought her a tablet — they'd redirect her outside, to the kitchen table, here's some tape. The day The Great Hush happened, she was in the backyard building a trebuchet from PVC pipe. She didn't fully understand what had happened. She went back to the trebuchet. Two days later she found the box in the recycling, put it on her head, and saw the backyard differently. She ran inside for markers. She's been running somewhere ever since.
 
-**Personality:** The Kid does not perform enthusiasm — he is genuinely, fundamentally inside whatever he's doing. The box does not make him imaginative. It reveals that he always was. He has conclusions, stated simply, then acts on them. He will not be talked out of anything by someone who hasn't tried it. The Skeptic's words land, but they do not stop him.
+**Personality:** The Kid does not perform enthusiasm — she is genuinely, fundamentally inside whatever she's doing. The box does not make her imaginative. It reveals that she always was. She has conclusions, stated simply, then acts on them. She will not be talked out of anything by someone who hasn't tried it. The Skeptic's words land, but they do not stop her.
 
-**What drives him:** He wants the apple tree to have its blossoms back. He doesn't articulate it that way. But that's what he's moving toward — everything that's gone grey, he wants it back. He knows it's still there underneath.
+**What drives her:** She wants the apple tree to have its blossoms back. She doesn't articulate it that way. But that's what she's moving toward — everything that's gone grey, she wants it back. She knows it's still there underneath.
+
+**Full character lore:** `docs/story/characters/the-kid.md` — she/her throughout all story content.
 
 Full character lore: `docs/story/characters/the-kid.md`
 
@@ -333,9 +336,9 @@ Full character lore: `docs/story/characters/the-kid.md`
 
 **Appearance:** Girl, same age range. Cowboy box — brim drawn on the sides, rope details, star badge. Braid visible, boots, vest.
 
-**Backstory:** She had a phone — got it for her ninth birthday, loved it. Used it to watch videos of horses, to text her best friend things that were easier to type than to say. The Great Hush took it all at once. First three days she cried. On the fourth day she found a hat box in the garage, cut it down, drew a brim, drew a star, put it on. She picked up the clothesline rope already in the garage and walked outside. She still grieves the phone sometimes — not the phone exactly, but her best friend's number, which she no longer has. She's looking for her. That's not the whole reason she's fighting, but it's in there.
+**Backstory:** She had a phone — got it for her ninth birthday, loved it. Used it to watch videos of horses, to text her best friend things that were easier to type than to say. The Great Hush took it all at once. First three days she cried. On the fourth day she found a hat box in the garage, cut it down, drew a brim, drew a star, put it on. She picked up the clothesline rope already in the garage and walked outside. She still grieves the phone sometimes — not the phone exactly, but her best friend's number, which she no longer has. She's looking for her. That's not the whole reason she's fighting, but it's in there. **Her missing best friend is The Female Ninja.** Their reunion is a story beat — which zone triggers it is TBD.
 
-**Personality:** Where the Kid is forward momentum, the Cowgirl is deliberate weight. She takes in a situation before moving through it. She is the one who notices when something's been reclaimed — color returning to a wall, a plant straightening. The Kid never doubted this world. The Cowgirl chose it. That gives her a gravity he doesn't have yet.
+**Personality:** Where the Kid is forward momentum, the Cowgirl is deliberate weight. She takes in a situation before moving through it. She is the one who notices when something's been reclaimed — color returning to a wall, a plant straightening. The Kid never doubted this world. The Cowgirl chose it. That gives her a gravity she doesn't have yet.
 
 Full character lore: `docs/story/characters/the-cowgirl.md`
 
@@ -347,7 +350,7 @@ Full character lore: `docs/story/characters/the-cowgirl.md`
 
 **Backstory:** She was training before The Great Hush — forms in the backyard at five in the morning, practicing what she'd seen in videos until her knees hurt. She did not fully know why. No teacher, no dojo, no tournament. When The Great Hush came, the phone went with it, but she barely noticed. She'd already absorbed what she needed. What The Hush clarified: she'd been preparing for something. Now she knows what it is.
 
-**Personality:** Quiet, not shy. Speaks when she has something specific to say. Notices the structural truth of every situation. Moves correctly. She admires the Kid — he just goes — though she would never use that word. The Cowgirl she trusts.
+**Personality:** Quiet, not shy. Speaks when she has something specific to say. Notices the structural truth of every situation. Moves correctly. She admires the Kid — she just goes — though she would never use that word. The Cowgirl she trusts.
 
 Full character lore: `docs/story/characters/the-female-ninja.md`
 
@@ -382,9 +385,11 @@ Full character lore: `docs/story/characters/the-female-ninja.md`
 
 ---
 
-### The Friend (Locked — Future Introduction)
+### The Friend — Not in the Game
 
-Kid's best friend since kindergarten. Equal partner, not a sidekick. Do NOT name in Phase 1 or Phase 2 — his name is a story beat.
+The "best friend since kindergarten" concept is covered in the companion anime, not the game. The only named friendship in the game's story belongs to The Elders — two people who knew each other since junior high and made a world-changing decision together.
+
+The Cowgirl joins Kid's cause because she notices what Kid is doing and wants to be part of it. Their history, if any, is not the game's to tell. The Cowgirl's own mission — finding the Female Ninja — runs in parallel.
 
 ### The Skeptic (Recurring Antagonist)
 
@@ -409,11 +414,15 @@ Full character lore: `docs/story/characters/the-skeptic.md`
 
 ### The Elders
 
-Not a single character — a collective. Engineers. Network Engineers, DevOps Engineers, Support Engineers — the infrastructure people who made sure things were working. The ones who knew where the actual wires went and had spent twenty to thirty years watching something go wrong. They found each other through the professional networks only people in their positions had access to. They ran the thought experiment. They stress-tested the models. The math said: survivable. Hard. Not clean. But survivable.
+Exactly two people. Lifelong friends — they met in junior high school and worked multiple IT jobs together over the years, the way people who trust each other completely do. Infrastructure engineers: not executives, not founders. The people who kept websites running. Their names do not appear anywhere in the game.
+
+They watched something happening for twenty years and could not explain it to anyone who hadn't already seen it. They ran the thought experiment. They stress-tested the models. The math said: survivable. Hard. Not clean. But survivable.
 
 They set a date. They did the work. They didn't announce themselves.
 
-Not one of them believed they were definitely right. That's the weight they carry. They calculated that the margin of error was acceptable. They understood that acceptable is not the same as good. Some are still alive, somewhere, watching. Most are just trying to rebuild something useful with their hands.
+Neither of them believed they were definitely right. That's the weight they carry. They calculated that the margin of error was acceptable. They understood that acceptable is not the same as good.
+
+**Elder BoxHead identity (resolved):** Elder BoxHead — the mysterious figure at the World Tree — is The Two Elders. This is the late-game revelation.
 
 The game does not resolve whether they were right.
 
@@ -421,14 +430,24 @@ Full character lore: `docs/story/characters/the-elders.md`
 
 ### Enemy Archetypes
 
-#### Phase 1 Enemies
+#### Recurring Enemy Types (All Zones)
+
+**Gnome Soldiers** and **Skeptic Grunts** are recurring infantry that appear across all worlds and zones — like Koopa Troopas in Mario Bros. They are not locked to a single zone.
+
+- **Gnome Soldiers**: Garden gnomes imagined as stocky armored soldiers in terracotta plate mail. Patrol, charge on sight, simple melee — never alone; always 3+. Zone-specific visual variants may apply (color, weathering).
+- **Skeptic Grunts**: Kids who never learned to see imaginatively, now working for the Unimaginative. Use zone-appropriate weapons (the same objects Kid finds) — but they hold them like tools, not weapons. Full design: `docs/story/enemies/skeptic.md`.
+
+#### World 2 (Backyard/Dojo) Enemies
 
 | Name | Concept | Behavior | Room |
 |---|---|---|---|
-| **Gnome Soldiers** | Garden gnomes imagined as stocky armored soldiers in terracotta plate mail | Patrol, charge on sight, simple melee — never alone; always 3+ | Room 1 |
+| **Gnome Soldiers** | Recurring type — see above | Patrol, charge, simple melee | Room 1 |
+| **Skeptic Grunts** | Recurring type — see above | Zone-appropriate weapon use | Rooms 1–2 |
 | **Leaf Pile Lurkers** | Dead leaves given form — hunched figures with no face, just shadow | Hide in piles, ambush, retreat into cover | Room 2 |
 | **Sprinkler Sentinel** | Garden pop-up sprinkler imagined as a rotating turret with a glowing blue eye | Holds ground, sweeping water bursts, Overheated weak-point window | Room 2 |
-| **SpinCycle** (boss) | Washing machine drum-headed heavyweight brawler — porthole is the eye and weak point | 2-phase fight | Room 3 |
+| **The Grasscutter** (boss) | Rusted push reel-mower imagined as a tengu blade-master | 2-phase: Kata → Rev; full lore in `docs/story/enemies/grasscutter-boss.md` | Room 3 |
+
+| **Crane Duelist** | Pink lawn flamingo imagined as a one-legged spear duelist in crane stance | Waits for player to enter range; single honest thrust (clear telegraph); counter window when it wobbles on one leg after a full thrust; lore: `docs/story/enemies/crane-duelist.md` | Room TBD |
 
 **Sprinkler Sentinel:** Sweeping water attacks are ground-level — the player can jump over them. Parrying a burst during Locked state triggers Overheated early (the only mid-fight way to open the weak-point window ahead of schedule).
 
@@ -477,7 +496,9 @@ The Elders were right about the diagnosis. People had forgotten how to build thi
 
 **The Unimaginative** are not villains. They are the wound the cure accidentally made worse — people who had outsourced everything to the network and had it taken away with nothing to fill the gap. The grey settled in. Some neighborhoods never came back.
 
-Kid's parents had never allowed a phone. When the world went quiet, he went outside, found a cardboard box, put it on his head — and saw everything. The box doesn't create the world. It is a lens: a way of seeing what was always there.
+They do not oppose imagination as an ideology. They notice Kid's reclamation the way a system administrator notices an anomaly: grey zones going vivid, managed areas behaving unexpectedly, metrics that do not add up. They escalate not from fear but from bureaucratic instinct — something in their systems is wrong, and that cannot be permitted. This is what makes them dangerous and what makes them pitiable in equal measure.
+
+Kid's parents had never allowed a phone. When the world went quiet, she went outside, found a cardboard box, put it on her head — and saw everything. The box doesn't create the world. It is a lens: a way of seeing what was always there.
 
 **The World Tree** is three hundred years old — the last living tree on Earth, the last source of cardboard. The Unimaginative didn't cut it down; they built mills around it and left it standing because a dead tree produces dead cardboard, and a dead box is just packaging. They needed it alive. The player's journey is a march toward the World Tree — zone by zone, restoring imagination to a world that forgot. Full World Tree lore in `docs/story/narrative/world-tree.md`.
 
@@ -516,10 +537,12 @@ Kid's parents had never allowed a phone. When the world went quiet, he went outs
 - Objects: Garden Hose (Water Whip), Cardboard Tube (Katana)
 - Safe Zone: box cosmetic switch + IP shop before boss
 
-**Room 3 — The Spin Arena (Boss)**
-- Circular colosseum of stacked washing machine drums. Spinning mosaic floor. Raised center platform + lower outer ring.
-- Boss: SpinCycle (World 2 variant — same move set, escalated timing)
-- Win: defeat SpinCycle → Imagination Restore → cherry blossoms drift in, full color blooms across the Backyard
+**Room 3 — The Garden End (Boss)**
+- The far end of the backyard, where the grass has gone tall and a rusted push reel-mower has been sitting in the green.
+- Boss: **The Grasscutter** — a rusted push reel-mower imagined as a drum-chested tengu blade-master. The spinning reel is its heart. Two phases: Kata (deliberate, teaches you to read it) → Rev (the machine taking over, cutting lanes across the whole court).
+- SpinCycle is NOT the World 2 boss. SpinCycle belongs to World 1 (Cul-de-Sac) only.
+- Win: the reel grinds to a stop → a gust takes every loose petal → the cherry tree opens all at once into full bloom → Imagination Restore fires across the Backyard
+- Full boss lore: `docs/story/enemies/grasscutter-boss.md`
 
 ### World 3+ Zones
 
@@ -536,13 +559,13 @@ Kid's parents had never allowed a phone. When the world went quiet, he went outs
 
 ## 10.1 Hard Knocks Workshop — Real-World Skill Mapping
 
-The world of BoxForged was built by people who made things. The skills Kid and his allies use in the game are not invented for convenience — they are the real skills The Great Hush forced children to rediscover: how to navigate without a phone, how to use an axe, how to start a fire, how to build something by hand.
+The world of BoxForged was built by people who made things. The skills Kid and her allies use in the game are not invented for convenience — they are the real skills The Great Hush forced children to rediscover: how to navigate without a phone, how to use an axe, how to start a fire, how to build something by hand.
 
 **Hard Knocks Workshop** (Lehi, Utah) teaches these exact skills to kids ages 10–15. The mapping below is intentional, not decorative. A kid who completes axe-work at HKW and then unlocks the Splitting Maul in the game should feel that the game recognized what they did in the real world — because it did. These four abilities are designed from the start to serve as Phase 3 real-world unlock rewards (QR codes issued by HKW instructors on skill completion).
 
 | HKW Real-World Skill | In-Game Ability | Phase Available | Unlock Method (Phase 3) |
 |---|---|---|---|
-| **Navigation** | **Compass Dash** — a dodge upgrade that locks Kid's movement to precise cardinal directions, bypassing terrain geometry and enemy positioning. Where a standard dodge goes roughly where the stick points, the Compass Dash snaps to the nearest cardinal angle. In Kid's imagination: the compass his grandfather kept in a drawer, finally in use. | Phase 2 | HKW wilderness navigation certification → QR code |
+| **Navigation** | **Compass Dash** — a dodge upgrade that locks Kid's movement to precise cardinal directions, bypassing terrain geometry and enemy positioning. Where a standard dodge goes roughly where the stick points, the Compass Dash snaps to the nearest cardinal angle. In Kid's imagination: the compass her grandfather kept in a drawer, finally in use. | Phase 2 | HKW wilderness navigation certification → QR code |
 | **Axe-work** | **Splitting Maul** — a charged overhead slam. Kid winds up fully (held ATTACK), then drives straight down. Staggers all enemies in a wide cone in front of him. The animation is deliberate, committed, and heavy — it rewards setting up the moment rather than spamming. Un-interruptible once the downswing starts. | Phase 2+ | HKW axe-work certification → QR code |
 | **Fire-starting** | **Ember Charge** — a weapon special mode available on any melee weapon after a successful parry. The parry "strikes the flint." One follow-up hit within the Counter Window deals fire damage and leaves a brief burning effect on the struck enemy. Available on Cowboy Style first; extends to other styles in Phase 3. | Phase 2+ | HKW fire-starting certification → QR code |
 | **Woodworking / building** | **Craftsman Skin Tier** — a cosmetic weapon skin layer applied to any weapon, making it look hand-carved and personalized: rough tool marks on the handle, a wrap of cord at the grip, initials scratched into the flat. Each HKW student's skin is unique (generated from their enrollment ID). No gameplay effect. The skin persists across runs. | Phase 3 | HKW woodworking project completion → QR code |
@@ -553,6 +576,16 @@ These are not Easter eggs. They are design bridges — each one built so that th
 
 Phase 3 implementation will require QR code issuance infrastructure on the HKW side and a redemption flow inside the game (likely a code-entry screen on the meta menu). The ability designs above are finalized so that implementation does not require mechanics redesign when Phase 3 begins.
 
+### Narrative Integration (v1.2)
+
+HKW is no longer a bolt-on Easter egg system — it is narratively integrated with Kid's core mission.
+
+Kid's mission is to recruit other kids to her side. The invitation is always the box: she shows them something through it, and they see it or they don't. Real kids who complete HKW skills are doing exactly what Kid's world needs — learning to navigate, build, start fires, use tools. They are the kind of kid the game is about.
+
+**World Tree visual mechanic:** As more kids join the coalition (in-game recruitment + real-world HKW), the World Tree grows visibly stronger. This is not a gameplay stat — it is visible in the world: more vivid color, more life, more imagination bleeding back into the grey. The Tree's health is something you see, not something you track on a screen.
+
+**Planned Phase 3+ feature:** Real HKW participants named in the World Tree — their actual achievement written into the fiction. A kid who completes axe-work at HKW is in the World Tree. That is the goal.
+
 ---
 
 ## 11. Mobile Controls & Touch UI
@@ -561,7 +594,11 @@ Phase 3 implementation will require QR code issuance infrastructure on the HKW s
 **Landscape only.**
 
 ### Camera
-**Fixed top-down. No rotation.** Cinemachine, offset `(0, 12, -8)`, hard look-at player. Final.
+**Fixed follow, lower angle, no rotation.** Cinemachine, pitch 36°, vertical FOV 45°, height 5.5m, `FollowOffset (0, 5.5, -7.57)` — technically validated per ADR-0001 (2026-08-19), superseding the earlier placeholder `(0, 4, -6)`. Camera stays behind Kid, follows her position, never rotates (yaw fixed at 0°). World is seen closer to kid-height rather than from above. No camera rotation on mobile — you always know which way is forward.
+
+**Requires a new attack-telegraph system (ADR-0003) shipped alongside it.** The game's current attack tells are whole-body color tints, which degrade at the new lower angle (enemies occlude each other, less body surface reads the hue) and which also encode parryable-vs-unparryable in hue alone — a pre-existing colorblind-accessibility gap the camera change exposes. Shipping the camera without this is the one outcome to avoid; fallback is holding the camera closer to its original pitch.
+
+*Overrides the previous "fixed top-down, no rotation, final" lock from v0.6. Pre-production/production task — see `docs/TECHNICAL_DESIGN.md` and `docs/adr/0001-fixed-low-follow-camera.md`.*
 
 ### Control Layout — Diamond Button Arrangement
 
@@ -749,12 +786,16 @@ Run start → Choose Fighting Style (Ninja or Cowboy)
 
 | # | Question | Why It Matters |
 |---|---|---|
-| 1 | **Elder BoxHead identity** | Late-game twist — needed before World Tree zone design |
+| 1 | ~~**Elder BoxHead identity**~~ | **Resolved (v1.1):** Elder BoxHead = The Two Elders |
 | 2 | **Versus mode rules** | Competitive scoring structure undefined |
 | 3 | **Cardboard Mill boss** | Phase 2 climax boss undefined |
 | 4 | **Full quest system** | Phase 2 quest structure undefined |
 | 5 | **Spark conversion rate** | Needs playtesting to tune — how much Spark per run? |
 | 6 | **IAP final pricing** | Estimates listed; confirm before App Store submission |
+| 7 | ~~**Grasscutter as World 2 boss — lock?**~~ | **Resolved (v1.2):** Grasscutter is the World 2 (Backyard/Dojo) boss. Locked. |
+| 8 | **Cowgirl/Female Ninja reunion zone** | Which zone and what triggers it? |
+| 9 | ~~**Crane Duelist as World 2 enemy — include?**~~ | **Resolved (v1.2):** Included. Room placement TBD. |
+| 10 | **Kid's inner arc (what does she need to learn?)** | Her emotional journey is her want; her need is undefined |
 
 ### Locked Decisions Log
 
@@ -781,12 +822,27 @@ Run start → Choose Fighting Style (Ninja or Cowboy)
 | 19 | Fighting Styles | Separate gameplay class — aerial, special, passive per style | 0.6 |
 | 20 | IP system | Two-pool: in-run IP + meta Spark (phased) | 0.6 |
 | 21 | Monetization | Free-to-play: ads + IAP (box skins, styles, power-up bundles, remove ads) | 0.6 |
-| 22 | Camera | Fixed top-down, no rotation. Final. | 0.6 |
+| 22 | Camera | ~~Fixed top-down, no rotation~~ — **overridden v1.2, spec corrected v1.3**: fixed follow, pitch 36°, FOV 45°, height 5.5m, offset `(0, 5.5, -7.57)` (ADR-0001). Requires telegraph system ADR-0003. | 0.6 → 1.3 |
 | 23 | Control layout | Diamond button arrangement (ATTACK / DODGE / PARRY / JUMP) | 0.6 |
 | 24 | Control layout positions | ATTACK=South, DODGE=East, PARRY=West, JUMP=North (overrides v0.6 diagram which had PARRY=top/JUMP=left) | 0.7 |
 | 25 | V2 Cul-de-Sac enemy roster | WagonWheelRoller, HitchingHound, MilepostMarshal (melee brawler), SprinklerSentinel V2 | 0.7 |
 | 26 | MilepostMarshal design | Melee brawler — Patrol→Alert→Slam→Retreat→Sweep; guard arm blocks frontal melee; NOT the stationary ranged stop-sign from prior zone doc | 0.7 |
 | 27 | V2 Cul-de-Sac weapons | Jump Rope→Lasso (T2), Bike Horn→Dynamite Bundle (T3), Garden Trowel→Quickdraw Blade (T1), Watering Can→Six-Shooter (T2) | 0.7 |
+| 28 | Kid's gender | Kid is a girl — she/her/hers throughout all game content, story, assets, and UI. Not ambiguous. | 1.1 |
+| 29 | The Elders | Exactly two people; lifelong friends since junior high; worked multiple IT jobs together; not a collective | 1.1 |
+| 30 | Elder BoxHead identity | The Two Elders — the late-game World Tree revelation | 1.1 |
+| 31 | SpinCycle world assignment | SpinCycle is the World 1 (Cul-de-Sac/Western) boss only; not the World 2 boss | 1.1 |
+| 32 | Recurring enemy types | Gnome Soldiers and Skeptic Grunts appear in all zones — not locked to one world | 1.1 |
+| 33 | Cowgirl's missing best friend | The Female Ninja — their reunion is a story beat (zone and trigger TBD) | 1.1 |
+| 40 | Cutscene scope | Boss intros only. Story told environmentally everywhere else. | 1.2 |
+| 41 | Camera (override) | Fixed follow, lower angle, no rotation. Behind Kid, kid-height perspective. Offset ~(0, 4, -6) to tune. | 1.2 |
+| 42 | Camera spec correction | Placeholder (0,4,-6) failed rear-visibility safety check. Real spec: pitch 36°, FOV 45°, height 5.5m, offset (0, 5.5, -7.57) — ADR-0001. Requires telegraph channel ADR-0003 shipped alongside it. | 1.3 |
+| 34 | World 2 boss | The Grasscutter — rusted push reel-mower imagined as a tengu blade-master; 2-phase: Kata → Rev; cherry blossoms on defeat | 1.2 |
+| 35 | Crane Duelist | Included as World 2 enemy — pink lawn flamingo as one-legged spear duelist; room placement TBD | 1.2 |
+| 36 | Kid's arc | Certainty → Courage. Starts because she knows; keeps going when she no longer does; resolved at World Tree (finds Mr. Wen's tomatoes). | 1.2 |
+| 37 | Kid's fear | Losing the sight — not the fight. That one day the box will be cardboard. | 1.2 |
+| 38 | Kid's mission | Actively recruit other kids; invitation is the box — she shows them, they see or they don't. World Tree grows visibly stronger as more join. | 1.2 |
+| 39 | The Friend concept | Removed from game scope — covered in companion anime. The only friendship in the game's story is The Elders'. | 1.2 |
 
 ---
 

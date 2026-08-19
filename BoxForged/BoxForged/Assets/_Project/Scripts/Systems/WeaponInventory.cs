@@ -39,7 +39,7 @@ namespace Boxhead.Systems
                     WeaponSlots[i] = instance;
                     // Auto-equip when filling the active slot (first forge lands in slot 0 = active)
                     if (i == ActiveSlotIndex)
-                        _weaponHolder.EquipWeapon(ResolveEquipData(instance.Data));
+                        _weaponHolder.EquipWeapon(ResolveEquipData(instance.Data), instance.Tier);
                     OnInventoryChanged?.Invoke();
                     return true;
                 }
@@ -58,7 +58,7 @@ namespace Boxhead.Systems
                 if (next >= 0)
                 {
                     ActiveSlotIndex = next;
-                    _weaponHolder.EquipWeapon(ResolveEquipData(WeaponSlots[ActiveSlotIndex].Data));
+                    _weaponHolder.EquipWeapon(ResolveEquipData(WeaponSlots[ActiveSlotIndex].Data), WeaponSlots[ActiveSlotIndex].Tier);
                 }
                 else
                 {
@@ -75,7 +75,7 @@ namespace Boxhead.Systems
             ActiveSlotIndex = slotIndex;
 
             if (WeaponSlots[ActiveSlotIndex] != null)
-                _weaponHolder.EquipWeapon(ResolveEquipData(WeaponSlots[ActiveSlotIndex].Data));
+                _weaponHolder.EquipWeapon(ResolveEquipData(WeaponSlots[ActiveSlotIndex].Data), WeaponSlots[ActiveSlotIndex].Tier);
             else
                 _weaponHolder.UnequipCurrentWeapon();
 

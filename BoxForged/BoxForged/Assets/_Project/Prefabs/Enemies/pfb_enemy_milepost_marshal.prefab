@@ -1108,6 +1108,8 @@ MonoBehaviour:
   attackDamage: 20
   _countsForWinCondition: 1
   _startInvulnerable: 0
+  _cardboardDropMin: 1
+  _cardboardDropMax: 3
   hitSparkPrefab: {fileID: 0}
 --- !u!114 &6842719008308815642
 MonoBehaviour:
@@ -1167,8 +1169,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.EnemyHealthBar
   _offset: {x: 0, y: 2.5, z: 0}
-  _barWidth: 1.4
-  _barHeight: 0.3
+  _barWidth: 0.8
+  _barHeight: 0.17
 --- !u!114 &-7491023262435956700
 MonoBehaviour:
   m_ObjectHideFlags: 0

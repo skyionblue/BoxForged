@@ -445,9 +445,9 @@ Within the week, boxes are moving.
 
 Within the month:
 
-A kid in an apartment building in a city two thousand miles away puts a box on his head.
+A kid in an apartment building in a city two thousand miles away puts a box on her head.
 
-He doesn't know why. He stands in front of the bathroom mirror. He looks at himself.
+She doesn't know why. She stands in front of the bathroom mirror. She looks at herself.
 
 Then he looks around his room and decides it's a castle.
 
@@ -457,7 +457,9 @@ Then he looks around his room and decides it's a castle.
 
 *(Not a gameplay moment. A texture. The player may notice or may not. Do not flag it.)*
 
-Mr. Wen is Kid's neighbor. Before: coached the youth soccer team two doors down, grew tomatoes in the window boxes that ran the length of his first-floor apartment, had a laugh you could hear through closed windows, through an autumn afternoon, through whatever you were doing. After The Hush: grey. Not sad, not angry — not anything. The window boxes: empty. He walks past the spot on the sidewalk where he always stopped to talk and he does not pause. He walks home. He goes inside. He does not come back out until the next morning when there is something to do.
+Mr. Wen is Kid's neighbor. Before: a martial arts instructor, ran a small dojo a few blocks away, taught kids after school. Grew tomatoes in the window boxes that ran the length of his first-floor apartment. Had a laugh you could hear through closed windows, through an autumn afternoon, through whatever you were doing. On Sunday mornings he was gone — to the old tree at the edge of the neighborhood, to sit in its roots. He knew where the World Tree was before Kid did. He knew what it was for.
+
+After The Hush: grey. Not sad, not angry — not anything. The window boxes: empty. He walks past the spot on the sidewalk where he always stopped to talk and he does not pause. He walks home. He goes inside. He does not come back out until the next morning when there is something to do.
 
 Kid has never said his name. She carries him the way you carry a person who was part of the texture of being alive in a place — not consciously, just present, the way a sound you're used to is present until it stops.
 

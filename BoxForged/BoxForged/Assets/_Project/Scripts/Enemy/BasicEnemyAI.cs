@@ -223,6 +223,8 @@ namespace Boxhead.Enemy
             _state = State.WindUp;
             _animator?.SetTrigger(AnimAttack);
             SetColor(Color.red);
+            // ADR-0003: occlusion-independent overhead telegraph, additive to the body tint above.
+            AttackTelegraphService.Show(transform, AttackTelegraphKind.MeleeParryable, windUpDuration);
             yield return _waitWindUp;
 
             _state = State.Attacking;

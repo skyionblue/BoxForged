@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: d1e38fc1d3d26984ead9db4f386e072a
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 255682
+  packageName: Cartoon City Environment Pack v2.0
+  packageVersion: 2.0
+  assetPath: Assets/Hayq Art/Cartoon  City/Shaders/SH_Water.shader
+  uploadId: 719900

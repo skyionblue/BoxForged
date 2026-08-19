@@ -415,6 +415,10 @@ namespace Boxhead.Enemy
             _leftArmBlend    = 1f; // left arm raises during wind-up
             if (_groundIndicator != null)
                 _groundIndicator.SetActive(true);
+            // ADR-0003: occlusion-independent overhead telegraph, additive to the ground
+            // indicator/arm-raise tell above. Slam is parryable (see SlamRoutine).
+            Boxhead.Core.AttackTelegraphService.Show(
+                transform, Boxhead.Core.AttackTelegraphKind.MeleeParryable, _windUpDuration);
             _stateRoutine = StartCoroutine(WindUpRoutine());
         }
 
@@ -459,6 +463,10 @@ namespace Boxhead.Enemy
             _agent.isStopped = true;
             _rightArmBlend   = SweepBlendSentinel;
             _leftArmBlend    = SweepBlendSentinel;
+            // ADR-0003: occlusion-independent overhead telegraph, additive to the arm-raise
+            // tell above. Sweep is un-parryable (see SweepRoutine).
+            Boxhead.Core.AttackTelegraphService.Show(
+                transform, Boxhead.Core.AttackTelegraphKind.MeleeUnparryable, _sweepWindUpDuration);
             _stateRoutine    = StartCoroutine(SweepWindUpRoutine());
         }
 

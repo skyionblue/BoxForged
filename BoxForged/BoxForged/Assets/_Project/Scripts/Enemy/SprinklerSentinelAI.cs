@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
+using Boxhead.Core;
 
 namespace Boxhead.Enemy
 {
@@ -382,6 +383,11 @@ namespace Boxhead.Enemy
         {
             // 1. Fire while burrowed (arms shoot, body stays underground)
             _state = SentinelState.Firing;
+            // ADR-0003: occlusion-independent overhead telegraph. There is no separate
+            // stationary wind-up here (SentinelState.WindUp is declared but never entered) — the
+            // firing burst is the tell, so raise the telegraph for its duration. WaterBurst is
+            // parryable by default (WaterBurstReturn._isParryable).
+            AttackTelegraphService.Show(transform, AttackTelegraphKind.ProjectileParryable, _firingDuration);
             WaitForSeconds interval = _state == SentinelState.Overheated ? _waitOverheatBurst : _waitBurst;
             StartFiring(interval);
             yield return new WaitForSeconds(_firingDuration);

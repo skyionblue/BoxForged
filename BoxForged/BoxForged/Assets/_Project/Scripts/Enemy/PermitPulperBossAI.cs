@@ -271,7 +271,7 @@ namespace Boxhead.Enemy
         private IEnumerator StampSlam()
         {
             // Wind-up 0.8s — telegraph in red
-            yield return StartCoroutine(WindUp(Color.red, 0.8f));
+            yield return StartCoroutine(WindUp(Color.red, 0.8f, AttackTelegraphKind.MeleeParryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -302,7 +302,7 @@ namespace Boxhead.Enemy
         private IEnumerator FormShove()
         {
             // Short dash toward player at 6 m/s for 0.6s — not parryable
-            yield return StartCoroutine(WindUp(new Color(1f, 0.5f, 0f), 0.5f));
+            yield return StartCoroutine(WindUp(new Color(1f, 0.5f, 0f), 0.5f, AttackTelegraphKind.MeleeUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -347,7 +347,7 @@ namespace Boxhead.Enemy
         private IEnumerator ClawSwipe()
         {
             // Wide arc — parryable
-            yield return StartCoroutine(WindUp(Color.yellow, 0.7f));
+            yield return StartCoroutine(WindUp(Color.yellow, 0.7f, AttackTelegraphKind.MeleeParryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -378,7 +378,7 @@ namespace Boxhead.Enemy
         private IEnumerator PaperVolley()
         {
             // Step back 1.5 units, then fire 3 projectiles
-            yield return StartCoroutine(WindUp(Color.cyan, 0.6f));
+            yield return StartCoroutine(WindUp(Color.cyan, 0.6f, AttackTelegraphKind.ProjectileUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -401,7 +401,7 @@ namespace Boxhead.Enemy
         private IEnumerator ShredSpin()
         {
             // Rotate 360° over 1.2s; OverlapSphere at peak; parryable via facing check
-            yield return StartCoroutine(WindUp(Color.magenta, 0.7f));
+            yield return StartCoroutine(WindUp(Color.magenta, 0.7f, AttackTelegraphKind.AreaUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -460,7 +460,7 @@ namespace Boxhead.Enemy
         private IEnumerator FormBarrage()
         {
             // Fire 5 projectiles with 0.1s between each
-            yield return StartCoroutine(WindUp(Color.white, 0.6f));
+            yield return StartCoroutine(WindUp(Color.white, 0.6f, AttackTelegraphKind.ProjectileUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -478,7 +478,7 @@ namespace Boxhead.Enemy
         private IEnumerator DoubleStamp()
         {
             // First hit: parryable at 0.5s; second hit: unparryable at 1.1s
-            yield return StartCoroutine(WindUp(Color.red, 0.5f));
+            yield return StartCoroutine(WindUp(Color.red, 0.5f, AttackTelegraphKind.MeleeParryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -511,7 +511,7 @@ namespace Boxhead.Enemy
             if (_state == BossState.Dead) yield break;
 
             // Second stamp: unparryable
-            yield return StartCoroutine(WindUp(new Color(0.8f, 0f, 0f), 0.4f));
+            yield return StartCoroutine(WindUp(new Color(0.8f, 0f, 0f), 0.4f, AttackTelegraphKind.MeleeUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -537,7 +537,7 @@ namespace Boxhead.Enemy
         private IEnumerator ChargeTackle()
         {
             // Capture player position, then sprint at 8 m/s for max 7 units
-            yield return StartCoroutine(WindUp(new Color(0.5f, 0f, 1f), 0.7f));
+            yield return StartCoroutine(WindUp(new Color(0.5f, 0f, 1f), 0.7f, AttackTelegraphKind.MeleeUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -586,10 +586,14 @@ namespace Boxhead.Enemy
 
         // ── Shared helpers ────────────────────────────────────────────────────
 
-        private IEnumerator WindUp(Color color, float duration)
+        // ADR-0003: raises the occlusion-independent overhead telegraph from the same seam that
+        // already centralises every attack's body-tint colour. Additive — the tint is
+        // unchanged. `kind` selects the telegraph's shape/audio class; see AttackTelegraphKind.
+        private IEnumerator WindUp(Color color, float duration, AttackTelegraphKind kind)
         {
             _state = BossState.WindUp;
             SetColor(color);
+            AttackTelegraphService.Show(transform, kind, duration);
             FacePlayer();
             yield return new WaitForSeconds(duration);
         }

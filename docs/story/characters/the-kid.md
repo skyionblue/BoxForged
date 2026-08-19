@@ -38,7 +38,9 @@ She will not be talked out of anything by someone who hasn't tried it. The Skept
 
 What drives her: she wants the apple tree to have its blossoms back. She doesn't articulate it that way. She wouldn't know how. But that's what she's moving toward. Everything that's gone grey — every flat quiet place that used to be alive — she wants it back. She knows, somehow, that it's still there underneath.
 
-The specific face she is walking toward: Mr. Wen. Her neighbor. He coached the soccer team two doors down. Grew tomatoes. Had a laugh she could hear through her bedroom window on autumn afternoons. After The Hush, he went grey — not sad, not angry, just not there in the way he used to be there. She has never said his name out loud in the game. He is not a quest marker. He is the reason the whole enterprise matters. The World Tree is not abstract. The World Tree is Mr. Wen's window boxes, empty.
+The specific face she is walking toward: Mr. Wen. Her neighbor. A martial arts instructor — had a dojo a few blocks away, ran classes after school for kids on the block. Grew tomatoes. Had a laugh she could hear through her bedroom window on autumn afternoons. He used to sit in the roots of the old tree at the edge of the neighborhood on Sunday mornings. She never asked him about it. She knows now why it matters.
+
+After The Hush, he went grey — not sad, not angry, just not there in the way he used to be there. She has never said his name out loud in the game. He is not a quest marker. He is the reason the whole enterprise matters. The World Tree is not abstract. The World Tree is Mr. Wen's window boxes, empty. The Lens cannot reach him — he is not somewhere imagination can simply fix. She can only leave what she finds in the roots and trust that the cardboard knows the way back.
 
 ## Inner Monologue
 

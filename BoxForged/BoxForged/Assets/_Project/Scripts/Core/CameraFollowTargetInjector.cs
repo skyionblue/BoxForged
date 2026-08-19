@@ -29,6 +29,10 @@ namespace Boxhead.Core
             foreach (var t in player.GetComponentsInChildren<Transform>(true))
                 if (t.name == "CameraLookTarget") { lookTarget = t; break; }
 
+            // ADR-0001: pfb_CM_FollowCam no longer has a CinemachineHardLookAt (or any other
+            // Aim component) — rotation is authored on the vcam's own transform and never
+            // computed at runtime. Setting LookAt here is now a no-op (nothing reads it), but
+            // it is harmless, so it is left in place rather than ripped out for its own sake.
             cam.LookAt = lookTarget != null ? lookTarget : player.transform;
         }
     }

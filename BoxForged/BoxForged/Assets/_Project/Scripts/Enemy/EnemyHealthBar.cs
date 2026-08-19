@@ -7,8 +7,13 @@ namespace Boxhead.Enemy
     {
         [Header("Bar Layout")]
         [SerializeField] private Vector3 _offset    = new Vector3(0f, 2.5f, 0f);
-        [SerializeField] private float   _barWidth  = 1.4f;
-        [SerializeField] private float   _barHeight = 0.3f;
+        // ADR-0001 consequence: these are world-space quad dimensions. Halving camera distance
+        // (16.8 m -> 9.36 m) roughly doubles their apparent screen size relative to how much of
+        // the frame the rest of the scene occupies. Scaled down by the approximate distance
+        // ratio (9.36/16.8 ~= 0.56) as a first pass — re-check visually against the new rig and
+        // adjust per art direction; this is an estimate, not a measured value.
+        [SerializeField] private float   _barWidth  = 0.8f;
+        [SerializeField] private float   _barHeight = 0.17f;
 
         private static Shader   _healthBarShader;
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
@@ -22,6 +27,8 @@ namespace Boxhead.Enemy
         private Material     _fillMat;
         private Camera       _mainCamera;
         private Vector3      _lastCameraPos;
+        private Vector3      _lastEnemyPos;
+        private Quaternion   _lastEnemyRot;
 
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoadMethod]
@@ -104,14 +111,27 @@ namespace Boxhead.Enemy
             if (_fillMat != null) Destroy(_fillMat);
         }
 
+        // Refreshing only on camera movement was invisible at the old ~40.8° near-top-down
+        // pitch, where per-enemy view angle barely varied across the screen. At the new 36°
+        // pitch (ADR-0001) an enemy that moves or turns while the camera holds still visibly
+        // skews out of billboard alignment, so the bar must also re-orient on enemy motion.
         private void LateUpdate()
         {
             if (_barRoot == null || !_barRoot.gameObject.activeInHierarchy) return;
             if (_mainCamera == null) return;
 
             var camPos = _mainCamera.transform.position;
-            if ((camPos - _lastCameraPos).sqrMagnitude <= 0.0001f) return;
+            var enemyPos = transform.position;
+            var enemyRot = transform.rotation;
+
+            bool cameraMoved = (camPos - _lastCameraPos).sqrMagnitude > 0.0001f;
+            bool enemyMoved   = (enemyPos - _lastEnemyPos).sqrMagnitude > 0.0001f;
+            bool enemyRotated = Quaternion.Angle(enemyRot, _lastEnemyRot) > 0.1f;
+            if (!cameraMoved && !enemyMoved && !enemyRotated) return;
+
             _lastCameraPos = camPos;
+            _lastEnemyPos  = enemyPos;
+            _lastEnemyRot  = enemyRot;
             ApplyBillboard();
         }
 

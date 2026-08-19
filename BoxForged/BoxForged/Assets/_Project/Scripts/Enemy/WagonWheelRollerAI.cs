@@ -343,6 +343,11 @@ namespace Boxhead.Enemy
             StopStateRoutine();
             _rb.linearVelocity = Vector3.zero;
             _state = RollerState.ChargeWindUp;
+            // ADR-0003: occlusion-independent overhead telegraph. Charge is parryable today
+            // (TryReceiveAttack in UpdateCharge/EnterCharging does not override the default) —
+            // shape reflects that, not a new balance decision.
+            Boxhead.Core.AttackTelegraphService.Show(
+                transform, Boxhead.Core.AttackTelegraphKind.MeleeParryable, _windUpDuration);
             _stateRoutine = StartCoroutine(WindUpRoutine());
         }
 

@@ -361,6 +361,8 @@ namespace Boxhead.Enemy
 
             _animator?.SetTrigger(AnimAttack);
             SetFlashColor(ColorWindUp);
+            // ADR-0003: occlusion-independent overhead telegraph, additive to the flash above.
+            AttackTelegraphService.Show(transform, AttackTelegraphKind.MeleeParryable, windUpDuration);
             yield return _waitWindUp;
 
             // Attacking: check distance and apply damage.

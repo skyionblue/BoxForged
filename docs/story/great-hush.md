@@ -97,7 +97,7 @@ She ran inside for markers. She's been running somewhere ever since.
 
 ### Mr. Wen
 
-He was her neighbor. Coached the youth soccer team two doors down, grew tomatoes in the window boxes that ran the length of his first-floor apartment. Had a laugh you could hear from two doors down, through closed windows, through an autumn afternoon, through whatever you were doing — a laugh that announced itself, that said: something good just happened, I'm willing to tell you about it.
+He was her neighbor. A martial arts instructor — had a small dojo a few blocks away, ran classes for kids after school. Grew tomatoes in the window boxes that ran the length of his first-floor apartment. Had a laugh you could hear from two doors down, through closed windows, through an autumn afternoon, through whatever you were doing — a laugh that announced itself, that said: something good just happened, I'm willing to tell you about it. Before The Hush, he sometimes disappeared on Sunday mornings. Kid found out later where he went: to the old tree at the edge of the neighborhood, to sit in its roots. He never explained why. He didn't have to.
 
 After the Hush: grey.
 

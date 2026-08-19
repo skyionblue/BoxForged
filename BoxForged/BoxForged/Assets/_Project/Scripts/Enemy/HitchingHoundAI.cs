@@ -341,6 +341,12 @@ namespace Boxhead.Enemy
             _animator.SetFloat(HashSpeed, 0f);
             _animator.SetTrigger(HashAttack);
 
+            // ADR-0003: the Hound has no separate stationary wind-up — the lunge itself is the
+            // tell, so raise the telegraph for the lunge's own travel time. Parryable today
+            // (TryReceiveAttack in UpdateLunge does not override the default).
+            Boxhead.Core.AttackTelegraphService.Show(
+                transform, Boxhead.Core.AttackTelegraphKind.MeleeParryable, _lungeDuration);
+
             OnLunge?.Invoke();
         }
 

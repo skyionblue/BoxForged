@@ -4,12 +4,24 @@ using UnityEngine;
 namespace Boxhead.Systems
 {
     // Attach to Main Camera. Assign _target to the Player transform.
-    // Any Renderer on the Building layer whose screen-space projection overlaps the
-    // player AND is closer to the camera than the player fades to _fadeAlpha, then
-    // smoothly restores when line of sight clears.
     //
-    // Detection uses viewport-space bounds overlap so buildings to the left, right,
-    // north, or south of the player are all caught regardless of camera angle.
+    // ADR-0001 §2.7 / consequences: this is the ONE occlusion system BoxForged keeps.
+    // BuildingOcclusionFader.cs used the same idea but (a) mutated shared Material assets
+    // in place instead of instancing them — a real bug, not just a tuning issue, since it
+    // permanently converts every building sharing that material to Transparent — and (b)
+    // selected occluders via a single feet-height raycast, which at the old ~40.8° top-down
+    // pitch rarely mattered but at the new 36° pitch misses walls that cover the torso while
+    // leaving the feet clear. It has been deleted; this is the retained/retuned system.
+    //
+    // Selection is a single raycast from the camera to the player's TORSO (not feet, not a
+    // full projected AABB rect) at every frame. At a low, near-level pitch a building's full
+    // projected screen-space rect is far bigger than its actual silhouette against the player,
+    // which is what caused mass over-fading under the old AABB-overlap test. A direct
+    // line-of-sight raycast only flags something that is actually between the camera and the
+    // torso, which is the correct question at any pitch.
+    //
+    // Any Renderer on the Building layer that occludes the line from camera to player torso
+    // fades to _fadeAlpha, then smoothly restores when line of sight clears.
     //
     // First occlusion: creates one per-instance URP Transparent material (once per wall).
     // Subsequent alpha animation uses MaterialPropertyBlock — zero GC in steady state.
@@ -25,8 +37,10 @@ namespace Boxhead.Systems
         [SerializeField, Range(0f, 1f)] private float _fadeAlpha  = 0.2f;
         [Tooltip("Speed of the fade lerp.")]
         [SerializeField] private float _fadeSpeed  = 10f;
-        [Tooltip("Radius around player to search for Building-layer colliders.")]
-        [SerializeField] private float _searchRadius = 30f;
+        [Tooltip("Height above the player's feet to aim the occlusion ray at. Approximates torso/chest height so occluders are judged by what actually covers the player's upper body at the new low camera pitch, not by feet-height or bounds-centre logic.")]
+        [SerializeField] private float _torsoHeight = 1.3f;
+        [Tooltip("Max simultaneous occluders resolved per frame along the camera-to-torso ray (e.g. a fence in front of a wall).")]
+        [SerializeField] private int _maxHitsPerRay = 8;
 
         // ── Shader property IDs (static, zero GC) ───────────────────────────────
 
@@ -42,8 +56,7 @@ namespace Boxhead.Systems
 
         // ── Pre-allocated buffers (Awake) ────────────────────────────────────────
 
-        private Collider[]  _overlapBuffer; // size 32, nearby Building-layer colliders
-        private Vector3[]   _corners;       // size 8, reused for bounds projection
+        private RaycastHit[] _hitsBuffer; // reused for the camera→torso occlusion ray
 
         // ── Runtime refs ─────────────────────────────────────────────────────────
 
@@ -55,15 +68,21 @@ namespace Boxhead.Systems
         private readonly List<Renderer>                  _toRemove = new List<Renderer>();
         private MaterialPropertyBlock                    _mpb;
 
+        // Collider → Renderer mapping never changes at runtime for static level geometry, so it
+        // is resolved once per collider and cached rather than calling GetComponentInChildren
+        // on every ray hit, every frame (see B35 — a standing violation of the project's own
+        // "avoid per-frame GetComponent" rule once the occlusion retune removed the viewport-rect
+        // rejection test that used to make this rare).
+        private readonly Dictionary<Collider, Renderer> _rendererCache = new Dictionary<Collider, Renderer>();
+
         // ── Unity lifecycle ──────────────────────────────────────────────────────
 
         private void Awake()
         {
-            _wallMask      = LayerMask.GetMask("Building");
-            _overlapBuffer = new Collider[32];
-            _corners       = new Vector3[8];
-            _mpb           = new MaterialPropertyBlock();
-            _cam           = GetComponent<Camera>();
+            _wallMask   = LayerMask.GetMask("Building");
+            _hitsBuffer = new RaycastHit[_maxHitsPerRay];
+            _mpb        = new MaterialPropertyBlock();
+            _cam        = GetComponent<Camera>();
 
             // Fallback: find player by tag if the Inspector reference was dropped by a scene re-save.
             if (_target == null)
@@ -77,75 +96,41 @@ namespace Boxhead.Systems
         {
             if (_target == null || _cam == null) return;
 
-            Vector3 camPos  = transform.position;
-            Vector3 aim     = _target.position + Vector3.up * 0.5f;
-            float   camDist = Vector3.Distance(camPos, aim);
-
-            // Project the player to viewport space once per frame
-            Vector3 playerVP = _cam.WorldToViewportPoint(aim);
-            if (playerVP.z <= 0f) return; // player behind camera — skip
+            Vector3 camPos = transform.position;
+            Vector3 aim    = _target.position + Vector3.up * _torsoHeight;
+            Vector3 toAim  = aim - camPos;
+            float   camDist = toAim.magnitude;
+            if (camDist <= 0.0001f) return;
+            Vector3 dir = toAim / camDist;
 
             // Mark all tracked renderers as not-yet-hit this frame
             foreach (var kv in _tracked)
                 kv.Value.HitThisFrame = false;
 
-            // Find all Building-layer colliders near the player
-            int colCount = Physics.OverlapSphereNonAlloc(
-                aim, _searchRadius, _overlapBuffer, _wallMask, QueryTriggerInteraction.Ignore);
+            // Single line-of-sight raycast from the camera to the player's torso. Anything on
+            // the Building layer between the two is, by definition, occluding the player —
+            // no viewport-rect approximation needed, and it stays correct at any camera pitch.
+            int hitCount = Physics.RaycastNonAlloc(
+                camPos, dir, _hitsBuffer, camDist, _wallMask, QueryTriggerInteraction.Ignore);
 
-            for (int i = 0; i < colCount; i++)
+            for (int i = 0; i < hitCount; i++)
             {
-                Collider col = _overlapBuffer[i];
-
-                // Building must be closer to camera than the player is
-                float buildingDist = Vector3.Distance(camPos, col.bounds.center);
-                if (buildingDist >= camDist) continue;
-
-                // Project building's 8 AABB corners to viewport space and find 2-D extent
-                Bounds b = col.bounds;
-                _corners[0] = new Vector3(b.min.x, b.min.y, b.min.z);
-                _corners[1] = new Vector3(b.max.x, b.min.y, b.min.z);
-                _corners[2] = new Vector3(b.min.x, b.max.y, b.min.z);
-                _corners[3] = new Vector3(b.max.x, b.max.y, b.min.z);
-                _corners[4] = new Vector3(b.min.x, b.min.y, b.max.z);
-                _corners[5] = new Vector3(b.max.x, b.min.y, b.max.z);
-                _corners[6] = new Vector3(b.min.x, b.max.y, b.max.z);
-                _corners[7] = new Vector3(b.max.x, b.max.y, b.max.z);
-
-                float vMinX = float.MaxValue, vMaxX = float.MinValue;
-                float vMinY = float.MaxValue, vMaxY = float.MinValue;
-                for (int j = 0; j < 8; j++)
-                {
-                    Vector3 vp = _cam.WorldToViewportPoint(_corners[j]);
-                    if (vp.z <= 0f) continue; // corner behind camera
-                    if (vp.x < vMinX) vMinX = vp.x;
-                    if (vp.x > vMaxX) vMaxX = vp.x;
-                    if (vp.y < vMinY) vMinY = vp.y;
-                    if (vp.y > vMaxY) vMaxY = vp.y;
-                }
-                if (vMinX == float.MaxValue) continue; // all corners behind camera
-
-                // Check if player's viewport position falls inside building's projected rect
-                if (playerVP.x < vMinX || playerVP.x > vMaxX ||
-                    playerVP.y < vMinY || playerVP.y > vMaxY)
-                    continue;
-
-                Renderer rend = col.gameObject.GetComponentInChildren<Renderer>();
+                Renderer rend = ResolveRenderer(_hitsBuffer[i].collider);
                 if (rend == null || rend.sharedMaterial == null) continue;
 
-                    if (!_tracked.TryGetValue(rend, out WallState state))
-                    {
-                        state = new WallState(
-                            rend,
-                            s_SurfaceId, s_BlendId,
-                            s_SrcBlendId, s_DstBlendId,
-                            s_SrcBlendAlphaId, s_DstBlendAlphaId,
-                            s_ZWriteId, s_ZWriteControlId);
-                        _tracked[rend] = state;
-                    }
+                if (!_tracked.TryGetValue(rend, out WallState state))
+                {
+                    state = new WallState(
+                        rend,
+                        s_SurfaceId, s_BlendId,
+                        s_SrcBlendId, s_DstBlendId,
+                        s_SrcBlendAlphaId, s_DstBlendAlphaId,
+                        s_ZWriteId, s_ZWriteControlId);
+                    _tracked[rend] = state;
+                }
 
-                    state.HitThisFrame = true;
-                    state.TargetAlpha  = _fadeAlpha;
+                state.HitThisFrame = true;
+                state.TargetAlpha  = _fadeAlpha;
             }
 
             // Animate alpha and clean up fully-restored renderers
@@ -179,6 +164,20 @@ namespace Boxhead.Systems
             foreach (var kv in _tracked)
                 kv.Value.DestroyInstance();
             _tracked.Clear();
+            _rendererCache.Clear();
+        }
+
+        // Looks up (and caches) the Renderer for a hit Collider — see B35. Caches a null result
+        // too (colliders with no Renderer, e.g. a trigger-only volume on the Building layer)
+        // so those don't repeat the GetComponentInChildren search on every subsequent hit either.
+        private Renderer ResolveRenderer(Collider collider)
+        {
+            if (_rendererCache.TryGetValue(collider, out Renderer cached))
+                return cached;
+
+            Renderer rend = collider.GetComponentInChildren<Renderer>();
+            _rendererCache[collider] = rend;
+            return rend;
         }
 
         // ── WallState ────────────────────────────────────────────────────────────

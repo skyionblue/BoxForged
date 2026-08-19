@@ -2,7 +2,7 @@
 
 **For:** Higgsfield AI video generation
 **Purpose:** Zone trailers, character showcases, "What Kid Sees" transformation segments, App Store preview, social clips
-**Game:** BoxForged V4 — a mobile action roguelite where Kid puts a cardboard box on his head and sees the world transformed by imagination
+**Game:** BoxForged V4 — a mobile action roguelite where Kid puts a cardboard box on her head and sees the world transformed by imagination
 **Last updated:** 2026-08-05
 
 ---

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1490380082210472561}
   - component: {fileID: 5280237556917788617}
   - component: {fileID: 7361691131284756266}
-  - component: {fileID: 759063179256332799}
   - component: {fileID: 6095453179139166774}
+  - component: {fileID: 5400359817334338509}
   m_Layer: 0
   m_Name: pfb_CM_FollowCam
   m_TagString: Untagged
@@ -28,8 +28,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8835209232116816727}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.30438742, y: -0.3100682, z: 0.10551623, w: 0.89446765}
-  m_LocalPosition: {x: 7.879929, y: 11, z: -20}
+  m_LocalRotation: {x: 0.309017, y: 0, z: 0, w: 0.95105654}
+  m_LocalPosition: {x: 0, y: 5.5, z: -7.57}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -59,7 +59,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 1
   Lens:
-    FieldOfView: 40
+    FieldOfView: 45
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -92,24 +92,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineFollow
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
+    PositionDamping: {x: 0.25, y: 0.2, z: 0.25}
     AngularDampingMode: 0
-    RotationDamping: {x: 1, y: 1, z: 1}
+    RotationDamping: {x: 0, y: 0, z: 0}
     QuaternionDamping: 1
-  FollowOffset: {x: 7.879929, y: 11, z: -10}
---- !u!114 &759063179256332799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8835209232116816727}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e8b78ac948f05a46a6d8339a503172b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineHardLookAt
-  LookAtOffset: {x: 0, y: 0, z: 0}
+  FollowOffset: {x: 0, y: 5.5, z: -7.57}
 --- !u!114 &6095453179139166774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,3 +109,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cf35685eff924e1db8b6c131a8a24f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Core.CameraFollowTargetInjector
+--- !u!114 &5400359817334338509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8835209232116816727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2a8cf0300b5342cdbdacfafabf95eac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Core.AspectAdaptiveCameraFraming
+  _minLateralWidthMeters: 16

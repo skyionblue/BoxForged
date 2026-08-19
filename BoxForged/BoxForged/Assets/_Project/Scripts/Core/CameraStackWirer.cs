@@ -5,10 +5,10 @@ namespace Boxhead.Core
 {
     /// <summary>
     /// Adds the scene's HUD_Camera (URP Overlay) to the Main Camera's URP camera stack at
-    /// runtime. Required because pfb_camera_rig and pfb_hud_v2 are separate prefabs and
+    /// runtime. Required because pfb_CM_FollowCam and pfb_hud_v2 are separate prefabs and
     /// cannot be cross-wired in the prefab asset.
     ///
-    /// Attach to: Main Camera child inside pfb_camera_rig.
+    /// Attach to: Main Camera (the Camera driven by pfb_CM_FollowCam's CinemachineBrain).
     /// </summary>
     [RequireComponent(typeof(Camera))]
     [RequireComponent(typeof(UniversalAdditionalCameraData))]

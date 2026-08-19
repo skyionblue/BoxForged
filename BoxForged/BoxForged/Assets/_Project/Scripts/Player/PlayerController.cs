@@ -18,7 +18,11 @@ namespace Boxhead.Player
         [SerializeField] private float _fastFallSpeed = -15f;
 
         [Header("Arena Boundary")]
-        [SerializeField] private float _arenaBoundaryRadius = 18f;
+        // ADR-0001: the fixed low-angle camera (5.5 m height, 36° pitch, FOV 45) sees only
+        // ~16.8 m of lateral width at the player's depth. An 18 m radius (36 m diameter) put
+        // more than half of any arena fight off-screen. Shrunk to the ADR's recommended 8-9 m
+        // range so combat arenas fit inside what the camera actually shows.
+        [SerializeField] private float _arenaBoundaryRadius = 8.5f;
         [SerializeField] private Vector3 _arenaCenter = Vector3.zero;
 
         [Header("Death")]

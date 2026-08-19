@@ -84,7 +84,10 @@ namespace Boxhead.Enemy
         [SerializeField] private float     _introWalkTarget_X     = -4f;
         [SerializeField] private float     _introWalkTarget_Z     = 4f;
         [SerializeField] private float     _introCameraFoV        = 30f;  // FoV at peak zoom during spin-up
-        [SerializeField] private float     _normalCameraFoV       = 40f;  // restored after intro
+        // ADR-0001: must match pfb_CM_FollowCam's Lens.FieldOfView (45) or the boss-intro ->
+        // gameplay handoff pops. No live camera reference is wired here, so this stays a
+        // hardcoded duplicate — keep it in sync if the rig's FOV changes again.
+        [SerializeField] private float     _normalCameraFoV       = 45f;  // restored after intro
         [SerializeField] private float     _introPanDuration      = 1f;    // how long to hold on the doorway before he emerges
         [SerializeField] private float     _introRunDuration      = 2.5f;  // how long SpinCycle takes to walk out
         [SerializeField] private float     _introWalkInDistance   = 5f;    // how far back inside the saloon the boss starts, behind the doorway
@@ -539,7 +542,8 @@ namespace Boxhead.Enemy
             drumWindow?.SetSlowPhase(); // settle to slow idle spin during combat
 
             // Disabling the intro vcam lets the untouched gameplay cam (pfb_CM_FollowCam) win
-            // the Brain again; Cinemachine blends from the intro shot to the gameplay top-down.
+            // the Brain again; Cinemachine blends from the intro shot to the fixed low-angle
+            // follow camera (36° pitch, no rotation — ADR-0001).
             if (_introVcam != null) _introVcam.enabled = false;
 
             _introComplete = true;
@@ -666,7 +670,7 @@ namespace Boxhead.Enemy
 
         private IEnumerator DrumSlam()
         {
-            yield return StartCoroutine(WindUp(Color.red));
+            yield return StartCoroutine(WindUp(Color.red, AttackTelegraphKind.MeleeUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -687,7 +691,7 @@ namespace Boxhead.Enemy
 
         private IEnumerator Haymaker()
         {
-            yield return StartCoroutine(WindUp(Color.yellow));
+            yield return StartCoroutine(WindUp(Color.yellow, AttackTelegraphKind.MeleeUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -716,7 +720,7 @@ namespace Boxhead.Enemy
 
         private IEnumerator SpinCharge()
         {
-            yield return StartCoroutine(WindUp(new Color(1f, 0.5f, 0f))); // orange
+            yield return StartCoroutine(WindUp(new Color(1f, 0.5f, 0f), AttackTelegraphKind.MeleeUnparryable)); // orange
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -764,7 +768,7 @@ namespace Boxhead.Enemy
 
         private IEnumerator ClothesToss()
         {
-            yield return StartCoroutine(JumpBack());
+            yield return StartCoroutine(JumpBack(AttackTelegraphKind.ProjectileUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -806,7 +810,7 @@ namespace Boxhead.Enemy
 
         private IEnumerator FullSpin()
         {
-            yield return StartCoroutine(WindUp(Color.magenta));
+            yield return StartCoroutine(WindUp(Color.magenta, AttackTelegraphKind.AreaUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -832,7 +836,7 @@ namespace Boxhead.Enemy
 
         private IEnumerator SudsBurst()
         {
-            yield return StartCoroutine(JumpBack());
+            yield return StartCoroutine(JumpBack(AttackTelegraphKind.ProjectileUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -868,7 +872,7 @@ namespace Boxhead.Enemy
         private IEnumerator DoubleHaymaker()
         {
             // First swing: parryable via drum window.
-            yield return StartCoroutine(WindUp(Color.yellow));
+            yield return StartCoroutine(WindUp(Color.yellow, AttackTelegraphKind.MeleeUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -897,7 +901,7 @@ namespace Boxhead.Enemy
             if (_state == BossState.Dead) yield break;
 
             // Second swing: always un-parryable — SpinCycle commits with the off-hand.
-            yield return StartCoroutine(WindUp(Color.yellow));
+            yield return StartCoroutine(WindUp(Color.yellow, AttackTelegraphKind.MeleeUnparryable));
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -917,7 +921,7 @@ namespace Boxhead.Enemy
 
         private IEnumerator JumpCharge()
         {
-            yield return StartCoroutine(WindUp(new Color(0.5f, 0f, 1f))); // purple
+            yield return StartCoroutine(WindUp(new Color(0.5f, 0f, 1f), AttackTelegraphKind.AreaUnparryable)); // purple
             _state = BossState.Attacking;
             SetColor(_baseColor);
             _animator?.SetTrigger(AnimAttack);
@@ -959,20 +963,25 @@ namespace Boxhead.Enemy
 
         // ── Shared helpers ────────────────────────────────────────────────────
 
-        private IEnumerator WindUp(Color color)
+        // ADR-0003: raises the occlusion-independent overhead telegraph from the same seam that
+        // already centralises every melee tell's body-tint colour. Additive — the tint is
+        // unchanged. `kind` selects the telegraph's shape/audio class; see AttackTelegraphKind.
+        private IEnumerator WindUp(Color color, AttackTelegraphKind kind)
         {
             _state = BossState.WindUp;
             SetColor(color);
+            AttackTelegraphService.Show(transform, kind, windUpDuration);
             drumWindow?.BeginPendulum();
             yield return _waitWindUp;
         }
 
-        private IEnumerator JumpBack()
+        private IEnumerator JumpBack(AttackTelegraphKind kind)
         {
             _state = BossState.WindUp;
 
             // Fire a brief color flash to telegraph the jump.
             SetColor(Color.cyan);
+            AttackTelegraphService.Show(transform, kind, jumpBackDuration);
             drumWindow?.BeginPendulum();
 
             Vector3 startPos = transform.position;

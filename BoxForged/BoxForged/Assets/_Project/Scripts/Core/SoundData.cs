@@ -12,7 +12,18 @@ namespace Boxhead.Core
         PlayerDodge,
         PlayerJump,
         EnemyHit,
-        EnemyDeath
+        EnemyDeath,
+
+        // ADR-0003: distinct audio cue per attack-telegraph class, raised by
+        // AttackTelegraphService alongside the shape/colour indicator. Audio is occlusion- and
+        // screen-position-proof, so it carries the parryable/un-parryable and melee/area/
+        // projectile distinction even when the visual channel is fully blocked.
+        // No SoundData assets/clips are authored for these yet — see AttackTelegraphService.
+        // Until they exist, AudioManager.Play() finds no mapping and is a silent no-op.
+        TelegraphMeleeParryable,
+        TelegraphMeleeUnparryable,
+        TelegraphAreaUnparryable,
+        TelegraphProjectile
     }
 
     [CreateAssetMenu(fileName = "SoundData_New", menuName = "BoxForged/Sound Data")]

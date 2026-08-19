@@ -25,7 +25,7 @@ Thumbs.db
 *.swo
 
 # Claude Code
-.claude/
+.claude-ORIG/
 
 # Build outputs
 builds/

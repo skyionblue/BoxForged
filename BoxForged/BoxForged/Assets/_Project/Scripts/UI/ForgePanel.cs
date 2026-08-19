@@ -1,6 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Boxhead.Core;
 using Boxhead.Systems;
 
 namespace Boxhead.UI
@@ -24,6 +26,7 @@ namespace Boxhead.UI
         private ForgeController  _forgeController;
         private WeaponInventory  _inventory;
         private CardboardResource _cardboard;
+        private Coroutine        _cutsceneWaitRoutine;
 
         private void Awake()
         {
@@ -88,6 +91,16 @@ namespace Boxhead.UI
 
         public void Close()
         {
+            // Cancel any pending "waiting for the first-forge cutscene to finish" watch (see
+            // HandleForgeOrUpgradeSuccess/WaitForCutsceneThenClose below) — whatever path Close()
+            // is reached through now supersedes it, and leaving it running could fire a second,
+            // stale Close() later.
+            if (_cutsceneWaitRoutine != null)
+            {
+                StopCoroutine(_cutsceneWaitRoutine);
+                _cutsceneWaitRoutine = null;
+            }
+
             if (_inventory != null)  _inventory.OnInventoryChanged  -= Refresh;
             if (_cardboard != null)  _cardboard.OnCardboardChanged  -= OnCardboardChanged;
 
@@ -112,14 +125,71 @@ namespace Boxhead.UI
 
         private void OnCardboardChanged(int _) => Refresh();
 
+        // On success, close immediately — the transformation moment itself plays in-world
+        // (ForgePresenter, subscribed to ForgeController.OnWeaponForged), not inside this
+        // paused modal. This panel's role is slot/item selection only; confirming a choice
+        // hands off to the world and resumes normal time scale before the moment plays.
+        //
+        // EXCEPT for the very first successful forge ever, which also fires the one-shot
+        // forge-tutorial cutscene (ForgeController.TryForge → CutscenePlayer.Instance.Play) —
+        // see HandleForgeOrUpgradeSuccess (B40).
         private void Forge(int bagIndex)
         {
-            _forgeController?.TryForge(bagIndex);
+            if (_forgeController != null && _forgeController.TryForge(bagIndex))
+                HandleForgeOrUpgradeSuccess();
         }
 
         private void Upgrade(int slotIndex)
         {
-            _forgeController?.TryUpgrade(slotIndex);
+            if (_forgeController != null && _forgeController.TryUpgrade(slotIndex))
+                HandleForgeOrUpgradeSuccess();
+        }
+
+        /// <summary>
+        /// Decides whether it is safe to unpause immediately after a successful forge/upgrade,
+        /// or whether the just-triggered first-forge cutscene needs to run first (B40).
+        ///
+        /// CutscenePlayer disables player input but never touches Time.timeScale itself. Before
+        /// Sprint 0, this panel stayed open (keeping Time.timeScale = 0f) until the player closed
+        /// it manually, which incidentally kept the world frozen behind the cutscene too. The
+        /// Sprint 0 change made this panel close (and unpause) immediately on every successful
+        /// forge — correct for the normal case, but wrong for the first forge specifically: the
+        /// cutscene covers the screen and disables input while every enemy in the room keeps
+        /// attacking in real time underneath it.
+        ///
+        /// CutscenePlayer.Play() sets IsPlaying = true synchronously before TryForge() returns,
+        /// so checking it here reliably distinguishes "a cutscene just started" from the normal
+        /// (non-first-forge) case.
+        /// </summary>
+        private void HandleForgeOrUpgradeSuccess()
+        {
+            if (CutscenePlayer.Instance != null && CutscenePlayer.Instance.IsPlaying)
+            {
+                // Hide this panel's own UI so it isn't visibly stacked under the cutscene overlay,
+                // but deliberately leave Time.timeScale / AudioListener.pause untouched — the
+                // world (and its enemies) must stay frozen for the cutscene's duration, exactly
+                // as it did before Sprint 0. WaitForCutsceneThenClose performs the real Close()
+                // once the cutscene actually finishes.
+                if (_panel != null) _panel.SetActive(false);
+
+                if (_cutsceneWaitRoutine != null) StopCoroutine(_cutsceneWaitRoutine);
+                _cutsceneWaitRoutine = StartCoroutine(WaitForCutsceneThenClose());
+                return;
+            }
+
+            Close();
+        }
+
+        // Polls with a bare `yield return null` rather than WaitForSeconds — this keeps advancing
+        // once per Update regardless of Time.timeScale (WaitForSeconds would never elapse while
+        // timeScale is 0f, which is exactly the state this coroutine starts in).
+        private IEnumerator WaitForCutsceneThenClose()
+        {
+            while (CutscenePlayer.Instance != null && CutscenePlayer.Instance.IsPlaying)
+                yield return null;
+
+            _cutsceneWaitRoutine = null;
+            Close();
         }
 
         private void Refresh()

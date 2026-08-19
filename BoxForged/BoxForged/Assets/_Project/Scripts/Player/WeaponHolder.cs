@@ -21,16 +21,33 @@ namespace Boxhead.Player
         private GameObject _activePrefab;
         // Last equipped WeaponData — used to re-attach after BoxSystem swaps the character model.
         private WeaponData _currentData;
+        // Tier of the currently equipped WeaponInstance (Standard/Epic/Legendary). Tracked
+        // alongside _currentData so a character-model swap (OnModelChanged) or a live grip
+        // re-tune (ReapplyGrip) re-attaches the correct tier visual instead of silently
+        // regressing a forged Epic/Legendary weapon back to its Standard mesh.
+        private WeaponTier _currentTier = WeaponTier.Standard;
         // No per-instance material tracking needed — sharedMaterials assignment uses asset
         // references directly; Unity destroys renderer materials with the weapon instance.
 
         private BoxSystem        _boxSystem;
         private CombatController _combatController;
         private WeaponEquipController _weaponEquipController;
+        // Source of truth for the forged tier of whatever is currently equipped (see B41). May
+        // be null on prefabs that never carry a WeaponInventory (e.g. non-player humanoids using
+        // WeaponHolder for a purely cosmetic held weapon).
+        private WeaponInventory  _weaponInventory;
         private Animator _animator;
         private static readonly List<Transform> _boneSearchBuffer = new List<Transform>();
 
         public WeaponAbilityData CurrentAbility => _currentData?.ability;
+
+        /// <summary>Tier of the currently equipped weapon (Standard unless equipped via the forge/upgrade tier-aware overload).</summary>
+        public WeaponTier CurrentTier => _currentTier;
+
+        /// <summary>The live instantiated weapon GameObject's transform, or null if nothing is equipped.
+        /// Exposed so presentation code (e.g. ForgePresenter) can animate the held weapon directly
+        /// without reaching into WeaponHolder's instantiate/destroy lifecycle.</summary>
+        public Transform WeaponVisualTransform => _weaponInstance != null ? _weaponInstance.transform : null;
 
         /// <summary>World position of the barrel tip. Uses WeaponData.muzzleLocalOffset
         /// transformed into world space by the live weapon instance. Falls back to the
@@ -50,6 +67,7 @@ namespace Boxhead.Player
             _boxSystem        = GetComponent<BoxSystem>();
             _combatController = GetComponent<CombatController>();
             _weaponEquipController = GetComponent<WeaponEquipController>();
+            TryGetComponent(out _weaponInventory);
             _animator = GetComponentInChildren<Animator>();
 
             if (weaponPool != null && weaponPool.Length > 0)
@@ -109,7 +127,7 @@ namespace Boxhead.Player
 
             if (_currentData != null)
             {
-                Attach(_currentData.weaponPrefab, _currentData.gripPositionOffset, _currentData.gripRotationOffset, _currentData.gripScale);
+                Attach(ResolveTierPrefab(_currentData, _currentTier), _currentData.gripPositionOffset, _currentData.gripRotationOffset, _currentData.gripScale, _currentTier);
                 _combatController?.OnWeaponEquipped(_currentData.ability);
             }
             else if (defaultWeaponData != null)
@@ -161,7 +179,7 @@ namespace Boxhead.Player
             return null;
         }
 
-        private void Attach(GameObject prefab, Vector3 positionOffset, Vector3 rotationOffset, float scale)
+        private void Attach(GameObject prefab, Vector3 positionOffset, Vector3 rotationOffset, float scale, WeaponTier tier = WeaponTier.Standard)
         {
 
             // TODO: replace Destroy/Instantiate with an object pool before EquipWeapon is called from combat or inventory.
@@ -192,6 +210,39 @@ namespace Boxhead.Player
                     renderers[i].sharedMaterials = mats;
                 }
             }
+
+            // Tier glow — no-op unless the attached prefab carries a WeaponTierGlow component
+            // (an art/prefab-wiring step; existing weapon prefabs are unaffected until wired).
+            var tierGlow = _weaponInstance.GetComponent<WeaponTierGlow>();
+            if (tierGlow != null) tierGlow.SetTier(tier);
+        }
+
+        /// <summary>
+        /// Resolves the tier-specific visual prefab for a WeaponObjectSO, falling back to the
+        /// base weaponPrefab when data isn't a WeaponObjectSO, the tier is Standard, or no
+        /// tier-specific prefab is assigned. This is the read path for
+        /// WeaponObjectSO.epicWeaponPrefab / legendaryWeaponPrefab — declared for exactly this
+        /// purpose but never read anywhere before this change.
+        ///
+        /// Scope note: when a WeaponObjectSO has baseEquippedData assigned, WeaponInventory
+        /// resolves the equip data to that (V3-era) WeaponData asset via WeaponCycler before it
+        /// ever reaches WeaponHolder — this method only sees the WeaponObjectSO itself when
+        /// baseEquippedData is unset. Tier-prefab swapping therefore only applies to weapons on
+        /// that direct path; character-variant-resolved weapons still get the persistent
+        /// WeaponTierGlow (tier is threaded through regardless). Reconciling the V3/V4 weapon
+        /// data split is tracked separately (docs/TECHNICAL_DESIGN.md §7.1) and out of scope here.
+        /// </summary>
+        private static GameObject ResolveTierPrefab(WeaponData data, WeaponTier tier)
+        {
+            var woso = data as WeaponObjectSO;
+            if (woso == null) return data.weaponPrefab;
+
+            return tier switch
+            {
+                WeaponTier.Epic      => woso.epicWeaponPrefab      != null ? woso.epicWeaponPrefab      : woso.weaponPrefab,
+                WeaponTier.Legendary => woso.legendaryWeaponPrefab != null ? woso.legendaryWeaponPrefab : woso.weaponPrefab,
+                _                    => woso.weaponPrefab
+            };
         }
 
         /// <summary>
@@ -209,17 +260,39 @@ namespace Boxhead.Player
             // Fully re-instantiate from the prefab so the FBX baked transforms are
             // reset cleanly before grip offsets are applied — patch-in-place doesn't
             // work reliably when the FBX hierarchy has its own baked child rotations.
-            Attach(_currentData.weaponPrefab,
+            Attach(ResolveTierPrefab(_currentData, _currentTier),
                    _currentData.gripPositionOffset,
                    _currentData.gripRotationOffset,
-                   _currentData.gripScale);
+                   _currentData.gripScale,
+                   _currentTier);
         }
 
         /// <summary>
-        /// Equip a weapon from WeaponData. Destroys the current weapon instance and
-        /// instantiates the new prefab using grip offsets and scale from the ScriptableObject.
+        /// Equip a weapon from WeaponData at Standard tier. Destroys the current weapon
+        /// instance and instantiates the new prefab using grip offsets and scale from the
+        /// ScriptableObject. Equivalent to EquipWeapon(data, WeaponTier.Standard).
         /// </summary>
-        public void EquipWeapon(WeaponData data)
+        public void EquipWeapon(WeaponData data) => EquipWeapon(data, WeaponTier.Standard);
+
+        /// <summary>
+        /// Equip a weapon from WeaponData at the given tier. When data is a WeaponObjectSO and
+        /// an Epic/Legendary-tier prefab is assigned (see ResolveTierPrefab), that tier visual
+        /// is instantiated instead of the base weaponPrefab, and any WeaponTierGlow on the
+        /// resulting instance is set to match — this is what makes a forged Epic/Legendary
+        /// weapon look different while held, not just carry a higher tier value internally.
+        ///
+        /// <paramref name="tier"/> is reasserted from WeaponInventory.ActiveWeapon (the actual
+        /// source of truth for what's equipped) when a sibling WeaponInventory exists and has an
+        /// active weapon, rather than trusting whichever caller passed last (see B41). Legacy V3
+        /// Boxhead.Systems.Inventory call sites (Equip/Swap/SetEquipped/Drop, and by extension
+        /// WeaponCycler and BossRoomWeaponSpawner.ClearPlayerWeapons) always call the tier-less
+        /// EquipWeapon(WeaponData) overload below, which defaults to WeaponTier.Standard — that
+        /// silently regressed a forged Epic/Legendary weapon back to Standard every time one of
+        /// those paths fired (concretely: every boss-room entry). WeaponInventory itself already
+        /// passes the correct tier when it calls this overload directly, so reasserting here is a
+        /// no-op on that path and only changes behaviour where the passed-in tier was wrong.
+        /// </summary>
+        public void EquipWeapon(WeaponData data, WeaponTier tier)
         {
             if (data == null)
             {
@@ -233,8 +306,12 @@ namespace Boxhead.Player
                 return;
             }
 
+            if (_weaponInventory != null && _weaponInventory.ActiveWeapon != null)
+                tier = _weaponInventory.ActiveWeapon.Tier;
+
             _activePrefab = data.weaponPrefab;
             _currentData  = data;
+            _currentTier  = tier;
 
             // Re-search for hand bone — covers the case where it was null at Start
             // because BoxSystem hadn't spawned the model yet.
@@ -242,7 +319,7 @@ namespace Boxhead.Player
                 handBone = FindHandBone();
 
             if (handBone != null)
-                Attach(data.weaponPrefab, data.gripPositionOffset, data.gripRotationOffset, data.gripScale);
+                Attach(ResolveTierPrefab(data, tier), data.gripPositionOffset, data.gripRotationOffset, data.gripScale, tier);
             else
                 Debug.LogWarning($"[WeaponHolder] Cannot equip weapon '{data.weaponName}' — handBone is null.", this);
 
@@ -260,6 +337,7 @@ namespace Boxhead.Player
             _weaponInstance = null;
 
             _currentData = null;
+            _currentTier = WeaponTier.Standard;
             _activePrefab = null;
 
             _animator?.SetInteger("WeaponType", 0);

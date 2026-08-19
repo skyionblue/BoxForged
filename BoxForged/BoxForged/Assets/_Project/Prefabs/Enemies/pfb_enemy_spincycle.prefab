@@ -1050,7 +1050,7 @@ MonoBehaviour:
   _introWalkTarget_X: -4
   _introWalkTarget_Z: 4
   _introCameraFoV: 30
-  _normalCameraFoV: 40
+  _normalCameraFoV: 45
   _introPanDuration: 1
   _introRunDuration: 2.5
   _introWalkInDistance: 5
@@ -1132,8 +1132,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.EnemyHealthBar
   _offset: {x: 0, y: 2.5, z: 0}
-  _barWidth: 1.4
-  _barHeight: 0.3
+  _barWidth: 0.8
+  _barHeight: 0.17
 --- !u!114 &2281404360451121407
 MonoBehaviour:
   m_ObjectHideFlags: 0

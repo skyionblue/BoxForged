@@ -18,9 +18,9 @@ The mills restarted. Not the way they had been running — not under grey manage
 
 Within a week, boxes were moving again.
 
-Within a month, a kid in an apartment building in a city two thousand miles away put a box on his head. He didn't know why. He stood in front of the bathroom mirror. He looked at himself.
+Within a month, a kid in an apartment building in a city two thousand miles away put a box on her head. She didn't know why. She stood in front of the bathroom mirror. She looked at herself.
 
-Then he looked around his room and decided it was a castle.
+Then she looked around her room and decided it was a castle.
 
 Adults don't talk about this part. They talk about infrastructure. They talk about supply chains. They talk about what got restored and what is still broken.
 
