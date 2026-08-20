@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 8198990627560640494}
   - component: {fileID: 3475408475305845411}
   - component: {fileID: 4830314695846599296}
+  - component: {fileID: 7894435262335059786}
   m_Layer: 0
   m_Name: pfb_player
   m_TagString: Player
@@ -408,6 +409,48 @@ MonoBehaviour:
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &7894435262335059786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57864372950292774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2621d394fff09439596d9e3b528a5e5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.ForgePresenter
+  _weaponHolder: {fileID: 0}
+  _weaponInventory: {fileID: 0}
+  _anticipationDuration: 0.35
+  _anticipationRiseHeight: 0.4
+  _anticipationSpinDegreesPerSecond: 180
+  _anticipationGhostScale: 1
+  _transformDuration: 0.5
+  _transformSpinDegrees: 360
+  _imaginationVolume: {fileID: 0}
+  _bloomFadeInDuration: 0.25
+  _bloomHoldDuration: 0.4
+  _bloomFadeOutDuration: 0.6
+  _bloomWeightStandard: 0.25
+  _bloomWeightEpic: 0.55
+  _bloomWeightLegendary: 0.9
+  _useHeavyImpactForLegendary: 1
+  _forgeRevealSfx: {fileID: 0}
+  _upgradeRevealSfx: {fileID: 0}
+  _sfxVolume: 0.85
+  _revealTextPrefab: {fileID: 8006415678551865869, guid: ebba3761c6e9c420ea0f68b92c148e37, type: 3}
+  _revealTextOffset: {x: 0, y: 1.4, z: 0}
+  _revealHoldDuration: 1.1
+  _revealFadeOutDuration: 0.4
+  _forgeRevealFormat: '{0}
+
+    <size=140%><b>{1}</b></size>'
+  _upgradeRevealFormat: '<b>{0}</b>
+
+    <size=120%>{1}</size>'
+  _upgradeDurationScale: 0.6
 --- !u!1 &4465086718402174422
 GameObject:
   m_ObjectHideFlags: 0

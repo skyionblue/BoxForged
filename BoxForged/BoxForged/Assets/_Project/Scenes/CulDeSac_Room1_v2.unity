@@ -208,42 +208,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1490380082210472561, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.95105654
-      objectReference: {fileID: 0}
-    - target: {fileID: 1490380082210472561, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.309017
-      objectReference: {fileID: 0}
-    - target: {fileID: 1490380082210472561, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1490380082210472561, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1490380082210472561, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1490380082210472561, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1490380082210472561, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7361691131284756266, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: FollowOffset.y
-      value: 6.285466
-      objectReference: {fileID: 0}
-    - target: {fileID: 7361691131284756266, guid: 08bd44461aea64830980777510271111, type: 3}
-      propertyPath: FollowOffset.z
-      value: -8.651087
-      objectReference: {fileID: 0}
     - target: {fileID: 8835209232116816727, guid: 08bd44461aea64830980777510271111, type: 3}
       propertyPath: m_Name
       value: pfb_CM_FollowCam
@@ -374,6 +338,7 @@ MonoBehaviour:
   _cameraClearanceMask:
     serializedVersion: 2
     m_Bits: 256
+  _cameraYawDegrees: 35
 --- !u!1 &357988163
 GameObject:
   m_ObjectHideFlags: 0
@@ -1750,19 +1715,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1259885663590963875, guid: 259303d139d344aa58393498224a47ec, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.95105654
+      value: 0.90703875
       objectReference: {fileID: 0}
     - target: {fileID: 1259885663590963875, guid: 259303d139d344aa58393498224a47ec, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.309017
+      value: 0.29471472
       objectReference: {fileID: 0}
     - target: {fileID: 1259885663590963875, guid: 259303d139d344aa58393498224a47ec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.28598824
       objectReference: {fileID: 0}
     - target: {fileID: 1259885663590963875, guid: 259303d139d344aa58393498224a47ec, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.09292321
       objectReference: {fileID: 0}
     - target: {fileID: 1259885663590963875, guid: 259303d139d344aa58393498224a47ec, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

@@ -30,6 +30,9 @@ namespace Boxhead.Systems
         [Tooltip("Layers that count as camera-blocking level geometry (walls, buildings, ceilings). Defaults to the Building layer only — matches CameraOcclusion's own _wallMask. Declared outside the UNITY_EDITOR guard (only ValidateCameraClearance's logic below is editor-only) so a serialized field does not appear/disappear across build configurations, which would otherwise create a prefab/scene serialization mismatch.")]
         [SerializeField] private LayerMask _cameraClearanceMask = 1 << 8; // "Building" layer (index 8 per ProjectSettings/TagManager.asset) — the same layer CameraOcclusion._wallMask resolves via LayerMask.GetMask("Building") in its own Awake(). Hardcoded here (rather than a GetMask() field initializer) so the value is a plain, inspectable serialized int like any other default; re-check the index if "Building" is ever moved in Edit > Project Settings > Tags and Layers.
 
+        [Tooltip("Must match this scene's authored camera rig yaw (pfb_CM_FollowCam's transform Y rotation), not the room's own layout. The rig never rotates at runtime (ADR-0001) but its fixed yaw is no longer guaranteed to be 0 — see the 2026-08-20 diagonal/isometric framing exploration. 'Behind' for the clearance check below is derived from this value; if it drifts out of sync with the actual rig, the check silently validates the wrong axis instead of failing loudly, so keep it updated whenever the rig's yaw changes.")]
+        [SerializeField] private float _cameraYawDegrees = 0f;
+
         private NavMeshSurface _navMeshSurface;
         private Coroutine _buildNavMeshRoutine;
 
@@ -113,12 +116,15 @@ namespace Boxhead.Systems
         }
 
 #if UNITY_EDITOR
-        // ADR-0001 §2.7: the follow camera is fixed at 0 yaw/roll with a permanent 36° pitch —
-        // every room sees the same camera axis, so "behind" is always world -Z and "above" is
-        // always world +Y, regardless of where the player stands. There is no deoccluder in
-        // this design (deliberately — see the ADR), so camera clearance is a level-design
-        // constraint instead: every walkable point needs >= 8 m clear behind it and >= 6 m
-        // clear above it along that fixed axis, or the camera (or its view) clips level geometry.
+        // ADR-0001 §2.7: the follow camera never rotates at runtime and holds a permanent 36°
+        // pitch, but its fixed yaw is authored per-room (see _cameraYawDegrees above) rather than
+        // assumed to be 0 — every room sees the same camera axis, so "behind" is always the same
+        // fixed horizontal direction (derived from that yaw below, world -Z only when yaw is 0)
+        // and "above" is always world +Y regardless of yaw (a ceiling overhead is a ceiling
+        // overhead no matter which way the camera looks). There is no deoccluder in this design
+        // (deliberately — see the ADR), so camera clearance is a level-design constraint instead:
+        // every walkable point needs >= 8 m clear behind it and >= 6 m clear above it along that
+        // fixed axis, or the camera (or its view) clips level geometry.
         //
         // This is intentionally a diagnostic, not a hard failure — LevelBuilder only spawns
         // props/pickups/workbenches onto scene-authored room geometry it does not own (that
@@ -132,13 +138,19 @@ namespace Boxhead.Systems
         // was flooding the console and adding a multi-second Play Mode entry hang.
         private const float RequiredClearBehind = 8f;
         private const float RequiredClearAbove  = 6f;
-        private static readonly Vector3 CameraBehindDirection = Vector3.back; // world -Z, fixed yaw 0
         private const float GroundEpsilon = 0.1f; // lift above the navmesh surface before raycasting up
 
         private void ValidateCameraClearance()
         {
             NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
             if (tri.vertices == null || tri.vertices.Length == 0) return;
+
+            // Direction from any walkable point toward where its camera actually sits, derived
+            // from the rig's authored yaw rather than hardcoded to world -Z — the rig's lateral
+            // (over-the-shoulder) offset component is intentionally not folded in here, since this
+            // is a coarse per-vertex diagnostic along the rig's dominant depth axis, not an exact
+            // per-point camera-position check.
+            Vector3 cameraBehindDirection = Quaternion.Euler(0f, _cameraYawDegrees, 0f) * Vector3.back;
 
             int behindViolations = 0;
             int aboveViolations  = 0;
@@ -147,7 +159,7 @@ namespace Boxhead.Systems
             {
                 Vector3 liftedPoint = tri.vertices[i] + Vector3.up * GroundEpsilon;
 
-                if (Physics.Raycast(liftedPoint, CameraBehindDirection, RequiredClearBehind,
+                if (Physics.Raycast(liftedPoint, cameraBehindDirection, RequiredClearBehind,
                         _cameraClearanceMask, QueryTriggerInteraction.Ignore))
                     behindViolations++;
 

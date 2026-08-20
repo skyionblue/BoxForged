@@ -104,8 +104,3 @@ MonoBehaviour:
     worldPosition: {x: -11, y: 0, z: 1}
     eulerRotation: {x: 0, y: 90, z: 0}
     localScale: {x: 1, y: 1, z: 1}
-  - prefab: {fileID: 4209694907691504182, guid: 9673f55ee320b4a3883b890f99d94f1a,
-      type: 3}
-    worldPosition: {x: -8.7, y: 3.2, z: 1}
-    eulerRotation: {x: 0, y: 90, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
