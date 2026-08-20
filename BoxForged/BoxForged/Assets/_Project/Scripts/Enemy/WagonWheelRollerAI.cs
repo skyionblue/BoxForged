@@ -326,7 +326,12 @@ namespace Boxhead.Enemy
 
         private void EnterChase()
         {
-            _rb.linearVelocity    = Vector3.zero;
+            // Guard the velocity write — when this is reached from PostAttackRoutine's
+            // stun-end transition, the Rigidbody is already kinematic (set during that
+            // routine's landing step) and writing velocity on a kinematic body throws.
+            // A kinematic body carries no meaningful velocity to clear, so skip the write
+            // rather than reorder — the Idle->Chase caller (non-kinematic) is unaffected.
+            if (!_rb.isKinematic) _rb.linearVelocity = Vector3.zero;
             _rb.isKinematic       = true;
             if (!_agent.enabled) _agent.enabled = true;
             _agent.updatePosition = true;
@@ -341,7 +346,10 @@ namespace Boxhead.Enemy
         {
             _agent.isStopped = true;
             StopStateRoutine();
-            _rb.linearVelocity = Vector3.zero;
+            // Guard the velocity write — this is only ever reached from UpdateChase() while
+            // the Rigidbody is still kinematic (set in EnterChase(); EnterCharging() is what
+            // later makes it non-kinematic). Writing velocity on a kinematic body throws.
+            if (!_rb.isKinematic) _rb.linearVelocity = Vector3.zero;
             _state = RollerState.ChargeWindUp;
             // ADR-0003: occlusion-independent overhead telegraph. Charge is parryable today
             // (TryReceiveAttack in UpdateCharge/EnterCharging does not override the default) —
@@ -378,7 +386,9 @@ namespace Boxhead.Enemy
         {
             StopStateRoutine();
             _state = RollerState.PostAttack;
-            _agent.isStopped = true;
+            // Guard isStopped — EnterCharging() just disabled the agent for the charge
+            // attack, so it is not on the NavMesh here (same guard as EnterDead()).
+            if (_agent.isOnNavMesh) _agent.isStopped = true;
             _agent.updatePosition = false;
 
             // Apply the backward jump velocity immediately — no coroutine startup gap.
@@ -400,6 +410,10 @@ namespace Boxhead.Enemy
         private void EnterDead()
         {
             StopStateRoutine();
+            // HitRollRoutine isn't tracked by _stateRoutine — cancel it explicitly so it
+            // can't restore a stale isKinematic value or zero the velocity of what is now
+            // a kinematic body after this method sets isKinematic below.
+            if (_hitRollRoutine != null) { StopCoroutine(_hitRollRoutine); _hitRollRoutine = null; }
             _state = RollerState.Dead;
             _rb.linearVelocity = Vector3.zero;
             _rb.isKinematic    = true;

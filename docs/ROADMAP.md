@@ -1,6 +1,6 @@
 # BoxForged Roadmap
 
-**Status:** Pre-production. Discovery locked 2026-08-18. Production not yet authorized.
+**Status:** In production. Discovery locked 2026-08-18. Production authorized 2026-08-19 ("Start Sprint 0"). Sprint 0 (camera, telegraph, forge) complete, committed, and pushed on `feature/sprint-0-foundation-rebuild`. Phase 2 (World 1 rebuild) underway — Room 1 in progress.
 
 This roadmap reflects the podcast production model: BoxForged is being built live to demonstrate AI-assisted game development by two non-professional-developer creators. Scope is deliberately small for the team-built portion — the audience builds everything beyond it.
 

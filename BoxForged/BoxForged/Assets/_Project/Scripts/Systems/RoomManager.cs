@@ -42,6 +42,9 @@ namespace Boxhead.Systems
 
         [SerializeField] private List<RoomData> _rooms = new List<RoomData>();
 
+        [Tooltip("ADR-0002: optional. When assigned, RoomManager pulls this scene's LevelBuilder.RoomData (RoomDataSO[]) at Start() and appends a runtime RoomData per asset, built via LevelBuilder.BuildSpawnPoints(). Leave null for legacy scenes that still author _rooms entirely by hand in the Inspector — nothing below changes for them.")]
+        [SerializeField] private LevelBuilder _levelBuilder;
+
         private int _currentRoom = -1;
 
         // ─── Spawn-point path state ───────────────────────────────────────────────
@@ -95,6 +98,23 @@ namespace Boxhead.Systems
 
         private void Start()
         {
+            // B49: fall back to finding the scene's LevelBuilder even when _levelBuilder
+            // was never explicitly wired (every scene has exactly one — see ADR-0002).
+            // This is what lets the NavMesh-readiness fix below apply uniformly to old,
+            // Inspector-authored scenes too, not just new RoomDataSO-driven ones — those
+            // scenes currently avoid B49 only by accident (a leftover pre-baked
+            // Scenes/<name>/NavMesh.asset masks the race), not by correct sequencing.
+            // One-time lookup at Start(), not a hot path — matches the same
+            // find-if-not-assigned pattern GameManager already uses for its UI screens.
+            if (_levelBuilder == null)
+                _levelBuilder = FindAnyObjectByType<LevelBuilder>(FindObjectsInactive.Include);
+
+            // ADR-0002: pull any data-driven rooms from this scene's LevelBuilder before
+            // anything below iterates _rooms. Appended after any Inspector-configured
+            // legacy rooms, so a scene can (in principle) mix both — new scenes simply
+            // start with an empty _rooms and get everything from here.
+            AppendRoomsFromLevelBuilder();
+
             // Build handler cache for legacy pre-placed enemies — one allocation per
             // enemy, done at init, never again during gameplay.
             foreach (var room in _rooms)
@@ -115,14 +135,43 @@ namespace Boxhead.Systems
                 foreach (var enemy in room.enemies)
                     if (enemy != null) enemy.SetActive(false);
 
-            // Room 0 activates immediately — player spawns there.
-            ActivateRoom(0);
+            // Room 0 activates once a NavMesh actually exists — see BeginRoom0WhenNavMeshReady.
+            BeginRoom0WhenNavMeshReady();
         }
 
         private void OnDestroy()
         {
             if (Instance == this) Instance = null;
+            if (_levelBuilder != null) _levelBuilder.OnNavMeshReady -= HandleNavMeshReady;
             UnsubscribeAllActive();
+        }
+
+        /// <summary>
+        /// B49: activating room 0 (which spawns NavMeshAgent enemies via TrySpawnNext)
+        /// used to happen synchronously in Start(), one frame before LevelBuilder's own
+        /// deferred NavMesh bake completes — a real race, previously hidden in every old
+        /// scene only by a leftover pre-baked NavMesh.asset from before ADR-0002. Waits
+        /// for LevelBuilder.OnNavMeshReady instead of changing the bake's own timing,
+        /// which is deferred for a correctness reason (freshly-Instantiated colliders
+        /// need a frame to register with physics), not a performance one.
+        /// </summary>
+        private void BeginRoom0WhenNavMeshReady()
+        {
+            if (_levelBuilder == null || _levelBuilder.IsNavMeshReady)
+            {
+                // No LevelBuilder in this scene, or the bake somehow already finished
+                // (e.g. Start() ran after it) — activate immediately, exactly as before.
+                ActivateRoom(0);
+                return;
+            }
+
+            _levelBuilder.OnNavMeshReady += HandleNavMeshReady;
+        }
+
+        private void HandleNavMeshReady()
+        {
+            _levelBuilder.OnNavMeshReady -= HandleNavMeshReady;
+            ActivateRoom(0);
         }
 
         // Fires whenever a room becomes active — subscribers receive the 0-based room index.
@@ -163,6 +212,38 @@ namespace Boxhead.Systems
         }
 
         // ─── Private helpers — shared ─────────────────────────────────────────────
+
+        /// <summary>
+        /// ADR-0002: converts this scene's LevelBuilder.RoomData (RoomDataSO[]) into
+        /// runtime RoomData entries and appends them to _rooms. No-ops entirely when
+        /// _levelBuilder is unassigned (legacy scenes) or RoomData is empty, so this
+        /// is purely additive for scenes that don't use the new data-driven path.
+        /// exitGate/propsGroup are intentionally left null/default here — they are
+        /// scene-local objects with nothing portable to bind to a data asset; a room
+        /// that needs them can still set them via the legacy Inspector-authored path.
+        /// </summary>
+        private void AppendRoomsFromLevelBuilder()
+        {
+            if (_levelBuilder == null) return;
+
+            RoomDataSO[] roomDataAssets = _levelBuilder.RoomData;
+            if (roomDataAssets == null) return;
+
+            for (int i = 0; i < roomDataAssets.Length; i++)
+            {
+                RoomDataSO so = roomDataAssets[i];
+                if (so == null) continue;
+
+                var room = new RoomData
+                {
+                    roomName = so.roomName,
+                    maxConcurrentEnemies = so.maxConcurrentEnemies,
+                    bossOwnedWin = so.bossOwnedWin,
+                    spawnPoints = _levelBuilder.BuildSpawnPoints(so.spawnPoints)
+                };
+                _rooms.Add(room);
+            }
+        }
 
         private void ActivateRoom(int index)
         {

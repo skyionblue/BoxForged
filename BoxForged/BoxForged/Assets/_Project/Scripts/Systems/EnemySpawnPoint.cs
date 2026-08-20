@@ -30,6 +30,20 @@ namespace Boxhead.Systems
         }
 
         /// <summary>
+        /// Configures this spawn point at runtime — used by LevelBuilder when building
+        /// spawn points from RoomDataSO data (ADR-0002) instead of Inspector wiring.
+        /// Safe to call immediately after Instantiate: Awake() (which seeds Remaining
+        /// from the prefab's default _spawnCount) runs synchronously during Instantiate,
+        /// so this always runs after Awake and is the value RoomManager actually reads.
+        /// </summary>
+        public void Initialize(GameObject enemyPrefab, int spawnCount)
+        {
+            _enemyPrefab = enemyPrefab;
+            _spawnCount = spawnCount;
+            Remaining = spawnCount;
+        }
+
+        /// <summary>
         /// Instantiates the next enemy at this point's transform. Returns null when
         /// the quota is exhausted or the prefab reference is missing.
         /// </summary>

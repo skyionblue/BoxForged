@@ -17,7 +17,8 @@ namespace Boxhead.Core
         // Add new zones here as they ship — unrecognized scenes return -1 (no update).
         internal static readonly Dictionary<string, int> ZoneIndexByScene = new Dictionary<string, int>
         {
-            { "CulDeSac_Room1",        0 },
+            { "CulDeSac_Room1",        0 }, // reference-only (ADR-0002) — kept so it still resolves if loaded directly
+            { "CulDeSac_Room1_v2",     0 }, // live zone-0 start room (ADR-0002 RoomDataSO build)
             { "CulDeSac_AmbushAlley",  0 },
             { "CulDeSac_SaloonFront",  0 },
             { "CulDeSac_MailboxRow",   0 },
@@ -28,10 +29,13 @@ namespace Boxhead.Core
 
         // Maps a zone index to the first scene the player enters when starting that zone.
         // Used by MetaScreen.OnContinue() to advance to the next zone after a win.
+        // Zone 0 points at CulDeSac_Room1_v2 (ADR-0002's RoomDataSO rebuild) — the old
+        // CulDeSac_Room1 is reference-only now (see docs/BACKLOG.md) and is never loaded
+        // through normal game flow, only opened directly for read-only comparison.
         internal static readonly Dictionary<int, string> ZoneStartScene = new Dictionary<int, string>
         {
-            { 0, "CulDeSac_Room1"   },
-            { 1, "TownSquare_Room1" },
+            { 0, "CulDeSac_Room1_v2" },
+            { 1, "TownSquare_Room1"  },
         };
 
         // ── Random Room Pool (Sprint 3 Phase 2) ──────────────────────────────────

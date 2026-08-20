@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80d0768145a604e57856fe0de2f53a17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.EnemyHealthBar
-  _offset: {x: 0, y: 2.5, z: 0}
+  _offset: {x: 0, y: 1.3, z: 0}
   _barWidth: 0.8
   _barHeight: 0.17
 --- !u!114 &-1031841815143647445
