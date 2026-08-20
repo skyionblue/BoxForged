@@ -29,32 +29,65 @@ namespace Boxhead.Systems
     /// audio/bloom beats fire — but the AudioSource below still sets ignoreListenerPause = true
     /// (docs/TECHNICAL_DESIGN.md §5.4 gotcha #2, precedent CutscenePlayer.cs:520-523) as a
     /// defensive measure against that ordering ever changing.
+    ///
+    /// 2026-08-20 feel pass: the anticipation/transformation beats previously had zero particle
+    /// VFX of their own — "the raw object gathers" was purely a transform tween on the ghost
+    /// mesh (see SpawnAnticipationGhost/TransformationBeat below), with no spark/energy effect
+    /// at all. A fully-authored burst prefab (Assets/_Project/Prefabs/VFX/pfb_forge_vfx.prefab,
+    /// gold sparks, negative gravity so they rise, single 60-particle burst, self-destroying via
+    /// its own stopAction) already existed but was wired to nothing in this file or any scene —
+    /// this pass wires it into both beats (see _anticipationVfxPrefab/_transformationVfxPrefab)
+    /// and fixes the same opaque-material/undersized-particle bug B24 already found once for
+    /// WeaponTierGlow (pfb_forge_vfx's MAT_Spark.mat was still _Surface:0/Opaque, and its
+    /// particles were sized for a close-up shot, not this project's actual pulled-back gameplay
+    /// camera). Also widened every beat duration below — 0.35s/0.5s beats with nothing to look
+    /// at read as "nothing happened," per owner feedback after playing the real flow.
     /// </summary>
     [RequireComponent(typeof(ForgeController))]
     public class ForgePresenter : MonoBehaviour
     {
         private const string ImaginationVolumeName = "ImaginationRestore_Volume";
 
+        /// <summary>Where the whole beat (ghost, VFX, reveal text) is anchored in world space.</summary>
+        private enum PresentationAnchor
+        {
+            /// <summary>Original hand-height staging (WeaponHolder.MuzzlePosition).</summary>
+            WeaponMuzzle,
+            /// <summary>Above the character's head — easier to read at the pulled-back gameplay
+            /// camera distance/yaw this project landed on (B27/B59). Owner's 2026-08-20 ask.</summary>
+            AboveHead
+        }
+
         [Header("Anchors (optional — resolved from sibling components if left empty)")]
         [SerializeField] private WeaponHolder    _weaponHolder;
         [SerializeField] private WeaponInventory _weaponInventory;
 
+        [Header("Presentation anchor")]
+        [Tooltip("AboveHead reads more clearly at real gameplay camera distance than the original hand-height WeaponMuzzle anchor — flip this back to WeaponMuzzle to compare the two directly, no other change needed.")]
+        [SerializeField] private PresentationAnchor _presentationAnchor = PresentationAnchor.AboveHead;
+        [Tooltip("Height above the player's feet (transform.position.y) used by the AboveHead anchor. pfb_player's CharacterController is 1.8m tall, so this sits a bit clear of the head.")]
+        [SerializeField] private float _aboveHeadHeight = 2.1f;
+
         [Header("Anticipation")]
         [Tooltip("Household object rises briefly before becoming the weapon. Uses WeaponObjectSO.rawObjectPrefab; skipped (timing still holds) if that field is unassigned.")]
-        [SerializeField] private float _anticipationDuration = 0.35f;
+        [SerializeField] private float _anticipationDuration = 0.8f;
         [SerializeField] private float _anticipationRiseHeight = 0.4f;
         [SerializeField] private float _anticipationSpinDegreesPerSecond = 180f;
         [SerializeField] private float _anticipationGhostScale = 1f;
+        [Tooltip("Particle burst played at the anchor when the anticipation beat starts (the 'gathering energy' read). Self-destroys via its own ParticleSystem.stopAction — no manual cleanup needed. Leave unassigned to skip.")]
+        [SerializeField] private ParticleSystem _anticipationVfxPrefab;
 
         [Header("Transformation")]
-        [SerializeField] private float _transformDuration = 0.5f;
+        [SerializeField] private float _transformDuration = 0.9f;
         [SerializeField] private float _transformSpinDegrees = 360f;
+        [Tooltip("Particle burst played at the anchor when the transformation beat starts (the 'reveal' pop). Same prefab as anticipation by default, but kept as a separate field so the two beats can diverge later. Leave unassigned to skip.")]
+        [SerializeField] private ParticleSystem _transformationVfxPrefab;
 
         [Header("Colour Bloom (drives the ImaginationRestore volume by name, if present in-scene)")]
         [SerializeField] private Volume _imaginationVolume;
-        [SerializeField] private float _bloomFadeInDuration = 0.25f;
-        [SerializeField] private float _bloomHoldDuration = 0.4f;
-        [SerializeField] private float _bloomFadeOutDuration = 0.6f;
+        [SerializeField] private float _bloomFadeInDuration = 0.35f;
+        [SerializeField] private float _bloomHoldDuration = 0.5f;
+        [SerializeField] private float _bloomFadeOutDuration = 0.7f;
         [SerializeField] private float _bloomWeightStandard = 0.25f;
         [SerializeField] private float _bloomWeightEpic = 0.55f;
         [SerializeField] private float _bloomWeightLegendary = 0.9f;
@@ -71,8 +104,9 @@ namespace Boxhead.Systems
         [Header("Imaginative Text Reveal")]
         [Tooltip("A world-space TextMeshPro (3D) prefab. If left unassigned, the rest of the sequence still plays — only the text beat is skipped.")]
         [SerializeField] private TextMeshPro _revealTextPrefab;
-        [SerializeField] private Vector3 _revealTextOffset = new Vector3(0f, 1.4f, 0f);
-        [SerializeField] private float _revealHoldDuration = 1.1f;
+        [Tooltip("Extra offset added on top of whichever PresentationAnchor is active. Was tuned at 1.4 for the old hand-height WeaponMuzzle anchor (~1m) to land text near head height; lowered to 0.4 now that AboveHead (2.1m) is the default anchor, so text doesn't end up floating well above the character.")]
+        [SerializeField] private Vector3 _revealTextOffset = new Vector3(0f, 0.4f, 0f);
+        [SerializeField] private float _revealHoldDuration = 1.3f;
         [SerializeField] private float _revealFadeOutDuration = 0.4f;
         [Tooltip("Placeholder copy, not final narrative text — content/writer decision. {0}=raw object name, {1}=forged weapon name.")]
         [SerializeField, TextArea(1, 2)] private string _forgeRevealFormat = "{0}\n<size=140%><b>{1}</b></size>";
@@ -80,8 +114,8 @@ namespace Boxhead.Systems
         [SerializeField, TextArea(1, 2)] private string _upgradeRevealFormat = "<b>{0}</b>\n<size=120%>{1}</size>";
 
         [Header("Upgrade pacing")]
-        [Tooltip("Upgrade beats should feel like an escalation of the same object, not an identical first-time reveal — scales every timed duration above.")]
-        [SerializeField] private float _upgradeDurationScale = 0.6f;
+        [Tooltip("Upgrade beats should feel like an escalation of the same object, not an identical first-time reveal — scales every timed duration above. Raised from 0.6 (2026-08-20): at the old anticipation/transform durations, 0.6x made upgrade beats sub-0.3s and unreadable on top of the base 'too fast' feedback.")]
+        [SerializeField] private float _upgradeDurationScale = 0.75f;
 
         private ForgeController  _forgeController;
         private AudioSource      _audioSource;
@@ -173,6 +207,34 @@ namespace Boxhead.Systems
             }
         }
 
+        /// <summary>
+        /// World-space point the whole beat plays around. AboveHead is computed relative to
+        /// this GameObject's own transform (the player root, since ForgePresenter lives on
+        /// pfb_player) rather than any bone lookup — deliberately simple so the two anchor modes
+        /// are a one-field comparison, not a rewrite the next time this needs tuning.
+        /// </summary>
+        private Vector3 ResolveAnchor()
+        {
+            if (_presentationAnchor == PresentationAnchor.AboveHead)
+                return transform.position + Vector3.up * _aboveHeadHeight;
+            return _weaponHolder != null ? _weaponHolder.MuzzlePosition : transform.position;
+        }
+
+        /// <summary>
+        /// Spawns a one-shot particle burst at the anchor. No pooling/tracking needed: forge
+        /// frequency is low (player-initiated, not a hot path) and pfb_forge_vfx's own
+        /// ParticleSystem.stopAction is Destroy, so the instance removes itself once its single
+        /// burst finishes playing — this call is fire-and-forget by design.
+        /// Rotated so local +Z (the shape module's emit direction) points world-up, matching the
+        /// prefab's authored negative gravityModifier (sparks drift upward) regardless of which
+        /// PresentationAnchor is active.
+        /// </summary>
+        private static void SpawnBeatVfx(ParticleSystem prefab, Vector3 anchor)
+        {
+            if (prefab == null) return;
+            Instantiate(prefab, anchor, Quaternion.Euler(-90f, 0f, 0f));
+        }
+
         private IEnumerator PlaySequence(WeaponInstance instance, bool isUpgrade)
         {
             // Only animate the held-weapon transform when this instance is actually the one
@@ -189,7 +251,7 @@ namespace Boxhead.Systems
                 : null;
 
             float durationScale = isUpgrade ? _upgradeDurationScale : 1f;
-            Vector3 anchor = _weaponHolder != null ? _weaponHolder.MuzzlePosition : transform.position;
+            Vector3 anchor = ResolveAnchor();
 
             Vector3 finalScale = Vector3.one;
             Quaternion finalRot = Quaternion.identity;
@@ -213,9 +275,11 @@ namespace Boxhead.Systems
             }
 
             GameObject ghost = SpawnAnticipationGhost(instance.Data.rawObjectPrefab, anchor);
+            SpawnBeatVfx(_anticipationVfxPrefab, anchor);
             yield return AnticipationBeat(ghost, anchor, durationScale);
             if (ghost != null) Destroy(ghost);
 
+            SpawnBeatVfx(_transformationVfxPrefab, anchor);
             if (weaponT != null)
                 yield return TransformationBeat(weaponT, finalScale, finalRot, durationScale);
 

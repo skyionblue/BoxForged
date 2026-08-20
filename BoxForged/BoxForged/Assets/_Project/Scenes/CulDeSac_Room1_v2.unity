@@ -1237,6 +1237,10 @@ PrefabInstance:
       propertyPath: m_TextStyleHashCode
       value: -1183493901
       objectReference: {fileID: 0}
+    - target: {fileID: 2302339976216981376, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2439385818293053131, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1444,6 +1448,10 @@ PrefabInstance:
     - target: {fileID: 4900146213678228921, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_Name
       value: pfb_hud_v4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900146213678228921, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6111567757149249910, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_LocalPosition.x

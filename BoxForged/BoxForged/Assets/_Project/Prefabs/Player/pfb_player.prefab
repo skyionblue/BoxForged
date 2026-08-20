@@ -423,16 +423,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.ForgePresenter
   _weaponHolder: {fileID: 0}
   _weaponInventory: {fileID: 0}
-  _anticipationDuration: 0.35
+  _presentationAnchor: 1
+  _aboveHeadHeight: 2.1
+  _anticipationDuration: 0.8
   _anticipationRiseHeight: 0.4
   _anticipationSpinDegreesPerSecond: 180
   _anticipationGhostScale: 1
-  _transformDuration: 0.5
+  _anticipationVfxPrefab: {fileID: 5223971911737039326, guid: d84f2c4f33d0c4ff09801dad131c4e8f, type: 3}
+  _transformDuration: 0.9
   _transformSpinDegrees: 360
+  _transformationVfxPrefab: {fileID: 5223971911737039326, guid: d84f2c4f33d0c4ff09801dad131c4e8f, type: 3}
   _imaginationVolume: {fileID: 0}
-  _bloomFadeInDuration: 0.25
-  _bloomHoldDuration: 0.4
-  _bloomFadeOutDuration: 0.6
+  _bloomFadeInDuration: 0.35
+  _bloomHoldDuration: 0.5
+  _bloomFadeOutDuration: 0.7
   _bloomWeightStandard: 0.25
   _bloomWeightEpic: 0.55
   _bloomWeightLegendary: 0.9
@@ -441,8 +445,8 @@ MonoBehaviour:
   _upgradeRevealSfx: {fileID: 0}
   _sfxVolume: 0.85
   _revealTextPrefab: {fileID: 8006415678551865869, guid: ebba3761c6e9c420ea0f68b92c148e37, type: 3}
-  _revealTextOffset: {x: 0, y: 1.4, z: 0}
-  _revealHoldDuration: 1.1
+  _revealTextOffset: {x: 0, y: 0.4, z: 0}
+  _revealHoldDuration: 1.3
   _revealFadeOutDuration: 0.4
   _forgeRevealFormat: '{0}
 
@@ -450,7 +454,7 @@ MonoBehaviour:
   _upgradeRevealFormat: '<b>{0}</b>
 
     <size=120%>{1}</size>'
-  _upgradeDurationScale: 0.6
+  _upgradeDurationScale: 0.75
 --- !u!1 &4465086718402174422
 GameObject:
   m_ObjectHideFlags: 0
