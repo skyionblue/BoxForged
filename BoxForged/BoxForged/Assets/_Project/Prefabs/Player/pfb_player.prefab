@@ -49,6 +49,10 @@ Transform:
   - {fileID: 2385255419965191043}
   - {fileID: 6949978802417448256}
   - {fileID: 6235404559656736899}
+  - {fileID: 8867880017859683819}
+  - {fileID: 553925703353112633}
+  - {fileID: 7196200286955262738}
+  - {fileID: 8112627317922627641}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &5560300344759108702
@@ -444,6 +448,72 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3020530217124974570}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &612860935980707815
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3020530217124974570}
+    m_Modifications:
+    - target: {fileID: 7852507513168730430, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_Name
+      value: NinjaFemale_CharacterModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7852507513168730430, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+--- !u!4 &8867880017859683819 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8327252615513000460, guid: f6fcb9063272b44cd96b3dc642120333, type: 3}
+  m_PrefabInstance: {fileID: 612860935980707815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &960614093018200430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -454,7 +524,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6601243423201294450, guid: c092249cb2a9d4de3baccde6fd320231, type: 3}
       propertyPath: m_Name
-      value: Cowgirl_CharacterModel
+      value: Cowgirl_CharacterModel_OLD
       objectReference: {fileID: 0}
     - target: {fileID: 6974995644848756776, guid: c092249cb2a9d4de3baccde6fd320231, type: 3}
       propertyPath: m_LocalPosition.x
@@ -604,7 +674,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2304557554726395118, guid: 209f9af5ecbb04881b16486adc49ca30, type: 3}
       propertyPath: m_Name
-      value: NinjaMale_CharacterModel
+      value: NinjaMale_CharacterModel_OLD
       objectReference: {fileID: 0}
     - target: {fileID: 2304557554726395118, guid: 209f9af5ecbb04881b16486adc49ca30, type: 3}
       propertyPath: m_IsActive
@@ -640,6 +710,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72c0340df88b4aca97c90cf396bf91e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Player.AnimationEventReceiver
+--- !u!1001 &5733213910537202148
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3020530217124974570}
+    m_Modifications:
+    - target: {fileID: 499416896851611331, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_Name
+      value: NinjaMale_CharacterModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 499416896851611331, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+--- !u!4 &8112627317922627641 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4541211982473030109, guid: ffdef675907004343b07eaa1b7d846fc, type: 3}
+  m_PrefabInstance: {fileID: 5733213910537202148}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5823371398209124096
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -650,7 +786,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3745348513934135672, guid: dcbe32052dfa742ee9ccda921cc4bb24, type: 3}
       propertyPath: m_Name
-      value: NinjaFemale_CharacterModel
+      value: NinjaFemale_CharacterModel_OLD
       objectReference: {fileID: 0}
     - target: {fileID: 3745348513934135672, guid: dcbe32052dfa742ee9ccda921cc4bb24, type: 3}
       propertyPath: m_IsActive
@@ -726,6 +862,138 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72c0340df88b4aca97c90cf396bf91e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Player.AnimationEventReceiver
+--- !u!1001 &7420379593788092528
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3020530217124974570}
+    m_Modifications:
+    - target: {fileID: 6705077582038653394, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_Name
+      value: Cowgirl_CharacterModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6705077582038653394, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+--- !u!4 &553925703353112633 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7013665458009794633, guid: 6cec40d074817427e82e1af60b848249, type: 3}
+  m_PrefabInstance: {fileID: 7420379593788092528}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8366290015435160414
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3020530217124974570}
+    m_Modifications:
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569045340384755300, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_Name
+      value: Cowboy_CharacterModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569045340384755300, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+--- !u!4 &7196200286955262738 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1712777955846957132, guid: 5f2ca9bccc1084b759af27e5acbc1187, type: 3}
+  m_PrefabInstance: {fileID: 8366290015435160414}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8422583381980801344
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -776,7 +1044,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 784923136525396694, guid: 4eaca7117836345d7a677270403789f8, type: 3}
       propertyPath: m_Name
-      value: Cowboy_CharacterModel
+      value: Cowboy_CharacterModel_OLD
       objectReference: {fileID: 0}
     - target: {fileID: 1975691603156269426, guid: 4eaca7117836345d7a677270403789f8, type: 3}
       propertyPath: m_LocalPosition.x
