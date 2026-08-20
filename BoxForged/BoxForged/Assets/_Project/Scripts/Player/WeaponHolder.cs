@@ -7,6 +7,46 @@ namespace Boxhead.Player
     [RequireComponent(typeof(CombatController))]
     public class WeaponHolder : MonoBehaviour
     {
+        /// <summary>
+        /// Canonical weapon-attachment convention (B63 socket refactor, 2026-08-20): every
+        /// playable character model must have a child GameObject named exactly
+        /// "WeaponGripPoint" somewhere under its hand hierarchy (in practice, parented directly
+        /// to the <see cref="WeaponHandBone"/> bone). FindHandBone() always prefers this socket
+        /// over the raw bone name below.
+        ///
+        /// Why a socket instead of a bone-relative offset: two characters' hand bones can have
+        /// completely different local rotation/scale conventions depending on how each rig was
+        /// authored (see docs/PROJECT_CONTEXT.md "Model orientation correction" — never assume
+        /// one rig's axis convention applies to another). A single shared WeaponData grip offset
+        /// (gripPositionOffset/gripRotationOffset/gripScale) therefore cannot be correct for both
+        /// characters' *raw bone* space at once — only one character can be "the one it was
+        /// tuned against" at a time, and every other character's weapon ends up misplaced.
+        ///
+        /// The socket fixes this by absorbing all of the *character-specific* hand correction
+        /// (its own local position/rotation, tuned once per character by hand — the same manual
+        /// tuning that used to get redone per WeaponData asset) so that WeaponData's grip offset
+        /// only has to express *weapon-specific* variance (a big vs. small prop) and can be
+        /// shared across every character. See docs/BACKLOG.md for the checklist to apply this to
+        /// a new character model (e.g. the upcoming Female Ninja / Cowgirl re-rigs).
+        ///
+        /// Retired 2026-08-20 (B63 follow-up): Cowboy and Ninja Male's
+        /// <c>WeaponCycler.characterWeaponSets</c> entries and their 19-asset
+        /// <c>Assets/_Project/ScriptableObjects/Weapons/{Cowboy,NinjaMale}/</c> variant folders
+        /// have been deleted. Root cause of the recurring per-weapon misplacement bug this
+        /// session: those variant assets' <c>gripPositionOffset</c>/<c>gripRotationOffset</c>
+        /// were hand-tuned back when the socket was still identity — so once the socket itself
+        /// carried a real correction, every one of those 19 offsets *doubled up* with it
+        /// (verified directly: the bostaff and sixshooter swung down near the ankle/hip on both
+        /// characters when equipped through the variant path, while the exact same shared/
+        /// default WeaponData equipped through the same socket landed correctly — see B63 in
+        /// docs/BACKLOG.md for the full numeric + screenshot evidence across all 19 weapons).
+        /// Cowboy and Ninja Male now equip purely through <c>defaultWeapons</c>/shared
+        /// WeaponData, same as Cowgirl always has. Ninja Female's variant folder and
+        /// characterWeaponSets entry are intentionally left in place — she's getting a new
+        /// model and will follow the checklist below when that lands, same as any future
+        /// character. New characters going forward should not need a variant folder at all: an
+        /// untuned/default WeaponData grip offset plus a correctly-placed socket is sufficient.
+        /// </summary>
         private const string WeaponGripPointName = "WeaponGripPoint";
         private const string WeaponHandBone      = "LeftHand";
 
@@ -159,6 +199,22 @@ namespace Boxhead.Player
                 if (fallback == null && (n == WeaponHandBone || n.EndsWith(namespacedHand)))
                     fallback = _boneSearchBuffer[i];
             }
+
+            // Falling back to the raw hand bone means this character model has no
+            // WeaponGripPoint socket yet — every WeaponData grip offset will be interpreted in
+            // this bone's own local space, which is very unlikely to match whichever character
+            // the shared offset was actually tuned against (see the class-level doc comment on
+            // WeaponGripPointName). This is expected/harmless for non-humanoid or cosmetic-only
+            // rigs that never equip a real weapon, but for a playable character it is almost
+            // always a missed onboarding step — warn once per model-swap so it surfaces
+            // immediately instead of shipping as a silently-misplaced weapon (see B63,
+            // docs/BACKLOG.md).
+            if (fallback != null)
+                Debug.LogWarning($"[WeaponHolder] No '{WeaponGripPointName}' socket found under " +
+                    $"'{gameObject.name}' — falling back to raw '{fallback.name}' bone. Add a " +
+                    $"correctly-placed child Transform named '{WeaponGripPointName}' to this " +
+                    "character's hand bone (see docs/BACKLOG.md for the checklist).", this);
+
             return fallback;
         }
 
