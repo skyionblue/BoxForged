@@ -25,6 +25,7 @@ namespace Boxhead.Core
             { "CulDeSac_BossArena",    0 },
             { "TownSquare_Room1",      1 },
             { "TownSquare_BossHall",   1 }, // Boss hall counts as same zone as Town Square Room 1
+            { "WeaponGripTest",        99 }, // dev-only weapon-grip-socket test scene (docs/BACKLOG.md) — not a real zone
         };
 
         // Maps a zone index to the first scene the player enters when starting that zone.
@@ -36,6 +37,11 @@ namespace Boxhead.Core
         {
             { 0, "CulDeSac_Room1_v2" },
             { 1, "TownSquare_Room1"  },
+            // 99 = dev-only weapon-grip-socket test scene (WeaponGripTest.unity), not a real
+            // progression zone — registered only so RunStartUI.Show()/OnStartClicked() treat it
+            // as a run-start room and actually display the character picker. Never referenced
+            // by MetaScreen.OnContinue() or any real zone-advance path.
+            { 99, "WeaponGripTest"   },
         };
 
         // ── Random Room Pool (Sprint 3 Phase 2) ──────────────────────────────────

@@ -32,5 +32,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/CulDeSac_Room1_v2.unity
     guid: 8fc05c5580d774934a3918305e525284
+  - enabled: 1
+    path: Assets/_Project/Scenes/WeaponGripTest.unity
+    guid: f1c9bb21bd60e4d0eb471bda245af6ca
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

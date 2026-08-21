@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 453eb7d0435a248ad935f39d2f476f31, type: 3}
+  m_Name: WeaponDropTableSO_WeaponGripTest
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponDropTableSO
+  scatteredObjects:
+  - weaponObject: {fileID: 11400000, guid: e957b4e6f51434e76a1fc9837c07d203, type: 2}
+    worldPosition: {x: -6, y: 0, z: 4}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 704da20f7ec1e45bf89447121543924b, type: 2}
+    worldPosition: {x: -2, y: 0, z: 4}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 0cd7030c2e13b4550a58f9004bfdc1ad, type: 2}
+    worldPosition: {x: 2, y: 0, z: 4}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 34c0cd0993d254022a0eba1ee1f490e8, type: 2}
+    worldPosition: {x: 6, y: 0, z: 4}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 73cf61de7813740d681a7456e87a44bf, type: 2}
+    worldPosition: {x: -6, y: 0, z: 8}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 8d54bd3b954884b19bf3edbdf3d7ab81, type: 2}
+    worldPosition: {x: -2, y: 0, z: 8}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: ecdd0ab8998eb4981bee65936c44b1c2, type: 2}
+    worldPosition: {x: 2, y: 0, z: 8}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: a34d921b411374cbbbe0bbd9327a9060, type: 2}
+    worldPosition: {x: 6, y: 0, z: 8}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 747c098066df94d3bb11422cdedd48a4, type: 2}
+    worldPosition: {x: -6, y: 0, z: 12}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 0e5b482cac5074b0c82e9d1f16fac007, type: 2}
+    worldPosition: {x: -2, y: 0, z: 12}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 3f2594162d6c341aea5d0a1300aeb0ec, type: 2}
+    worldPosition: {x: 2, y: 0, z: 12}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 9f7be8a4e51544621a90be5a6012834d, type: 2}
+    worldPosition: {x: 6, y: 0, z: 12}
+    useRarityOverride: 0
+    rarityOverride: 0
+  lootZoneObjects: []
+  cardboardPiles:
+  - worldPosition: {x: -6, y: 0, z: -2}
+    amount: 50
+  - worldPosition: {x: 6, y: 0, z: -2}
+    amount: 50
+  - worldPosition: {x: 0, y: 0, z: -2}
+    amount: 50
+  workbenchPositions:
+  - {x: 0, y: 0, z: 16}
+  envProps: []

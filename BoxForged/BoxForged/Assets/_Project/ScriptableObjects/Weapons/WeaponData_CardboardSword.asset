@@ -18,9 +18,9 @@ MonoBehaviour:
   attackRange: 1.8
   weaponPrefab: {fileID: 2900126300265565464, guid: 0c86821cde67a45e38d02b216c4ea302, type: 3}
   material: {fileID: 2100000, guid: a1e1619cea41c45a39af81c3517dc9c5, type: 2}
-  gripPositionOffset: {x: -0.098, y: -0.001, z: 0.003}
-  gripRotationOffset: {x: 7.639, y: -158.666, z: 330.087}
-  gripScale: 0.61
+  gripPositionOffset: {x: 0, y: 0, z: 0}
+  gripRotationOffset: {x: 0, y: 0, z: 0}
+  gripScale: 0.35
   ability: {fileID: 0}
   specialAbilityName: 
   specialAbilityDescription: 

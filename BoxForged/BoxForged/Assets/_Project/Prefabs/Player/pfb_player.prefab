@@ -219,13 +219,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Player.WeaponCycler
   defaultWeapons:
   - {fileID: 11400000, guid: 9bb17e4c96ca54b99ad61ab7a1b6168c, type: 2}
-  - {fileID: 11400000, guid: e1f03f3d20d1543c8af88df8f5c39174, type: 2}
   - {fileID: 11400000, guid: 585225e58139240018ee71fdba45ac3f, type: 2}
-  - {fileID: 11400000, guid: 74bdc31f126b94bc4939bb8753337c2f, type: 2}
   - {fileID: 11400000, guid: 1de1870c9af474a0d84e62f31c589250, type: 2}
-  - {fileID: 11400000, guid: e09c746eee14d48eaaf2e17d1a179e9b, type: 2}
   - {fileID: 11400000, guid: 9e3b313b8dc9740739c0abec09fa6d32, type: 2}
-  - {fileID: 11400000, guid: aafdeacc3d80048e5a2f6cfae97f4738, type: 2}
   - {fileID: 11400000, guid: d3ea174f097b94d0287670912678883a, type: 2}
   - {fileID: 11400000, guid: 00b1e74857fd34a11a9bb85d9c62013a, type: 2}
   - {fileID: 11400000, guid: 61519cfcb64354dcd8f31727fb5eaf8b, type: 2}
@@ -234,20 +230,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d81de2977e409400783ce8664b11675e, type: 2}
   - {fileID: 11400000, guid: 9051b8c49b68342eb90fbaf1d5f80ab5, type: 2}
   - {fileID: 11400000, guid: 83f7408e86b29479f8455474119cb220, type: 2}
-  - {fileID: 11400000, guid: 8ebb8f0870e6a4a1f86dca03dfe0d708, type: 2}
   - {fileID: 11400000, guid: 09262db07842643fa9df3a1481bf15f5, type: 2}
   - {fileID: 11400000, guid: 03e6c47bc51d44f14bb0b18583ca8d24, type: 2}
   characterWeaponSets:
   - characterModelName: NinjaFemale_CharacterModel
     weapons:
     - {fileID: 11400000, guid: 5d4bc5da5e4a74c07957ac73b2fb4483, type: 2}
-    - {fileID: 11400000, guid: a3770c59a0faa445ab281a40219c11ec, type: 2}
     - {fileID: 11400000, guid: 796704975592043aa96f0809ddfc5644, type: 2}
-    - {fileID: 11400000, guid: c7d9f026ee16f486eaca6b004415765c, type: 2}
     - {fileID: 11400000, guid: e84d00de0f97f493fa39aeb29955216f, type: 2}
-    - {fileID: 11400000, guid: fffacfbb065c945b8aa59df6e759378c, type: 2}
     - {fileID: 11400000, guid: 31a1bca30e8cf40278329e8cc7338e96, type: 2}
-    - {fileID: 11400000, guid: 404dc7e6b875c4d1497d36c5c9753998, type: 2}
     - {fileID: 11400000, guid: 82f83254b20184774a3f66566300b015, type: 2}
     - {fileID: 11400000, guid: edc7e886285db4b9a8c9d508384b3574, type: 2}
     - {fileID: 11400000, guid: 29c1e45591cba420fbb8cb56aebebc8f, type: 2}
@@ -256,19 +247,14 @@ MonoBehaviour:
     - {fileID: 11400000, guid: c2d1079d049d54bc1b2fecd02327dfef, type: 2}
     - {fileID: 11400000, guid: 0112e35aba4454e3c99ecf754bef540b, type: 2}
     - {fileID: 11400000, guid: 34a14e3d37a3f498b91724c727f78262, type: 2}
-    - {fileID: 11400000, guid: 679ab07487de741e68f6ee443fa0ca8b, type: 2}
     - {fileID: 11400000, guid: f907887d22fd642d294148413ed62d97, type: 2}
     - {fileID: 11400000, guid: 598826999b0de420d88ec0fd9b6fc42a, type: 2}
   - characterModelName: Cowgirl_CharacterModel
     weapons:
     - {fileID: 11400000, guid: 9bb17e4c96ca54b99ad61ab7a1b6168c, type: 2}
-    - {fileID: 11400000, guid: e1f03f3d20d1543c8af88df8f5c39174, type: 2}
     - {fileID: 11400000, guid: 585225e58139240018ee71fdba45ac3f, type: 2}
-    - {fileID: 11400000, guid: 74bdc31f126b94bc4939bb8753337c2f, type: 2}
     - {fileID: 11400000, guid: 1de1870c9af474a0d84e62f31c589250, type: 2}
-    - {fileID: 11400000, guid: e09c746eee14d48eaaf2e17d1a179e9b, type: 2}
     - {fileID: 11400000, guid: 9e3b313b8dc9740739c0abec09fa6d32, type: 2}
-    - {fileID: 11400000, guid: aafdeacc3d80048e5a2f6cfae97f4738, type: 2}
     - {fileID: 11400000, guid: d3ea174f097b94d0287670912678883a, type: 2}
     - {fileID: 11400000, guid: 00b1e74857fd34a11a9bb85d9c62013a, type: 2}
     - {fileID: 11400000, guid: 61519cfcb64354dcd8f31727fb5eaf8b, type: 2}
@@ -277,7 +263,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: d81de2977e409400783ce8664b11675e, type: 2}
     - {fileID: 11400000, guid: 9051b8c49b68342eb90fbaf1d5f80ab5, type: 2}
     - {fileID: 11400000, guid: 83f7408e86b29479f8455474119cb220, type: 2}
-    - {fileID: 11400000, guid: 8ebb8f0870e6a4a1f86dca03dfe0d708, type: 2}
     - {fileID: 11400000, guid: 09262db07842643fa9df3a1481bf15f5, type: 2}
     - {fileID: 11400000, guid: 03e6c47bc51d44f14bb0b18583ca8d24, type: 2}
 --- !u!114 &4364794059547319684
