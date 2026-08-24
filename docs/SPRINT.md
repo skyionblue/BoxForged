@@ -88,6 +88,12 @@ This is what makes the audience-contribution goal (Phase 5+) actually reachable 
 
 ---
 
+## Owner-verified items outside sprint scope
+
+- **HUD pause button** — owner asked about adding a pause button to the HUD; investigation found the plumbing already exists in `pfb_hud_v4` (the prefab every scene actually uses): `PauseMenu.cs`, the `PausePanel`, and a `PauseButton_Shield` button already wired to `PauseMenu.TogglePause`. The one visual gap found — `PauseButton_Shield`'s Image has alpha 0, so it's an invisible tap zone with no icon, unlike every other HUD button — was flagged to the owner with a choice (quick UI placeholder vs. full matching Meshy cardboard-icon art). Owner manually verified in Play Mode that the pause button works as-is and asked to leave it alone. No code or prefab changes made (2026-08-24).
+
+---
+
 ## Explicitly Out of Scope for Sprint 0
 
 - Any new room/level content (that's Phase 2 — World 1 rebuild)
