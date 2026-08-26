@@ -17,13 +17,6 @@ namespace Boxhead.Core
         // Add new zones here as they ship — unrecognized scenes return -1 (no update).
         internal static readonly Dictionary<string, int> ZoneIndexByScene = new Dictionary<string, int>
         {
-            { "CulDeSac_Room1",           0 }, // reference-only (ADR-0002) — kept so it still resolves if loaded directly
-            { "CulDeSac_Room1_v2",        0 }, // live zone-0 start room (ADR-0002 RoomDataSO build)
-            { "CulDeSac_AmbushAlley",     0 }, // reference-only (ADR-0002) — kept so it still resolves if loaded directly
-            { "CulDeSac_AmbushAlley_v2",  0 }, // live ADR-0002 RoomDataSO rebuild, replaces CulDeSac_AmbushAlley in RandomRoomPool
-            { "CulDeSac_SaloonFront",     0 },
-            { "CulDeSac_MailboxRow",      0 },
-            { "CulDeSac_BossArena",       0 },
             { "CulDeSac_WildWestCity",    0 }, // ADR-0004: World 1 single continuous scene — zone 0 start room
             { "TownSquare_Room1",         1 },
             { "TownSquare_BossHall",      1 }, // Boss hall counts as same zone as Town Square Room 1
@@ -32,10 +25,10 @@ namespace Boxhead.Core
 
         // Maps a zone index to the first scene the player enters when starting that zone.
         // Used by MetaScreen.OnContinue() to advance to the next zone after a win.
-        // Zone 0 points at CulDeSac_WildWestCity (ADR-0004: World 1 is one continuous scene) —
-        // CulDeSac_Room1_v2 and CulDeSac_Room1 are reference-only now (see docs/BACKLOG.md /
-        // docs/adr/0004-world1-single-continuous-scene.md) and are never loaded through normal
-        // game flow, only opened directly for read-only comparison.
+        // Zone 0 points at CulDeSac_WildWestCity (ADR-0004: World 1 is one continuous scene).
+        // The old per-room CulDeSac scenes (Room1, Room1_v2, AmbushAlley, AmbushAlley_v2,
+        // SaloonFront, MailboxRow, BossArena) were deleted once WildWestCity fully replaced
+        // them — see docs/adr/0004-world1-single-continuous-scene.md.
         internal static readonly Dictionary<int, string> ZoneStartScene = new Dictionary<int, string>
         {
             { 0, "CulDeSac_WildWestCity" },
@@ -48,15 +41,15 @@ namespace Boxhead.Core
         };
 
         // ── Random Room Pool (Sprint 3 Phase 2) ──────────────────────────────────
-        // The three CulDeSac random rooms that follow Room 1 via the upgrade screen flow.
-        // CulDeSac_AmbushAlley_v2 replaces the old CulDeSac_AmbushAlley here now that it has
-        // been rebuilt under ADR-0002/the new camera (docs/ROADMAP.md Phase 2) — SaloonFront
-        // and MailboxRow still point at their old, reference-only scenes until rebuilt too.
-        private static readonly string[] RandomRoomPool = {
-            "CulDeSac_AmbushAlley_v2",
-            "CulDeSac_SaloonFront",
-            "CulDeSac_MailboxRow",
-        };
+        // Legacy scene-per-room progression queue. The three CulDeSac random rooms that used
+        // to populate this (AmbushAlley_v2, SaloonFront, MailboxRow) were deleted when World 1
+        // was rebuilt as one continuous scene (ADR-0004) — WildWestCity's RoomManager/
+        // WildWestCityZoneDirector own its in-scene zone progression instead of this queue.
+        // Left empty (not removed) so the mechanism stays available for a future World 2 that
+        // isn't built as a single continuous scene — see docs/ARCHITECTURE.md §4.2.1. Populate
+        // it, and give LoadNextRoom()'s exhausted-queue branch a real target scene, before
+        // anything relies on this path again.
+        private static readonly string[] RandomRoomPool = { };
 
         // Static so queue state survives scene reloads — GameManager is per-scene.
         private static List<string> s_roomQueue      = new List<string>();
@@ -565,14 +558,15 @@ namespace Boxhead.Core
         // ── Random Room Progression ───────────────────────────────────────────────
 
         /// <summary>
-        /// Builds a Fisher-Yates shuffled queue of the three random CulDeSac rooms.
-        /// Call once at the start of a run (after Room 1 loads).
+        /// Builds a Fisher-Yates shuffled queue from <see cref="RandomRoomPool"/> (currently
+        /// empty — see its comment). Call once at the start of a run (after the zone-0 start
+        /// scene loads).
         /// </summary>
         public void InitRoomQueue()
         {
             string currentScene = SceneManager.GetActiveScene().name;
-            // Only build a fresh queue when starting from Room 1.
-            // Boss arena and random rooms preserve the existing static queue.
+            // Only build a fresh queue when starting from the zone-0 start scene.
+            // Other scenes preserve the existing static queue.
             if (currentScene == ZoneStartScene[0])
             {
                 s_roomQueue = new List<string>(RandomRoomPool);
@@ -590,13 +584,18 @@ namespace Boxhead.Core
         }
 
         /// <summary>
-        /// Loads the next room from the shuffled queue. When all three random rooms
-        /// are exhausted, falls back to CulDeSac_Room1 (loops the zone).
+        /// Loads the next room from the shuffled queue. When the queue is exhausted (or empty —
+        /// see <see cref="RandomRoomPool"/>), this legacy scene-per-room path has no valid
+        /// target scene for World 1 (ADR-0004 deleted CulDeSac_BossArena along with the rest of
+        /// the old per-room CulDeSac scenes) and logs an error instead of loading a scene that
+        /// no longer exists. This branch should be unreachable from CulDeSac_WildWestCity today
+        /// — it owns its own progression via RoomManager/WildWestCityZoneDirector — and stays
+        /// only for a future World 2 to give a real boss-arena scene name.
         /// </summary>
         public void LoadNextRoom()
         {
             // Snapshot cardboard + forged weapons before the scene unloads so they carry
-            // into the next room (and into the boss arena on the exhausted-queue branch).
+            // into the next room.
             CaptureLoadoutForTransition();
 
             if (_roomQueueIndex < _roomQueue.Count)
@@ -607,10 +606,12 @@ namespace Boxhead.Core
             }
             else
             {
-                // All 3 random rooms done — load boss arena and reset queue for next run.
                 s_roomQueue.Clear();
                 s_roomQueueIndex = 0;
-                SceneManager.LoadScene("CulDeSac_BossArena");
+                Debug.LogError("[GameManager] LoadNextRoom(): random room queue exhausted with no " +
+                    "boss-arena scene configured — ADR-0004 removed CulDeSac_BossArena and the old " +
+                    "CulDeSac random rooms. This legacy path needs RandomRoomPool and a real target " +
+                    "scene before any content relies on it again.");
             }
         }
 
