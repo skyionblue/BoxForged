@@ -6,7 +6,7 @@
 - **Unity project root:** `BoxForged/BoxForged/`
 - **Scripts root:** `Assets/_Project/Scripts/`
 
-This document describes what exists in code **today**, which contracts are staying, and which are changing under [ADR-0001](adr/0001-fixed-low-follow-camera.md), [ADR-0002](adr/0002-full-scene-rebuild.md), and [ADR-0003](adr/0003-attack-telegraph-channel.md).
+This document describes what exists in code **today**, which contracts are staying, and which are changing under [ADR-0001](adr/0001-fixed-low-follow-camera.md), [ADR-0002](adr/0002-full-scene-rebuild.md), [ADR-0003](adr/0003-attack-telegraph-channel.md), and [ADR-0004](adr/0004-world1-single-continuous-scene.md).
 
 It is descriptive, not aspirational. Where the codebase diverges from the documented intent, the divergence is recorded rather than smoothed over — that divergence is itself the most useful thing in here.
 
@@ -186,6 +186,10 @@ The contract is therefore made explicit rather than removed:
 **Rationale:** the environment layer is already portable; the encounter layer is not, and is destroyed by a scene rebuild. Extraction must precede the rebuild or every room is authored twice. Beyond this milestone it is what makes a contributed room a reviewable data asset rather than correct scene surgery.
 
 `LevelBuilder`'s existing responsibilities and its runtime NavMesh bake (`LevelBuilder.cs:65`, which discards all baked scene NavMesh data) are unchanged.
+
+### 4.2.1 World 1 is one continuous scene — ADR-0004
+
+ADR-0002's "one scene per room" corollary is superseded **for World 1 only**. `CulDeSac_WildWestCity.unity` is one continuous street played start to finish, not a series of scene loads. This did not require replacing `RoomManager`/`RoomDataSO` — `RoomManager` already models an ordered list of encounter zones inside a single scene (`_rooms`, `RoomTrigger.OnTriggerEnter` → `OnRoomEntered(index)`), it had just never been used that way. Three `RoomDataSO` zones (Arrival, Ambush Alley, boss-only Showdown Circle) are appended via `LevelBuilder.RoomData` as before; what changed is `GameManager` — `RoomManager.HasZoneAfterCurrent` now lets a room-clear advance to the next zone in-scene instead of always calling `LoadNextRoom()`/`SceneManager.LoadScene`. A scene-local `WildWestCityZoneDirector` handles the one piece of behavior specific to this layout (clearing two covered-wagon props to open the boss's fight space on zone-2 entry). See ADR-0004 for the full zone geometry, the gate/NavMesh-carving pattern (`RoomGate` now also toggles a `NavMeshObstacle`, not just its `Collider`/`Renderer`), and the boundary-wall pattern that seals the street against flanking the gates. World 2 and any future world are not required to follow this pattern — the room-per-scene model in 4.2 above is still the default; ADR-0004 documents when and why to deviate from it.
 
 ### 4.3 Attack telegraphs — ADR-0003
 
