@@ -17,25 +17,28 @@ namespace Boxhead.Core
         // Add new zones here as they ship — unrecognized scenes return -1 (no update).
         internal static readonly Dictionary<string, int> ZoneIndexByScene = new Dictionary<string, int>
         {
-            { "CulDeSac_Room1",        0 }, // reference-only (ADR-0002) — kept so it still resolves if loaded directly
-            { "CulDeSac_Room1_v2",     0 }, // live zone-0 start room (ADR-0002 RoomDataSO build)
-            { "CulDeSac_AmbushAlley",  0 },
-            { "CulDeSac_SaloonFront",  0 },
-            { "CulDeSac_MailboxRow",   0 },
-            { "CulDeSac_BossArena",    0 },
-            { "TownSquare_Room1",      1 },
-            { "TownSquare_BossHall",   1 }, // Boss hall counts as same zone as Town Square Room 1
-            { "WeaponGripTest",        99 }, // dev-only weapon-grip-socket test scene (docs/BACKLOG.md) — not a real zone
+            { "CulDeSac_Room1",           0 }, // reference-only (ADR-0002) — kept so it still resolves if loaded directly
+            { "CulDeSac_Room1_v2",        0 }, // live zone-0 start room (ADR-0002 RoomDataSO build)
+            { "CulDeSac_AmbushAlley",     0 }, // reference-only (ADR-0002) — kept so it still resolves if loaded directly
+            { "CulDeSac_AmbushAlley_v2",  0 }, // live ADR-0002 RoomDataSO rebuild, replaces CulDeSac_AmbushAlley in RandomRoomPool
+            { "CulDeSac_SaloonFront",     0 },
+            { "CulDeSac_MailboxRow",      0 },
+            { "CulDeSac_BossArena",       0 },
+            { "CulDeSac_WildWestCity",    0 }, // ADR-0004: World 1 single continuous scene — zone 0 start room
+            { "TownSquare_Room1",         1 },
+            { "TownSquare_BossHall",      1 }, // Boss hall counts as same zone as Town Square Room 1
+            { "WeaponGripTest",           99 }, // dev-only weapon-grip-socket test scene (docs/BACKLOG.md) — not a real zone
         };
 
         // Maps a zone index to the first scene the player enters when starting that zone.
         // Used by MetaScreen.OnContinue() to advance to the next zone after a win.
-        // Zone 0 points at CulDeSac_Room1_v2 (ADR-0002's RoomDataSO rebuild) — the old
-        // CulDeSac_Room1 is reference-only now (see docs/BACKLOG.md) and is never loaded
-        // through normal game flow, only opened directly for read-only comparison.
+        // Zone 0 points at CulDeSac_WildWestCity (ADR-0004: World 1 is one continuous scene) —
+        // CulDeSac_Room1_v2 and CulDeSac_Room1 are reference-only now (see docs/BACKLOG.md /
+        // docs/adr/0004-world1-single-continuous-scene.md) and are never loaded through normal
+        // game flow, only opened directly for read-only comparison.
         internal static readonly Dictionary<int, string> ZoneStartScene = new Dictionary<int, string>
         {
-            { 0, "CulDeSac_Room1_v2" },
+            { 0, "CulDeSac_WildWestCity" },
             { 1, "TownSquare_Room1"  },
             // 99 = dev-only weapon-grip-socket test scene (WeaponGripTest.unity), not a real
             // progression zone — registered only so RunStartUI.Show()/OnStartClicked() treat it
@@ -46,8 +49,11 @@ namespace Boxhead.Core
 
         // ── Random Room Pool (Sprint 3 Phase 2) ──────────────────────────────────
         // The three CulDeSac random rooms that follow Room 1 via the upgrade screen flow.
+        // CulDeSac_AmbushAlley_v2 replaces the old CulDeSac_AmbushAlley here now that it has
+        // been rebuilt under ADR-0002/the new camera (docs/ROADMAP.md Phase 2) — SaloonFront
+        // and MailboxRow still point at their old, reference-only scenes until rebuilt too.
         private static readonly string[] RandomRoomPool = {
-            "CulDeSac_AmbushAlley",
+            "CulDeSac_AmbushAlley_v2",
             "CulDeSac_SaloonFront",
             "CulDeSac_MailboxRow",
         };
@@ -168,24 +174,76 @@ namespace Boxhead.Core
             // Subscribe to room-clear events to show upgrade/shop screens between rooms.
             RoomManager.OnRoomCleared += HandleRoomCleared;
 
-            if (_livingEnemyCount == 0 && enemies.Length == 0)
+            // When a RoomManager is present it owns win/room-clear via its own boss-tracking
+            // logic (see the early-return in CheckWinCondition below) — having zero enemies
+            // tagged at Start is expected there (e.g. a boss spawned inactive until its zone
+            // activates), not a sign anything is wrong. Only warn when there's no RoomManager
+            // to own the win condition instead, since that genuinely means the run can never
+            // be won via the counter-based path either.
+            if (_livingEnemyCount == 0 && enemies.Length == 0 && RoomManager.Instance == null)
                 Debug.LogWarning("[GameManager] No enemies found at Start — win condition will not trigger via enemy counter.");
 
-            // Calculate total enemies: initial enemies + max spawns from spawner
+            // Calculate total enemies: initial enemies + max spawns from spawner.
+            // ADR-0004 §6: scenes driven entirely by RoomManager/LevelBuilder (no EnemySpawner)
+            // have no other way to know how many enemies a run will actually spawn — the old
+            // flat "20" default was cosmetically wrong on every such scene (e.g. Room 1's 3-enemy
+            // room showed "20 remaining"), not just this one; deriving it from the scene's own
+            // RoomDataSO data fixes all of them without touching any of them individually.
             var spawnerScript = Object.FindAnyObjectByType<Boxhead.Enemy.EnemySpawner>(FindObjectsInactive.Include);
-            if (spawnerScript == null)
-                Debug.LogWarning("[GameManager] No EnemySpawner found in scene — using default maxSpawns of 20.");
-            int maxSpawns = spawnerScript != null ? spawnerScript.MaxTotalSpawns : 20;
+            int maxSpawns;
+            if (spawnerScript != null)
+            {
+                maxSpawns = spawnerScript.MaxTotalSpawns;
+            }
+            else
+            {
+                var levelBuilder = Object.FindAnyObjectByType<LevelBuilder>(FindObjectsInactive.Include);
+                RoomDataSO[] roomData = levelBuilder != null ? levelBuilder.RoomData : null;
+                if (roomData != null && roomData.Length > 0)
+                {
+                    maxSpawns = 0;
+                    foreach (var roomSO in roomData)
+                    {
+                        if (roomSO == null) continue;
+
+                        if (roomSO.spawnPoints != null)
+                        {
+                            foreach (var sp in roomSO.spawnPoints)
+                                maxSpawns += sp.spawnCount;
+                        }
+
+                        // A bossOwnedWin zone with no spawn points represents one pre-placed
+                        // boss elsewhere in the scene (RoomManager never spawns it) — count it
+                        // once so the HUD's starting total includes the boss.
+                        if (roomSO.bossOwnedWin && (roomSO.spawnPoints == null || roomSO.spawnPoints.Length == 0))
+                            maxSpawns += 1;
+                    }
+                }
+                else
+                {
+                    // Legacy scenes with neither an EnemySpawner nor RoomDataSO-driven zones
+                    // (e.g. hand-authored RoomManager._rooms, or no RoomManager at all) keep
+                    // the old approximate default.
+                    Debug.LogWarning("[GameManager] No EnemySpawner or RoomDataSO-driven LevelBuilder found — using default maxSpawns of 20.");
+                    maxSpawns = 20;
+                }
+            }
             _totalEnemyCount = _livingEnemyCount + maxSpawns;
             _deadCount = 0;
 
             UpdateEnemyCounter();
 
             // Restore any inspector refs that scene re-saves may have dropped.
+            // _shopScreen included here (not just _upgradeScreen's earlier Start()-time
+            // fallback) because pfb_GameManager.prefab has never serialized this field at
+            // all — any scene that instantiates a ShopScreen without an explicit Inspector
+            // wire would otherwise leave HandleRoomCleared's _shopScreen?.Show() a silent
+            // no-op (docs/BACKLOG.md B1 / CulDeSac_WildWestCity).
             if (_runStartUI    == null) _runStartUI    = Object.FindAnyObjectByType<RunStartUI>(FindObjectsInactive.Include);
             if (_gameOverUI    == null) _gameOverUI    = Object.FindAnyObjectByType<GameOverUI>(FindObjectsInactive.Include);
             if (_runEndScreen  == null) _runEndScreen  = Object.FindAnyObjectByType<RunEndScreen>(FindObjectsInactive.Include);
             if (_metaScreen    == null) _metaScreen    = Object.FindAnyObjectByType<MetaScreen>(FindObjectsInactive.Include);
+            if (_shopScreen    == null) _shopScreen    = Object.FindAnyObjectByType<ShopScreen>(FindObjectsInactive.Include);
             if (hudController  == null) hudController  = Object.FindAnyObjectByType<HUDController_V2>(FindObjectsInactive.Include);
 
             // Try to play intro/zone-entry cutscenes BEFORE showing RunStartUI. If an opening
@@ -323,6 +381,29 @@ namespace Boxhead.Core
             ProgressionSystem.Instance.CaptureRunLoadout(cardboard, inventory);
         }
 
+        /// <summary>
+        /// Shows a UI screen reference, re-resolving it once via FindAnyObjectByType if the
+        /// serialized/cached field is null. If it's still null after that, logs a clear error
+        /// naming the screen and why it matters instead of silently no-oping — a win/lose/reward
+        /// moment with no on-screen result and no console output is otherwise indistinguishable
+        /// from a hang. Same tone/pattern as RoomManager's spawn-failure logging and
+        /// WildWestCityZoneDirector's H5 gate-failure logging.
+        /// </summary>
+        private void ShowScreenOrLogMissing<T>(ref T screen, System.Action<T> show, string screenName, string consequence)
+            where T : Component
+        {
+            if (screen == null)
+                screen = Object.FindAnyObjectByType<T>(FindObjectsInactive.Include);
+
+            if (screen == null)
+            {
+                Debug.LogError($"[GameManager] {screenName} missing — {consequence}", this);
+                return;
+            }
+
+            show(screen);
+        }
+
         private void OnTrackedEnemyDeath()
         {
             _livingEnemyCount = Mathf.Max(0, _livingEnemyCount - 1);
@@ -400,7 +481,8 @@ namespace Boxhead.Core
                 waited += Time.unscaledDeltaTime;
                 yield return null;
             }
-            _gameOverUI?.Show(won: false);
+            ShowScreenOrLogMissing(ref _gameOverUI, ui => ui.Show(won: false), "_gameOverUI (GameOverUI)",
+                "player death was recorded but the game-over screen will not appear.");
         }
 
         // Called by RoomManager when the final room is cleared, or directly when all tracked enemies die.
@@ -433,10 +515,26 @@ namespace Boxhead.Core
 
             // Run-end screen leads to MetaScreen via its Continue button.
             // GameOverUI win path is replaced by this flow — do not call gameOverUI.Show(won:true) here.
-            _runEndScreen?.Show();
+            ShowScreenOrLogMissing(ref _runEndScreen, ui => ui.Show(), "_runEndScreen (RunEndScreen)",
+                "win state was set and IP/save already committed, but nothing will appear on screen.");
         }
 
         // ── Room progression ──────────────────────────────────────────────────
+
+        /// <summary>
+        /// Fires once the room-clear reward screen has actually taken control (Show()
+        /// called, Time.timeScale frozen) for a cleared room index — not when
+        /// RoomManager.OnRoomCleared itself fires, which happens up to
+        /// <see cref="_roomClearShowDelay"/> seconds earlier. Single-scene worlds
+        /// (ADR-0004, e.g. WildWestCityZoneDirector) subscribe to this instead of
+        /// RoomManager.OnRoomCleared to open a zone's exit gate only once the player is
+        /// actually frozen by the screen — otherwise the gate opens up to ~1.5s before the
+        /// screen appears and the player can sprint into the next zone first (docs/BACKLOG.md H4).
+        /// Fires unconditionally after the roomIndex==0/1 branches below, even for a future
+        /// roomIndex with no screen configured yet, so a gate-opening subscriber never
+        /// permanently stalls waiting for a screen that will never show.
+        /// </summary>
+        public static event System.Action<int> OnRoomClearScreenShown;
 
         /// <summary>
         /// Invoked by RoomManager.OnRoomCleared when a non-boss room is fully cleared.
@@ -455,9 +553,13 @@ namespace Boxhead.Core
             yield return _waitRoomClearShow;
 
             if (roomIndex == 0)
-                _upgradeScreen?.Show();
+                ShowScreenOrLogMissing(ref _upgradeScreen, ui => ui.Show(), "_upgradeScreen (UpgradeScreen)",
+                    $"room {roomIndex} was cleared but the upgrade-card screen will not appear.");
             else if (roomIndex == 1)
-                _shopScreen?.Show();
+                ShowScreenOrLogMissing(ref _shopScreen, ui => ui.Show(), "_shopScreen (ShopScreen)",
+                    $"room {roomIndex} was cleared but the shop screen will not appear.");
+
+            OnRoomClearScreenShown?.Invoke(roomIndex);
         }
 
         // ── Random Room Progression ───────────────────────────────────────────────
@@ -515,7 +617,13 @@ namespace Boxhead.Core
         /// <summary>Called when the player picks an upgrade card — loads the next queued room.</summary>
         private void OnUpgradePicked()
         {
-            LoadNextRoom();
+            // ADR-0004: in a single-scene world the next zone's RoomTrigger owns progression.
+            // UpgradeScreen.OnCardPicked already called Hide() before firing OnUpgradeSelected,
+            // so there is nothing left to close here — just return without loading a scene and
+            // let the next zone's RoomTrigger hand control back to the player in place.
+            if (RoomManager.Instance != null && RoomManager.Instance.HasZoneAfterCurrent) return;
+
+            LoadNextRoom();   // legacy scene-per-room path (World 2 / TownSquare)
         }
 
         public void Restart()

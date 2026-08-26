@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 453eb7d0435a248ad935f39d2f476f31, type: 3}
+  m_Name: WeaponDropTableSO_CulDeSac_WildWestCity
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponDropTableSO
+  scatteredObjects:
+  - weaponObject: {fileID: 11400000, guid: 0cd7030c2e13b4550a58f9004bfdc1ad, type: 2}
+    worldPosition: {x: -41.012, y: 0, z: -36.770}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 9f7be8a4e51544621a90be5a6012834d, type: 2}
+    worldPosition: {x: -36.062, y: 0, z: -40.305}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 34c0cd0993d254022a0eba1ee1f490e8, type: 2}
+    worldPosition: {x: -34.295, y: 0, z: -25.102}
+    useRarityOverride: 0
+    rarityOverride: 0
+  lootZoneObjects: []
+  cardboardPiles:
+  - worldPosition: {x: -40.482, y: 0, z: -38.714}
+    amount: 5
+  - worldPosition: {x: -23.688, y: 0, z: -31.466}
+    amount: 5
+  workbenchPositions:
+  - {x: -35.532, y: 0, z: -30.936}
+  - {x: -18.031, y: 0, z: -27.224}
+  envProps: []

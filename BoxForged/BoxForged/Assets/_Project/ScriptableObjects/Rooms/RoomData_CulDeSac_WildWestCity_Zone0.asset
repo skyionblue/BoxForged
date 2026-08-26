@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4336089dc490f4ad8b50078c2dd40a52, type: 3}
+  m_Name: RoomData_CulDeSac_WildWestCity_Zone0
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.RoomDataSO
+  roomName: The Arrival
+  maxConcurrentEnemies: 3
+  spawnPoints:
+  - enemyPrefab: {fileID: 1291572976274003528, guid: 21e2df531501949b4ac4fa77e1e869df, type: 3}
+    position: {x: -41.189, y: 0, z: -32.350}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 1291572976274003528, guid: 21e2df531501949b4ac4fa77e1e869df, type: 3}
+    position: {x: -32.173, y: 0, z: -39.952}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: -35.179, y: 0, z: -34.118}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: -28.991, y: 0, z: -38.891}
+    facingY: 245
+    spawnCount: 1
+  - enemyPrefab: {fileID: 4201322907947373338, guid: bc9f5703dc6c145e7b28153b0c7d057c, type: 3}
+    position: {x: -34.825, y: 0, z: -31.643}
+    facingY: 225
+    spawnCount: 1
+  bossOwnedWin: 0

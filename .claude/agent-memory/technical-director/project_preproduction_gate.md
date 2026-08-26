@@ -1,22 +1,18 @@
 ---
 name: project-preproduction-gate
-description: BoxForged lifecycle state — pre-production authorized 2026-08-18; TDD/ARCHITECTURE/ADRs 0001-0003 produced 2026-08-19 and all still Proposed; production NOT authorized.
+description: BoxForged lifecycle state — production authorized 2026-08-19, Sprint 0 shipped; ADR-0001/2/3 status is contradictory across docs; ADR-0004 (single-scene World 1) is Accepted but unimplemented.
 metadata:
   type: project
 ---
 
-BoxForged left Discovery on 2026-08-18 ("Lock discovery and begin pre-production"). On 2026-08-19 the pre-production technical deliverable was produced: `docs/TECHNICAL_DESIGN.md`, `docs/ARCHITECTURE.md`, `docs/TECHNICAL_DECISIONS.md`, `docs/BACKLOG.md`, and three ADRs.
+BoxForged left Discovery 2026-08-18 and the owner authorized production 2026-08-19 ("Start Sprint 0"). **Sprint 0 is implemented and pushed** on `feature/sprint-0-foundation-rebuild` — camera (ADR-0001), telegraph channel (ADR-0003), and forge feel all shipped. The earlier note that "production is not authorized" is obsolete.
 
-All three ADRs are **Proposed, not Accepted**. Production is not authorized — no C# or scene work should begin until the owner approves.
+**ADR status is genuinely contradictory across sources — do not assume.** `docs/TECHNICAL_DECISIONS.md` lists ADR-0001/0002/0003 as **Proposed**; `docs/adr/0002-full-scene-rebuild.md`'s own header says **Accepted**; `docs/ROADMAP.md` says production was authorized. Code shipped against 0001/0003 regardless. Flagged in TECHNICAL_DECISIONS for the owner; check current state rather than trusting any single doc.
 
-- **ADR-0001** fixed low follow camera: pitch 36°, FOV 45°, yaw 0°, offset `(0, 5.5, -7.57)`
-- **ADR-0002** full scene rebuild, gated on extracting `RoomData` → `RoomDataSO` **before** old scenes are abandoned
-- **ADR-0003** attack telegraph channel (not requested — recorded because ADR-0001 is unsafe without it)
+- **ADR-0004** (`docs/adr/0004-world1-single-continuous-scene.md`): World 1 becomes one continuous scene `CulDeSac_WildWestCity.unity`, zoned by `RoomManager`, boss included. **Accepted 2026-08-26** — the owner resolved all five original open questions. It is now an implementation spec, still unimplemented, and a commit still needs the owner's normal approval. Two questions remain open: barricade art for the `RoomGate`s, and the measured 10° street-vs-camera yaw mismatch.
 
-**Why:** the owner locked two decisions (camera override, full scene rebuild) that are material architecture changes, and project rules require `technical-director` design + ADR before implementation.
+**Why:** the owner pivots direction mid-flight (room-by-room → single scene) and expects a `technical-director` design + ADR pass before implementation, per `CLAUDE.md`.
 
-**How to apply:** before doing any camera, scene, level, or forge implementation work, check whether these ADRs have moved to Accepted. If they are still Proposed, the work is not authorized. Six owner decisions (D1–D6 in `docs/BACKLOG.md`) also gate downstream work — notably the ability-system choice and whether existing room encounter data is preserved.
+**How to apply:** the ADR-0001/2/3 status conflict is still unresolved — check current state rather than trusting any single doc. Six older owner decisions (D1–D6 in `docs/BACKLOG.md`) still gate downstream work, notably the V3/V4 ability-system choice.
 
-ADR-0001 and ADR-0003 should be approved or rejected **together**; the low camera without the telegraph work is the one combination that should not ship.
-
-Related: [[project-asset-weight-risk]], [[project-docs-drift-from-code]]
+Related: [[project-asset-weight-risk]], [[project-docs-drift-from-code]], [[project-roommanager-zone-mechanism]]

@@ -441,7 +441,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: ce85b949a42d34935a9b79031ac781e4, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -551,7 +551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80d0768145a604e57856fe0de2f53a17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.EnemyHealthBar
-  _offset: {x: 0, y: 2.5, z: 0}
+  _offset: {x: 0, y: 2.3, z: 0}
   _barWidth: 0.8
   _barHeight: 0.17
 --- !u!114 &2894948667127507446

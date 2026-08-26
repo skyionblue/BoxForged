@@ -185,7 +185,10 @@ namespace Boxhead.Enemy
         private WaitForSeconds _waitStagger;
         private WaitForSeconds _waitPhaseTransition;
         private WaitForSeconds _waitDefeatHold;
-        private WaitForSeconds _waitDefeatStumble;
+        // Realtime (unscaled), not WaitForSeconds: DefeatSequence must always reach TriggerWin()
+        // even if something elsewhere in the scene has left Time.timeScale at 0 (e.g. a UI panel
+        // that failed to restore it) — see the unscaled-time fix throughout DefeatSequence below.
+        private WaitForSecondsRealtime _waitDefeatStumble;
 
         // ── Unity lifecycle ───────────────────────────────────────────────────
 
@@ -213,7 +216,7 @@ namespace Boxhead.Enemy
             _waitStagger         = new WaitForSeconds(staggerDuration);
             _waitPhaseTransition = new WaitForSeconds(phaseTransitionPause);
             _waitDefeatHold      = new WaitForSeconds(defeatHoldDuration);
-            _waitDefeatStumble   = new WaitForSeconds(_defeatStumbleDuration);
+            _waitDefeatStumble   = new WaitForSecondsRealtime(_defeatStumbleDuration);
 
             _agent = GetComponent<NavMeshAgent>();
             if (_agent != null)
@@ -1107,6 +1110,20 @@ namespace Boxhead.Enemy
             _defeatRoutine = StartCoroutine(DefeatSequence());
         }
 
+        // Runs entirely on unscaled/real time (see WobbleRoutine/ShrinkAndFade/LerpImagination
+        // below, plus _waitDefeatStumble being a WaitForSecondsRealtime) rather than the scaled
+        // Time.deltaTime the rest of this AI otherwise uses. Root cause (docs/BACKLOG.md, World1
+        // WildWestCity boss-win bug): once the boss is confirmed dead, this sequence's only job
+        // is to play a short animation and then unconditionally call GameManager.TriggerWin() —
+        // but every step previously waited on SCALED time, so if anything else in the scene left
+        // Time.timeScale at 0 at the moment of the killing blow (confirmed reproducible: a UI
+        // panel that pauses the game via Time.timeScale = 0 but whose own "unpause" path never
+        // ran), the whole sequence silently stalled forever and TriggerWin() was never reached —
+        // the boss died with no error, but the run never ended. Converting these waits to
+        // unscaled time guarantees the win condition always fires a few real seconds after death,
+        // regardless of what any other system has done to Time.timeScale. Matches the same
+        // pattern this codebase already uses for the identical class of problem elsewhere
+        // (ForgePanel.WaitForCutsceneThenClose, GameManager._waitRoomClearShow/_cutsceneStartDelay).
         private IEnumerator DefeatSequence()
         {
             drumWindow?.BeginStopDrum();
@@ -1152,6 +1169,8 @@ namespace Boxhead.Enemy
         /// <summary>
         /// Oscillates SpinCycle's Y rotation back and forth — simulates a stumble/wobble
         /// without DOTween. Rotation resets to the pre-wobble value when done.
+        /// Unscaled time — see DefeatSequence's class-level comment on why every step of the
+        /// defeat animation must be immune to Time.timeScale.
         /// </summary>
         private IEnumerator WobbleRoutine(float duration)
         {
@@ -1162,7 +1181,7 @@ namespace Boxhead.Enemy
 
             while (elapsed < duration)
             {
-                elapsed += Time.deltaTime;
+                elapsed += Time.unscaledDeltaTime;
                 float angle = Mathf.Sin(elapsed * wobbleFrequency) * wobbleAmplitude
                               * (1f - elapsed / duration); // dampen toward zero
                 transform.rotation = Quaternion.Euler(0f, startAngleY + angle, 0f);
@@ -1178,6 +1197,8 @@ namespace Boxhead.Enemy
         /// uses URP Surface Type = Opaque, which ignores _BaseColor.a entirely — the geometry
         /// stayed fully opaque regardless of the alpha value written. The shrink alone (wobble
         /// + particle burst + scale-to-zero) provides sufficient visual payoff.
+        /// Unscaled time — see DefeatSequence's class-level comment on why every step of the
+        /// defeat animation must be immune to Time.timeScale.
         /// </summary>
         private IEnumerator ShrinkAndFade(float duration)
         {
@@ -1186,7 +1207,7 @@ namespace Boxhead.Enemy
 
             while (elapsed < duration)
             {
-                elapsed += Time.deltaTime;
+                elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
                 transform.localScale = Vector3.Lerp(startScale, Vector3.zero, t);
                 yield return null;
@@ -1198,13 +1219,16 @@ namespace Boxhead.Enemy
             // Do NOT call Destroy here — DefeatSequence must invoke TriggerWin first.
         }
 
+        // Unscaled time — see DefeatSequence's class-level comment on why every step of the
+        // defeat animation must be immune to Time.timeScale (this is the step that ultimately
+        // calls GameManager.TriggerWin(), so it matters most here).
         private IEnumerator LerpImagination(float duration)
         {
             float elapsed = 0f;
             while (elapsed < duration)
             {
                 if (_imaginationVolume == null) yield break;
-                elapsed += Time.deltaTime;
+                elapsed += Time.unscaledDeltaTime;
                 _imaginationVolume.weight = Mathf.Clamp01(elapsed / duration);
                 yield return null;
             }

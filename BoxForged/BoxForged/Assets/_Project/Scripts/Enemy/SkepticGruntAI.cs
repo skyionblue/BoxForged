@@ -23,6 +23,8 @@ namespace Boxhead.Enemy
         [SerializeField] private float windUpDuration       = 0.6f;
         [SerializeField] private float attackActiveDuration = 0.3f;
         [SerializeField] private float attackCooldown       = 2f;
+        [Tooltip("Overhead telegraph height. This model's top is ~1.89m (0.9m taller than WagonWheelRoller), so the shared AttackTelegraphService default reads too low here — see BACKLOG.md B56/B69.")]
+        [SerializeField] private float telegraphHeightOffset = 2.8f;
 
         [Header("Stagger")]
         [SerializeField] private float staggerDuration    = 1.5f;
@@ -362,7 +364,9 @@ namespace Boxhead.Enemy
             _animator?.SetTrigger(AnimAttack);
             SetFlashColor(ColorWindUp);
             // ADR-0003: occlusion-independent overhead telegraph, additive to the flash above.
-            AttackTelegraphService.Show(transform, AttackTelegraphKind.MeleeParryable, windUpDuration);
+            // Explicit height — the shared _defaultHeightOffset is WagonWheelRoller-specific
+            // per BACKLOG.md B56 and reads too low on this taller model.
+            AttackTelegraphService.Show(transform, AttackTelegraphKind.MeleeParryable, windUpDuration, telegraphHeightOffset);
             yield return _waitWindUp;
 
             // Attacking: check distance and apply damage.

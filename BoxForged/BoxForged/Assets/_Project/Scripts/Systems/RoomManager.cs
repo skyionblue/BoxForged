@@ -194,6 +194,15 @@ namespace Boxhead.Systems
         }
 
         /// <summary>
+        /// ADR-0004: true when a later zone exists in this scene — progression is in-scene
+        /// (the next zone's RoomTrigger), not a scene load. GameManager.OnUpgradePicked reads
+        /// this to skip LoadNextRoom() for single-scene worlds (e.g. CulDeSac_WildWestCity)
+        /// while leaving the legacy scene-per-room path (every RoomDataSO-per-scene world)
+        /// untouched — there _rooms.Count is always 1, so this is always false there.
+        /// </summary>
+        public bool HasZoneAfterCurrent => _currentRoom >= 0 && _currentRoom < _rooms.Count - 1;
+
+        /// <summary>
         /// Resets all spawn point quotas across every room and re-activates room 0.
         /// Iterates all rooms (not just the last active one) so every EnemySpawnPoint
         /// is restored. In practice GameManager.Restart() calls SceneManager.LoadScene,

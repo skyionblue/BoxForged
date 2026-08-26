@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4336089dc490f4ad8b50078c2dd40a52, type: 3}
+  m_Name: RoomData_CulDeSac_WildWestCity_Zone1
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.RoomDataSO
+  roomName: Ambush Alley
+  maxConcurrentEnemies: 4
+  spawnPoints:
+  - enemyPrefab: {fileID: 4201322907947373338, guid: bc9f5703dc6c145e7b28153b0c7d057c, type: 3}
+    position: {x: -32.704, y: 0, z: -25.279}
+    facingY: 200
+    spawnCount: 1
+  - enemyPrefab: {fileID: 4201322907947373338, guid: bc9f5703dc6c145e7b28153b0c7d057c, type: 3}
+    position: {x: -26.340, y: 0, z: -31.643}
+    facingY: 250
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: -29.698, y: 0, z: -21.920}
+    facingY: 205
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: -23.511, y: 0, z: -28.107}
+    facingY: 245
+    spawnCount: 1
+  - enemyPrefab: {fileID: 1291572976274003528, guid: 21e2df531501949b4ac4fa77e1e869df, type: 3}
+    position: {x: -21.567, y: 0, z: -22.981}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: -18.738, y: 0, z: -19.446}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 1291572976274003528, guid: 21e2df531501949b4ac4fa77e1e869df, type: 3}
+    position: {x: -22.451, y: 0, z: -15.733}
+    facingY: 225
+    spawnCount: 1
+  bossOwnedWin: 0
