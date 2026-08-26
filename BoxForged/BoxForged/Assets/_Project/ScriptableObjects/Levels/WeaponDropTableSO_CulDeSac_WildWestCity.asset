@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponDropTableSO
   scatteredObjects:
   - weaponObject: {fileID: 11400000, guid: 0cd7030c2e13b4550a58f9004bfdc1ad, type: 2}
-    worldPosition: {x: -41.012, y: 0, z: -36.770}
+    worldPosition: {x: -41.012, y: 0, z: -36.77}
     useRarityOverride: 0
     rarityOverride: 0
   - weaponObject: {fileID: 11400000, guid: 9f7be8a4e51544621a90be5a6012834d, type: 2}
@@ -31,6 +31,18 @@ MonoBehaviour:
     amount: 5
   - worldPosition: {x: -23.688, y: 0, z: -31.466}
     amount: 5
+  - worldPosition: {x: -42.5, y: 0, z: -34}
+    amount: 4
+  - worldPosition: {x: -38, y: 0, z: -27.5}
+    amount: 4
+  - worldPosition: {x: -27, y: 0, z: -35.5}
+    amount: 5
+  - worldPosition: {x: -20.5, y: 0, z: -20}
+    amount: 5
+  - worldPosition: {x: -13, y: 0, z: -9}
+    amount: 5
+  - worldPosition: {x: -6, y: 0, z: -13}
+    amount: 4
   workbenchPositions:
   - {x: -35.532, y: 0, z: -30.936}
   - {x: -18.031, y: 0, z: -27.224}
