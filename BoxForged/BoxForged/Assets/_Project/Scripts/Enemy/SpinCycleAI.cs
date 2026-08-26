@@ -352,17 +352,9 @@ namespace Boxhead.Enemy
 
             _stats.OnDeath += HandleDeath;
 
-            // Play the pre-rendered standoff cutscene first (every encounter, skippable), then
-            // run the in-engine emergence intro. The video overlay hides the scene, so the boss
-            // stays hidden behind it until the in-engine BossIntro takes over on the callback.
-            var cutscene = Boxhead.Core.CutscenePlayer.Instance;
-            if (cutscene != null)
-                cutscene.Play(
-                    Boxhead.Core.CutsceneCatalog.SpinCycleStandoff,
-                    onFinished: () => StartCoroutine(BossIntro()),
-                    skippable: true);
-            else
-                StartCoroutine(BossIntro());
+            // Run the in-engine emergence intro (camera dolly to the doorway, boss walk-out)
+            // directly on encounter start.
+            StartCoroutine(BossIntro());
         }
 
         private void Update()

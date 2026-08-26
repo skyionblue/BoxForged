@@ -1163,7 +1163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.UI.MinimapIndicator
   _color: {r: 1, g: 0.9, b: 0.1, a: 1}
-  _discRadius: 2.8
+  _discRadius: 0.7
   _altitudeY: 38
   _minimapLayer: 20
 --- !u!135 &69497437774029168

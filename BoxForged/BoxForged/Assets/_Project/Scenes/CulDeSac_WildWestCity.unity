@@ -1889,6 +1889,19 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &577545379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 577545373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a749ffdae2f346739a6d6e6bb015461, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Core.MinimapCameraFollow
+  _ground: {fileID: 1051719104}
 --- !u!1001 &580462786
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5463,7 +5476,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4807040789361459882, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
       propertyPath: orthographic size
-      value: 32
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4807040789361459882, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
       propertyPath: m_CullingMask.m_Bits
@@ -5480,6 +5493,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5111062476808439299, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
       insertIndex: -1
       addedObject: {fileID: 577545376}
+    - targetCorrespondingSourceObject: {fileID: 5111062476808439299, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 577545379}
   m_SourcePrefab: {fileID: 100100000, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
 --- !u!1001 &2041358257
 PrefabInstance:
