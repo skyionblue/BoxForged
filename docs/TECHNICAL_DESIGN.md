@@ -207,6 +207,20 @@ No optimization is accepted without a before/after measurement on device.
 3. Record CPU main/render thread, GPU frame time, draw calls, SetPass calls, texture memory, GC allocation per frame, and **frame time at minute 1 versus minute 12** for thermal.
 4. Record the scenario and device alongside the numbers. A figure without its scenario is not evidence.
 
+### 3.8 Executing the protocol — see `docs/PERFORMANCE_PROFILING.md`
+
+§3.7 states *what* to measure. **[`docs/PERFORMANCE_PROFILING.md`](PERFORMANCE_PROFILING.md)** is the step-by-step execution of it for `CulDeSac_WildWestCity` on a physical iPhone, written to be followed by a non-expert without further engineering support: exact Unity and Xcode menu paths, which Profiler modules to open and what to read in each, which Instruments template to use, and a **results template that is the recording home for every device measurement** — results go there, not into this document.
+
+That checklist introduces **no new budgets**. Every pass/fail line in it cites §3.1, §3.2, §3.3, or [ADR-0004](adr/0004-world1-single-continuous-scene.md) §8 as its source.
+
+Three things it establishes that §3.7 leaves open, and which matter for whether the numbers are trustworthy:
+
+- **Two passes are required, not one.** A Development Build (needed for the Unity Profiler) inflates CPU frame time. So the Unity Profiler pass owns *counts and structure* — draw calls, SetPass calls, triangles, GC allocation, texture memory — and a **non-development** build profiled with Xcode Instruments owns the *frame-time and thermal verdict*. Reporting a Development Build millisecond figure as the answer to the 60 FPS budget is wrong.
+- **The minute-1-vs-minute-12 comparison cannot be one Unity Profiler recording.** The Profiler frame buffer caps at 2000 frames (~33 s at 60 FPS). The 15-minute thermal run is measured with Xcode's continuous gauges, optionally supplemented by two short Profiler captures at each end.
+- **Device class is part of the result.** A pass on a device newer than the §3.1 target class is a lower bound, not a pass — consistent with the standard §3.4 sets on itself.
+
+**One correction this document needs.** §3.3's shadow-distance row describes the current setting as 40 m against a **256×256** atlas. The live `Assets/Settings/Mobile_RPAsset.asset` actually reads `m_ShadowDistance: 50`, `m_MainLightShadowmapResolution: 1024`, `m_ShadowCascadeCount: 1`. The **25 m target is unchanged and still correct**; only the description of the current state is stale, and the gap is larger than §3.3 implies (50 → 25, not 40 → 25). Flagged here rather than edited in place, since correcting a budget table's prose is a separate reviewed change.
+
 ---
 
 ## 4. Attack readability — a blocking dependency of the camera change
