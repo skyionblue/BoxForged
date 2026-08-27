@@ -220,7 +220,7 @@ Recorded, not resolved. Backlog candidates — see `docs/BACKLOG.md`.
 | 8 | **Persistence split across two backends** — JSON for `SaveData`, PlayerPrefs for `CutsceneFlags` | |
 | 9 | **Mutable state on shared ScriptableObject assets** — e.g. `TheFirstStrikeBehaviour._firstHitReady` | Single-player-only assumption; would break co-op, which CANON says is designed for from day one |
 | 10 | **1,016 lines of unreachable boss code** — `PermitPulperBossAI` + `PermitPulperBossIntro` are in no scene or prefab; runtime lookups always return null | |
-| 11 | **Three Build Settings scenes do not exist on disk** — `LoadingScreen`, `TownSquare_Room1`, `TownSquare_BossHall` | Makes `GameManager.cs:34` zone 1 unreachable |
+| 11 | ~~**Three Build Settings scenes do not exist on disk**~~ — **FIXED 2026-08-27**, dead entries removed from `EditorBuildSettings.asset` (see `docs/BACKLOG.md` B11) | `GameManager.cs:34` zone 1 (`TownSquare_Room1`) is still unreachable — that scene simply doesn't exist yet (World 2, Phase 3), independent of the Build Settings cleanup |
 | 12 | **No test infrastructure** — one trivial asmdef, zero tests, DoD unsatisfiable | |
 
 Divergence 9 is worth flagging beyond its size: `docs/CREATIVE_STATE.md` records co-op as designed-in from day one, and per-asset mutable ability state is directly incompatible with that.

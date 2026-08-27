@@ -341,7 +341,7 @@ The payoff beyond this milestone: a contributor authors a room by creating a dat
 
 | Item | Evidence |
 |---|---|
-| Three Build Settings scenes do not exist on disk | `LoadingScreen.unity`, `TownSquare_Room1.unity`, `TownSquare_BossHall.unity`. `GameManager.cs:34` `ZoneStartScene[1]` is unreachable |
+| ~~Three Build Settings scenes do not exist on disk~~ — **FIXED 2026-08-27**, entries removed from `EditorBuildSettings.asset` | `LoadingScreen.unity`, `TownSquare_Room1.unity`, `TownSquare_BossHall.unity` are gone from Build Settings. `GameManager.cs:34` `ZoneStartScene[1]` is still unreachable (World 2 doesn't exist yet) — unrelated to the Build Settings fix |
 | Two parallel enemy-spawn systems run simultaneously | `RoomManager`'s `EnemySpawnPoint` path and `Enemy/EnemySpawner.cs`'s `Transform[]` coroutine, both active in CulDeSac scenes |
 | Two forge UIs, the better one dead | `UI/ForgeUI.cs` (514 lines, zero scene/prefab references) vs live `UI/ForgePanel.cs` (193 lines) |
 | `_spawnRoot` null | `{fileID: 0}` in `CulDeSac_Room1` — builder content lands at scene root |
