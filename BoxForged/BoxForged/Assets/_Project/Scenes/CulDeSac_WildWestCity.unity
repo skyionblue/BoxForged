@@ -1035,7 +1035,7 @@ GameObject:
   - component: {fileID: 388940338}
   - component: {fileID: 388940339}
   m_Layer: 0
-  m_Name: WildWestCityZoneDirector
+  m_Name: ZoneDirector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

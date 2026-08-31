@@ -20,6 +20,7 @@ namespace Boxhead.Core
             { "CulDeSac_WildWestCity",    0 }, // ADR-0004: World 1 single continuous scene — zone 0 start room
             { "TownSquare_Room1",         1 },
             { "TownSquare_BossHall",      1 }, // Boss hall counts as same zone as Town Square Room 1
+            { "Backyard_Dojo",            1 }, // ADR-0005: World 2 single continuous scene — zone 1 start room
             { "WeaponGripTest",           99 }, // dev-only weapon-grip-socket test scene (docs/BACKLOG.md) — not a real zone
         };
 
@@ -32,7 +33,9 @@ namespace Boxhead.Core
         internal static readonly Dictionary<int, string> ZoneStartScene = new Dictionary<int, string>
         {
             { 0, "CulDeSac_WildWestCity" },
-            { 1, "TownSquare_Room1"  },
+            // ADR-0005 §7: corrects the never-existent "TownSquare_Room1" placeholder to
+            // World 2's real single-continuous-scene, Backyard_Dojo (the Backyard/Dojo).
+            { 1, "Backyard_Dojo"  },
             // 99 = dev-only weapon-grip-socket test scene (WeaponGripTest.unity), not a real
             // progression zone — registered only so RunStartUI.Show()/OnStartClicked() treat it
             // as a run-start room and actually display the character picker. Never referenced

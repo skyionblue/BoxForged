@@ -4,29 +4,36 @@ using Boxhead.Core;
 namespace Boxhead.Systems
 {
     /// <summary>
-    /// ADR-0004: owns every scene-specific consequence of a zone change in
-    /// CulDeSac_WildWestCity — clearing the two covered wagons that block the boss arena,
-    /// activating the pre-placed SpinCycle boss, and opening each zone's exit gate.
+    /// ADR-0005 (generalized from ADR-0004's WildWestCityZoneDirector): owns every
+    /// scene-specific consequence of a zone change in a single-continuous-scene world —
+    /// clearing props that block the boss arena, activating the pre-placed boss, and
+    /// opening each zone's exit gate. All four serialized fields below are already
+    /// scene-agnostic data (which props clear, which GameObject is the boss, and which
+    /// gate belongs to which zone are facts about one scene's layout, not the reusable
+    /// encounter system) — only the class name was ever street-specific, so this is a
+    /// reusable component instantiated once per single-scene world rather than copied
+    /// per world. First shipped for CulDeSac_WildWestCity (World 1); World 2's
+    /// Backyard_Dojo reuses the same class as a second instance.
     ///
     /// Deliberately a single scene-local script rather than an extension of RoomManager:
     /// which props clear, which GameObject is the boss, and which barricade belongs to
-    /// which zone are facts about one street, not the reusable encounter system. RoomManager
+    /// which zone are facts about one scene, not the reusable encounter system. RoomManager
     /// exposes OnRoomActivated (still used directly here for boss activation).
     /// Gate-opening deliberately does NOT subscribe to RoomManager.OnRoomCleared directly —
     /// see HandleZoneCleared below (docs/BACKLOG.md H4).
     /// </summary>
-    public class WildWestCityZoneDirector : MonoBehaviour
+    public class ZoneDirector : MonoBehaviour
     {
-        [Tooltip("Objects deactivated the moment the boss zone activates — the two covered wagons blocking the boss arena floor and the SpinCycle intro camera's dolly path.")]
+        [Tooltip("Objects deactivated the moment the boss zone activates — e.g. props blocking the boss arena floor or a boss intro camera's dolly path (World 1: the two covered wagons and the SpinCycle intro camera's dolly path).")]
         [SerializeField] private GameObject[] _clearOnBossZone;
 
-        [Tooltip("Pre-placed, inactive SpinCycle boss instance. Forced inactive in Awake regardless of the saved scene state, then activated when the boss zone becomes active.")]
+        [Tooltip("Pre-placed, inactive boss instance for this scene. Forced inactive in Awake regardless of the saved scene state, then activated when the boss zone becomes active.")]
         [SerializeField] private GameObject _boss;
 
-        [Tooltip("_gateByZone[i] is the RoomGate that opens when zone i is cleared. Leave an element null if that zone has no gate (e.g. the boss zone, which is never \"cleared\" via RoomManager — SpinCycleAI owns the win).")]
+        [Tooltip("_gateByZone[i] is the RoomGate that opens when zone i is cleared. Leave an element null if that zone has no gate (e.g. the boss zone, which is never \"cleared\" via RoomManager — the boss AI owns the win).")]
         [SerializeField] private RoomGate[] _gateByZone;
 
-        [Tooltip("Zone index at which the boss activates and the wagons clear. Matches this scene's third RoomDataSO (index 2, \"The Showdown Circle\"). Cross-checked against this scene's LevelBuilder.RoomData at Start() — a loud warning/error fires if it drifts out of sync.")]
+        [Tooltip("Zone index at which the boss activates and _clearOnBossZone props clear. Must match this scene's boss RoomDataSO (bossOwnedWin = true). Cross-checked against this scene's LevelBuilder.RoomData at Start() — a loud warning/error fires if it drifts out of sync.")]
         [SerializeField] private int _bossZoneIndex = 2;
 
         private void Awake()
@@ -43,7 +50,7 @@ namespace Boxhead.Systems
                 // H5: silent before this fix — the boss would simply never activate, giving
                 // an unwinnable run with zero log output to explain why.
                 Debug.LogError(
-                    "[WildWestCityZoneDirector] _boss is not assigned — the boss zone will " +
+                    "[ZoneDirector] _boss is not assigned — the boss zone will " +
                     "never activate and the run is unwinnable.", this);
             }
         }
@@ -59,7 +66,7 @@ namespace Boxhead.Systems
             if (roomData == null || roomData.Length == 0)
             {
                 Debug.LogWarning(
-                    "[WildWestCityZoneDirector] Could not find this scene's LevelBuilder.RoomData " +
+                    "[ZoneDirector] Could not find this scene's LevelBuilder.RoomData " +
                     "— cannot cross-check _bossZoneIndex/_gateByZone.", this);
                 return;
             }
@@ -67,25 +74,25 @@ namespace Boxhead.Systems
             if (_bossZoneIndex < 0 || _bossZoneIndex >= roomData.Length)
             {
                 Debug.LogError(
-                    $"[WildWestCityZoneDirector] _bossZoneIndex ({_bossZoneIndex}) is out of range " +
+                    $"[ZoneDirector] _bossZoneIndex ({_bossZoneIndex}) is out of range " +
                     $"for this scene's {roomData.Length} RoomDataSO zones — the boss will never activate.", this);
             }
             else if (roomData[_bossZoneIndex] == null || !roomData[_bossZoneIndex].bossOwnedWin)
             {
                 Debug.LogWarning(
-                    $"[WildWestCityZoneDirector] _bossZoneIndex ({_bossZoneIndex}) does not point at a " +
+                    $"[ZoneDirector] _bossZoneIndex ({_bossZoneIndex}) does not point at a " +
                     "bossOwnedWin RoomDataSO — it may be out of sync with this scene's actual zone order.", this);
             }
 
             // Every zone except the last needs a gate to exit it (the last zone is the boss
-            // zone, which SpinCycleAI ends directly — no gate needed). Trailing null/absent
+            // zone, which the boss AI ends directly — no gate needed). Trailing null/absent
             // entries beyond that are fine (that is how the boss zone's "no gate" slot works).
             int gatesNeeded = roomData.Length - 1;
             int gatesProvided = _gateByZone != null ? _gateByZone.Length : 0;
             if (gatesProvided < gatesNeeded)
             {
                 Debug.LogWarning(
-                    $"[WildWestCityZoneDirector] _gateByZone has {gatesProvided} entries but this scene " +
+                    $"[ZoneDirector] _gateByZone has {gatesProvided} entries but this scene " +
                     $"has {roomData.Length} zones (needs {gatesNeeded} gates) — some zone clears may have " +
                     "no gate to open, permanently walling the player in.", this);
             }
@@ -120,9 +127,9 @@ namespace Boxhead.Systems
         {
             if (zoneIndex != _bossZoneIndex) return;
 
-            // Order is load-bearing: covered_wagon_01 sits directly alongside the SpinCycle
-            // intro camera's dolly path (ADR-0004 §2), so the wagons must be gone before the
-            // boss (and its Awake()-created intro camera) is activated.
+            // Order is load-bearing: e.g. World 1's covered_wagon_01 sits directly alongside
+            // the SpinCycle intro camera's dolly path (ADR-0004 §2), so _clearOnBossZone must
+            // clear before the boss (and any Awake()-created intro camera) is activated.
             if (_clearOnBossZone != null)
             {
                 for (int i = 0; i < _clearOnBossZone.Length; i++)
@@ -143,7 +150,7 @@ namespace Boxhead.Systems
             if (_gateByZone == null || zoneIndex < 0 || zoneIndex >= _gateByZone.Length)
             {
                 Debug.LogError(
-                    $"[WildWestCityZoneDirector] No RoomGate configured for cleared zone {zoneIndex} " +
+                    $"[ZoneDirector] No RoomGate configured for cleared zone {zoneIndex} " +
                     $"(_gateByZone has {(_gateByZone == null ? 0 : _gateByZone.Length)} entries) — " +
                     "the gate will never open and the player is permanently walled in.", this);
                 return;
@@ -153,7 +160,7 @@ namespace Boxhead.Systems
             if (gate == null)
             {
                 Debug.LogError(
-                    $"[WildWestCityZoneDirector] _gateByZone[{zoneIndex}] is null — the gate for " +
+                    $"[ZoneDirector] _gateByZone[{zoneIndex}] is null — the gate for " +
                     "this zone will never open and the player is permanently walled in.", this);
                 return;
             }
