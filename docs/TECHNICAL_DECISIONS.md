@@ -12,8 +12,9 @@ Index and summary of accepted technical decisions and package approvals. Full co
 | [0002](adr/0002-full-scene-rebuild.md) | Full scene rebuild on extracted room data | **Proposed** | 2026-08-19 |
 | [0003](adr/0003-attack-telegraph-channel.md) | Occlusion-independent attack telegraph channel | **Proposed** | 2026-08-19 |
 | [0004](adr/0004-world1-single-continuous-scene.md) | World 1 is one continuous scene, zoned by `RoomManager` | **Accepted** | 2026-08-25, finalized 2026-08-26 |
+| [0005](adr/0005-world2-single-continuous-scene.md) | World 2 is one continuous scene; single-scene becomes the default | **Accepted** | 2026-08-31 |
 
-ADR-0001–0003 await owner approval. ADR-0004 was accepted 2026-08-26 once the owner resolved every question it had left open; it is the implementation spec for the city scene but does not by itself authorize a commit.
+ADR-0001–0003 await owner approval. ADR-0004 was accepted 2026-08-26 once the owner resolved every question it had left open; it is the implementation spec for the city scene but does not by itself authorize a commit. ADR-0005 was accepted 2026-08-31 with the owner having explicitly delegated the scene-architecture choice to `technical-director`; its open questions are content decisions and do not block scaffolding.
 
 > **Status conflict, surfaced not resolved (2026-08-25):** this table lists 0001–0003 as Proposed, but `adr/0002-full-scene-rebuild.md`'s own header says **Accepted** and `docs/ROADMAP.md` records production as authorized on 2026-08-19. Sprint 0 shipped against 0001/0003. Owner should confirm which is correct and the losing source should be corrected.
 
@@ -60,6 +61,30 @@ No new mechanism is invented, and **no geometry changes.** `RoomManager` already
 Rejected: additive scene loading, distance-based streaming, `_zoneSceneBindings`, hand-authoring zones in the Inspector, a boss arena at the far north end, four-plus zones, and clearing only one wagon.
 
 Performance position: **no new gating system**, and the `_useBakedNavMesh` opt-out is dropped (the runtime bake is collider-driven and correct here). Three risks recorded instead: texture residency (all 10 buildings resident for the whole run, likely breaching the < 150 MB/room budget), a stale NavMesh hole if the wagons are deactivated without a carving `NavMeshObstacle`, and boss/roller `NavMeshAgent` radii (1.0 / 0.95) exceeding the single baked agent type's 0.5.
+
+> **Update from measurement (B112, 2026-08-27):** the texture-residency prediction **did not materialize** — a full on-device playthrough measured **41.2 MB / 52 textures** against the 150 MB budget. The real cost of a resident whole-world scene is **draw calls (205 vs < 100) and triangles (356.7k vs < 300k)**, with the SRP Batcher contributing **zero**. ADR-0005 §3 re-bases the budgets on this.
+
+### ADR-0005 — World 2 is one continuous scene; single-scene becomes the default
+
+World 2 (The Backyard/Dojo) is **one continuous scene, `Backyard_Dojo.unity`**, with **three** `RoomManager` zones — back gate/courtyard → garden gauntlet (containing the Koi Pond sub-space and the Skeptic beat) → the garden end/Blossom Court with the Grasscutter. Three zones consume `GameManager.ShowRoomClearScreenDelayed`'s existing index routing with **zero** code change.
+
+**This also promotes single-continuous-scene from "a World 1 deviation" to the project default** for team-built worlds, retiring ADR-0002's "one scene per room" corollary as the default while **preserving** its `RoomDataSO`/`LevelBuilder` data-driven encounter layer, which is the load-bearing half.
+
+Decided on facts about the project, not preference:
+
+- **The scene-per-room path is currently dead code with no valid targets.** `RandomRoomPool` is empty (`GameManager.cs:52`), `LoadNextRoom()`'s exhausted branch logs an error instead of loading (`:607-615`), every per-room scene was deleted (commit `84a3a44e`), and `ZoneStartScene[1] = "TownSquare_Room1"` names a scene that never existed. Choosing the "documented default" would mean reviving a path with no working reference implementation.
+- **The shop screen is unreachable under scene-per-room.** Routing keys off in-scene zone index, and a per-room scene's `RoomManager` always has one room at index 0 — so every clear routes to the upgrade screen.
+- **Two canon story beats require the zones to coexist.** The post-boss victory beat is *"I look back at the engawa. The chair is still there"* — impossible once the Koi Pond scene has unloaded. And the Koi Pond is one of three *random* rooms in the v4 GDD, so a CANON Skeptic appearance would fire in ~1 run of 3.
+- **A backyard is one contiguous space in the fiction**, its bamboo stockade is a diegetic boundary (World 1 needed retrofit invisible walls), and a long linear yard validates better against ADR-0001's no-deoccluder camera clearance than a set of small walled rooms.
+- **Consistency is load-bearing here** — TDD §1: the two team-built worlds are the reference implementation for an audience-built World 3, and "two ways of doing the same thing is worse than one mediocre way."
+
+The scene-load path (`RandomRoomPool`, `LoadNextRoom`, `s_roomQueue`, `CaptureLoadoutForTransition`) **stays alive, not deleted** — but must be re-qualified before any future world uses it.
+
+Also decided: **whole-scene** performance budgets replacing per-room ones (< 100 draw calls, < 300k tris, < 150 MB textures, ≤ 20 distinct ENV materials, ≤ 500 ms scene-start hitch, combat radius ≤ 9 m); the boss arena is **budgeted before `GrasscutterAI` is written** (clear circle r ≥ 8.5 m, Spin-Dash travel ≤ 8 m, mandatory `NavMesh.SamplePosition` clamp on the dash landing point) rather than measured after, correcting the blueprint's 36 m court which violates TDD §6.4 two-fold; and `WildWestCityZoneDirector` is **renamed to a reusable `ZoneDirector`** rather than copied, since all four of its serialized fields are already scene-agnostic data.
+
+Rejected: scene-per-room, a second one-off deviation, a hybrid boss-only scene, additive per-zone loading, five zones per the v4 GDD, a streaming/world-partition system, and copying the zone director.
+
+Blocking prerequisites recorded: the **large-agent NavMesh** decision (the Grasscutter is the second boss to exceed the single baked agent type's 0.5 radius) and the **texture import policy** before any new dojo art.
 
 ---
 
