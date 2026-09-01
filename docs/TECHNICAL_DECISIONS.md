@@ -13,9 +13,10 @@ Index and summary of accepted technical decisions and package approvals. Full co
 | [0003](adr/0003-attack-telegraph-channel.md) | Occlusion-independent attack telegraph channel | **Proposed** | 2026-08-19 |
 | [0004](adr/0004-world1-single-continuous-scene.md) | World 1 is one continuous scene, zoned by `RoomManager` | **Accepted** | 2026-08-25, finalized 2026-08-26 |
 | [0005](adr/0005-world2-single-continuous-scene.md) | World 2 is one continuous scene; single-scene becomes the default | **Accepted** | 2026-08-31, §3/§4 amended 2026-09-01 by 0006 |
-| [0006](adr/0006-world2-zone-scale-and-arena-metric.md) | World 2 zone scale, and the two budget metrics that were measuring the wrong thing | **Accepted** | 2026-09-01 |
+| [0006](adr/0006-world2-zone-scale-and-arena-metric.md) | World 2 zone scale, and the two budget metrics that were measuring the wrong thing | **Accepted** | 2026-09-01, §1.3 condition resolved in design by 0007 |
+| [0007](adr/0007-ground-plane-lane-telegraph.md) | A ground-plane lane geometry for the ADR-0003 telegraph channel | **Accepted** | 2026-09-01 |
 
-ADR-0001–0003 await owner approval. ADR-0004 was accepted 2026-08-26 once the owner resolved every question it had left open; it is the implementation spec for the city scene but does not by itself authorize a commit. ADR-0005 was accepted 2026-08-31 with the owner having explicitly delegated the scene-architecture choice to `technical-director`; its open questions are content decisions and do not block scaffolding. ADR-0006 amends ADR-0005 §3/§4 and restates `TECHNICAL_DESIGN.md` §6.4 after the owner playtested World 2's built geometry.
+ADR-0001–0003 await owner approval. ADR-0004 was accepted 2026-08-26 once the owner resolved every question it had left open; it is the implementation spec for the city scene but does not by itself authorize a commit. ADR-0005 was accepted 2026-08-31 with the owner having explicitly delegated the scene-architecture choice to `technical-director`; its open questions are content decisions and do not block scaffolding. ADR-0006 amends ADR-0005 §3/§4 and restates `TECHNICAL_DESIGN.md` §6.4 after the owner playtested World 2's built geometry. ADR-0007 extends ADR-0003 with a second telegraph geometry and is what satisfies ADR-0006 §1.3's arena-size condition — **note that it extends a decision this table still records as Proposed.**
 
 > **Status conflict, surfaced not resolved (2026-08-25):** this table lists 0001–0003 as Proposed, but `adr/0002-full-scene-rebuild.md`'s own header says **Accepted** and `docs/ROADMAP.md` records production as authorized on 2026-08-19. Sprint 0 shipped against 0001/0003. Owner should confirm which is correct and the losing source should be corrected.
 
@@ -106,11 +107,33 @@ The owner playtested World 2's built Stage A geometry and reported **zone 1 and 
 
 **Budget.** ~122.6k tris of 300k. Worst-case wall draw calls **fall by 9** versus the built scene, because the enlargement is paid for by an 8.0 m BD-01 variant on straight runs, and a 16-gon at r = 10.0 has 3.978 m sides — so the bigger arena uses the **same 14 modules** at native scale. Prop counts are **frozen** while area grows. Draw calls remain gated on B112's SRP-Batcher-at-zero investigation, which this decision neither improves nor worsens.
 
-Granted **on** one condition: the ground-plane dash-lane telegraph (ADR-0003 channel) must exist before the arena is accepted at 20 m, because it replaces simultaneous on-frame visibility as the fairness mechanism.
+Granted **on** one condition: the ground-plane dash-lane telegraph (ADR-0003 channel) must exist before the arena is accepted at 20 m, because it replaces simultaneous on-frame visibility as the fairness mechanism. **Resolved in design 2026-09-01 by ADR-0007 — the telegraph is being built (B118), not the fallback.** The fallback was examined and has no legal landing site: M2.2 with a 0.35 m central trunk needs `R ≥ 8.85 m`, a body-anchored tell readable rim-to-rim needs `R ≤ 7.65 m`, and the intervals are disjoint. **The condition is not discharged until ADR-0006 §Validation 10 passes on device.**
 
 Rejected: pure redefinition with no dimension change (the current arena fails a well-formed M2 at 8.15 m of 8.5 m); moving the tree off-centre (the victory beat's bloom shot cannot be framed at 20 m against F = 15.3 m); enlarging without cutting the dash (ratio-preservation would demand 28.6 m); uniform scale-up of all three zones; prop-thinning alone; widening the engawa; and adding a wave affordance to `RoomDataSO`.
 
-Implementation is `docs/BACKLOG.md` **B116** (`unity-gameplay-engineer`) — a re-layout, not World 1's rigid translation. **M1 and M2 are not yet implemented in `LevelBuilder`'s validation**, and both were violated silently for a full design pass.
+Implementation is `docs/BACKLOG.md` **B116** (`unity-gameplay-engineer`) — a re-layout, not World 1's rigid translation, **DONE 2026-09-01**. **M1 and M2 are not yet implemented in `LevelBuilder`'s validation**, and both were violated silently for a full design pass.
+
+---
+
+### ADR-0007 — A ground-plane lane geometry for the ADR-0003 telegraph channel
+
+A `code-reviewer` pass on the newly built `GrasscutterAI` found the Phase-2 Spin-Dash telegraphing through ADR-0003's **overhead billboard** — body-anchored 2.6 m above the boss — not the ground-plane lane ADR-0006 §1.3 made a **condition** of the 20.0 m arena. Two paths were legitimately open: build the telegraph, or take §1.3's named fallback and shrink the arena and dash back down.
+
+**Decision: build it.** The fallback turned out to have **no legal landing site.** M2.2 with a 0.35 m central trunk requires `R ≥ 8.85 m`; a body-anchored tell readable rim-to-rim requires `2R ≤ F = 15.3 m`, i.e. `R ≤ 7.65 m`. **Disjoint by 1.2 m of radius** — no arena size satisfies both, and the pre-enlargement r = 8.5 m arena fails M2.2 at 8.15 m regardless. Retreating would have meant revising M2 too, discarding World 1's playtested 8.44 m radial band, and re-deriving everything B116 had just finished placing while paying the 45° coordinate tax a third time.
+
+**Three findings beyond the code review's.** (1) ADR-0003's API *cannot express a lane* — `Show(Transform, kind, duration, heightOffset)` has no direction, length, width, or world anchor, and `AttackTelegraphKind`'s five members classify parryability, not geometry. No care at the call site could have produced one. (2) The dash's **heading is computed after the wind-up**, so during the whole 0.9 s rev no committed lane exists; the code's own *"dodge perpendicular to the lane"* comment describes something the player cannot do. Committing the heading before the telegraph is the load-bearing half. (3) The overhead billboard is occlusion-independent but **not frustum-independent**, and floating it 2.6 m up makes a far-rim boss *less* visible, not more.
+
+**The addition.** `AttackTelegraphService.ShowGroundLane(start, direction, length, width, kind, duration, groundY)` — world-space anchored, never target-tracking. Geometry is chosen by **which method you call**; `AttackTelegraphKind` does not grow (a sixth member would mean "geometry" while its siblings mean "class"). One shared flat quad, the **existing** `TelegraphOverlayUnlit` shader with `ZTest` promoted to a material property (default `Always`, so the shipped billboard path is untouched), and a new `mat_TelegraphLane.mat` at `LEqual` so the player stands *on* the lane instead of under a screen overlay. Its own pool of 2 — the billboard pool's `FindSlot` evicts at a round-robin cursor, so a long-lived boss lane sharing it would be recyclable by grunt wind-ups.
+
+**Spin-Dash numbers:** heading committed at rev start; lane raised the same frame; **full chord**, wall inner face to wall inner face (a 6.5 m segment from a north-rim boss is entirely off-frame for a south-rim player — frustum-independence is a property of the extent, not the shader); **3.0 m wide, derived from the dash's own `IsPlayerWithinRange(1.5f)` hit test** so the two cannot drift; 1.4 s duration; chord measured by two `RaycastNonAlloc` calls taking the **farthest** `Building` hit, which makes the central trunk irrelevant without a tag hack. The overhead billboard is **kept** — additive, per ADR-0003 decision 4.
+
+**The escape window is proved, not asserted** — two accepted criteria on this project have already been unsatisfiable as written. To clear 1.9 m of lateral distance: a perpendicular walk at `moveSpeed 5` takes **0.38 s**, a single dodge (`0.2 s` delay + `0.5 s`, covering 3.0 m) takes **0.70 s**, against a 0.9 s rev. Both close. **`spinDashRevDuration` has a hard floor of 0.75 s** while the lane is the fairness mechanism.
+
+**Also:** ADR-0003's URP-decal rejection is narrowed — it rejects `DecalRendererFeature` and its depth prepass, **not** markings on a flat floor, which a two-triangle quad does for free. ADR-0006 §1.2's "perpendicular offset ≥ 2.5 m" is clarified as a chord-arithmetic bound, not an AI invariant (enforcing it would make the boss visibly aim past the player). One arithmetic erratum in ADR-0006 §2.2 corrected.
+
+Rejected: the fallback (no legal landing site); a new `AttackTelegraphKind` member; sharing the billboard pool; `ZTest Always` for the lane; a URP decal projector; animation-based tells (still the best answer, still too much authored animation); and doing nothing.
+
+Implementation is `docs/BACKLOG.md` **B118** (`unity-gameplay-engineer`); visual treatment is `ui-ux-designer`. **The arena's grant condition is not discharged until ADR-0006 §Validation 10 passes on device** — player at the south rim, boss at the north rim, 4.7 m off-frame.
 
 ---
 

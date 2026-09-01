@@ -2,7 +2,8 @@
 
 - **Status:** **Accepted** — owner authorized 2026-08-19, explicitly choosing to build this alongside ADR-0001 rather than deferring the camera change
 - **Date:** 2026-08-19
-- **Related:** [ADR-0001](0001-fixed-low-follow-camera.md) (camera)
+- **Extended 2026-09-01 by [ADR-0007](0007-ground-plane-lane-telegraph.md):** adds **decision 6 — a ground-plane lane geometry** to this channel, world-space anchored rather than body-anchored, for committed traversal attacks whose danger is a direction rather than a point. Everything below stands unchanged; the overhead billboard remains the default geometry and every existing call site keeps working. ADR-0007 also **narrows the scope of the "Explicitly rejected: URP decal projectors" section below** — see the note there.
+- **Related:** [ADR-0001](0001-fixed-low-follow-camera.md) (camera), [ADR-0007](0007-ground-plane-lane-telegraph.md) (the lane geometry)
 
 > This ADR was not requested. It is recorded because ADR-0001 cannot be safely implemented without it: the camera change invalidates the mechanism the game currently uses to communicate every attack.
 
@@ -70,6 +71,8 @@ Introduce a **second telegraph channel that does not depend on the enemy's body 
 ### Explicitly rejected: URP decal projectors
 
 Ground-decal AOE markers are the conventional answer and are rejected on mobile cost. `Assets/Settings/Mobile_Renderer.asset` has `m_RendererFeatures: []` — no decal support exists today, and the URP Decal Renderer Feature requires a depth prepass on mobile. Adding a full-screen depth prepass to gain telegraph markers is a large, permanent frame-time cost imposed on every scene, against a budget already under pressure from texture memory. An overhead billboard achieves occlusion-independence at a fraction of the cost.
+
+> **Scope narrowed 2026-09-01 by [ADR-0007](0007-ground-plane-lane-telegraph.md).** What is rejected here is **`DecalRendererFeature` and the depth prepass it requires** — the machinery that conforms a decal to arbitrary geometry. It is **not** a ban on markings on the floor. On a flat floor at a known height (a boss arena's `Ground` plane, for instance) the same read is achieved by a flat quad — two triangles, the same unlit telegraph material, no renderer feature, no prepass, `m_RendererFeatures` still empty. ADR-0007 §2 does exactly that. A projector only becomes necessary on sloped or multi-level ground, and that is the point at which this rejection deserves re-litigating on its original merits.
 
 ## Alternatives considered
 
