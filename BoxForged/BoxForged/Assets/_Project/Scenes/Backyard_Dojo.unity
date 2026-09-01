@@ -7501,6 +7501,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7361691131284756266, guid: 08bd44461aea64830980777510271111, type: 3}
+      propertyPath: FollowOffset.x
+      value: -4.8378
+      objectReference: {fileID: 0}
+    - target: {fileID: 7361691131284756266, guid: 08bd44461aea64830980777510271111, type: 3}
+      propertyPath: FollowOffset.z
+      value: -13.447
+      objectReference: {fileID: 0}
+    - target: {fileID: 7361691131284756266, guid: 08bd44461aea64830980777510271111, type: 3}
+      propertyPath: TrackerSettings.PositionDamping.x
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7361691131284756266, guid: 08bd44461aea64830980777510271111, type: 3}
+      propertyPath: TrackerSettings.PositionDamping.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7361691131284756266, guid: 08bd44461aea64830980777510271111, type: 3}
+      propertyPath: TrackerSettings.PositionDamping.z
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 8835209232116816727, guid: 08bd44461aea64830980777510271111, type: 3}
       propertyPath: m_Name
       value: pfb_CM_FollowCam
@@ -7914,15 +7934,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5107352113913451579, guid: 351eea5154efb454f881421f7195551b, type: 3}
       propertyPath: _arenaCenter.x
-      value: 0.5
+      value: 22.5
       objectReference: {fileID: 0}
     - target: {fileID: 5107352113913451579, guid: 351eea5154efb454f881421f7195551b, type: 3}
       propertyPath: _arenaCenter.z
-      value: 31
+      value: 21.5
       objectReference: {fileID: 0}
     - target: {fileID: 5107352113913451579, guid: 351eea5154efb454f881421f7195551b, type: 3}
       propertyPath: _arenaBoundaryRadius
-      value: 35
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 5560300344759108702, guid: 351eea5154efb454f881421f7195551b, type: 3}
       propertyPath: m_Enabled
@@ -10478,13 +10498,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.ZoneDirector
   _clearOnBossZone:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  _boss: {fileID: 0}
+  - {fileID: 97214298}
+  - {fileID: 1390312543}
+  - {fileID: 1552176198}
+  - {fileID: 1675381082}
+  - {fileID: 694145959}
+  - {fileID: 1458247664}
+  _boss: {fileID: 3798543027718567541}
   _gateByZone:
   - {fileID: 646158244}
   - {fileID: 2041331481}
@@ -12655,6 +12675,76 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2143592137}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &3798543027718567541 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2974375931941352411, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+  m_PrefabInstance: {fileID: 4062205995756422584}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4062205995756422584
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2598356050918453954, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: _imaginationVolume
+      value: 
+      objectReference: {fileID: 1315146802}
+    - target: {fileID: 2598356050918453954, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: _cherryTreeLookTarget
+      value: 
+      objectReference: {fileID: 827869176}
+    - target: {fileID: 2974375931941352411, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_Name
+      value: pfb_enemy_grasscutter
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 44.54773
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 44.54772
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.38268346
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.92387956
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -12674,3 +12764,4 @@ SceneRoots:
   - {fileID: 477765472}
   - {fileID: 1315146803}
   - {fileID: 1873093013}
+  - {fileID: 4062205995756422584}

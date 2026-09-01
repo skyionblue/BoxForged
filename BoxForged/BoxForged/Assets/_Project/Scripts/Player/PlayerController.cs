@@ -49,6 +49,12 @@ namespace Boxhead.Player
         private PlayerStats _stats;
         private CombatController _combat;
         private Vector2 _moveInput;
+        // Additive world-space displacement queued by external systems that need to move the
+        // player without owning input (e.g. GrasscutterAI's Whirlwind Pull — Boxhead.Enemy has
+        // no other way to move a CharacterController-driven player). Zero by default, so this
+        // is fully backward-compatible: no caller means no behavior change. Applied once per
+        // frame via CharacterController.Move alongside normal movement, then cleared.
+        private Vector3 _externalDisplacement;
         private float _verticalVelocity;
         private float _jumpVelocity;
         private bool _wasGrounded;
@@ -145,6 +151,18 @@ namespace Boxhead.Player
             _verticalVelocity = _fastFallSpeed;
         }
 
+        /// <summary>
+        /// Queues a world-space displacement applied this frame via CharacterController.Move,
+        /// additive to normal input-driven movement. Lets an external hazard (e.g. a boss's
+        /// sustained pull attack) reposition the player without needing to own input or fight
+        /// the CharacterController directly. Safe to call every frame from multiple sources —
+        /// displacements accumulate and are cleared after being applied.
+        /// </summary>
+        public void ApplyExternalDisplacement(Vector3 worldDelta)
+        {
+            _externalDisplacement += worldDelta;
+        }
+
         private void Update()
         {
             ApplyGravity();
@@ -167,6 +185,12 @@ namespace Boxhead.Player
             if (!_wasGrounded && physicsGrounded)
                 _combat?.NotifyLanded();
             _wasGrounded = physicsGrounded;
+
+            if (_externalDisplacement != Vector3.zero)
+            {
+                _controller.Move(_externalDisplacement);
+                _externalDisplacement = Vector3.zero;
+            }
 
             ClampToArenaBounds();
         }
