@@ -1,3 +1,17 @@
+> # ⛔ SUPERSEDED — HISTORICAL ONLY. DO NOT BUILD FROM THIS FILE.
+>
+> **Superseded 2026-09-01 by [`zone-layout-spec.md`](zone-layout-spec.md)**, which is the live, buildable spec for World 2. Build to that document.
+>
+> This blueprint predates [ADR-0001](../../../../adr/0001-fixed-low-follow-camera.md) (fixed low camera), [ADR-0004](../../../../adr/0004-world1-single-continuous-scene.md), and [ADR-0005](../../../../adr/0005-world2-single-continuous-scene.md). Three things in it are now wrong in ways that would break the build:
+>
+> 1. **Scene-per-room is retired.** ADR-0005 §1/§2: World 2 is **one continuous scene**, `Backyard_Dojo.unity`, with three in-scene `RoomManager` zones. The five scene files named below will never exist, and the `s_roomQueue` / `RandomRoomPool` path they rely on is dead code with no valid targets.
+> 2. **The 5-room random-draw structure is retired.** Owner-resolved 2026-08-31 (ADR-0005 §OQ1): **exactly three zones.** Rooms A/B/C do not exist as separate rooms. The Rock Garden folds into zone 1A, the Koi Pond becomes zone 1's sub-space, and the Training Hall is retired as a space (a roofed interior is unbuildable under ADR-0001's ≥ 6 m overhead clearance).
+> 3. **The "~36 m circular sparring court" is wrong by 2×.** It violates TDD §6.4's ≤ 9 m combat radius; over half that fight would be off screen at this project's camera. The Blossom Court is **17.0 m across** (ADR-0005 §4).
+>
+> Nothing of value here is discarded — `zone-layout-spec.md` §7 records exactly where each piece of this document went. Kept on disk for that trace, and because its per-room lore, mechanic intents, and craftsmanship dressing were the source material for the live spec.
+
+---
+
 # Unity Blueprint: The Backyard (Dojo) — World 2
 
 **Scene files:**

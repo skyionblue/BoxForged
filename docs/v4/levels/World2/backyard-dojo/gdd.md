@@ -1,7 +1,23 @@
+> # ⚠️ PARTIALLY SUPERSEDED — 2026-09-01
+>
+> **§2 "Room Structure" and §10 "Implementation Notes for Unity" (run integration) are SUPERSEDED** by [`zone-layout-spec.md`](zone-layout-spec.md), which is the live, buildable spec for World 2. The 5-room random-draw structure described in §2 is retired: owner-resolved 2026-08-31 ([ADR-0005](../../../../adr/0005-world2-single-continuous-scene.md) §OQ1), World 2 is **one continuous scene with exactly three zones** —
+>
+> | Idx | Zone | Contains | Reward |
+> |---|---|---|---|
+> | 0 | The Back Gate / Dojo Courtyard | Assembly Beat, gnome pack rhythm | Upgrade |
+> | 1 | Garden Gauntlet | the Rock Garden's constrained footing **and** the Koi Pond / engawa as a sub-space (Crane debut, the Skeptic beat) | Shop |
+> | 2 | The Garden End — Blossom Court | Grasscutter, `bossOwnedWin: true` | none |
+>
+> The **Training Hall is retired as a space** (a roofed interior is unbuildable under [ADR-0001](../../../../adr/0001-fixed-low-follow-camera.md)'s ≥ 6 m overhead-clearance rule); its shed survives as a solid exterior prop with a doorway. §5's "~36 m" boss court is corrected to **17.0 m across**.
+>
+> **Everything else in this file remains live reference and is NOT superseded:** §1 (tone/palette), §3 (Crane Duelist), §4 (returning-enemy tuning), §5 (Grasscutter phases), §6 (weapons), §7 (ENV props — but see `zone-layout-spec.md` §5.1: the Polyworks Asian props listed there are **not in the project**), §8 (difficulty scaling and the enemy-mixing rules), §9 (lore hook), §11 (craftsmanship dressing), §12 (open questions — Q1, Q2, Q3, Q4 all still open).
+
+---
+
 # GDD: The Backyard (Dojo) — World 2
 
 **World:** 2 (run order: after the Cul-de-Sac)
-**Rooms:** 5 (Room 1 fixed → 3 random → boss)
+**Rooms:** ~~5 (Room 1 fixed → 3 random → boss)~~ **3 zones, one continuous scene — see the banner above**
 **Version:** 1.0
 **Date:** 2026-08-07
 **Status:** Approved — ready for implementation
