@@ -1,0 +1,12 @@
+---
+name: feedback-verify-adr-navmesh-claims
+description: An ADR's cited project setting (e.g. NavMeshSettings.agentClimb) can simply be wrong — read ProjectSettings/NavMeshAreas.asset and NavMesh.GetSettingsByIndex directly rather than trusting a design doc's citation before it drives an implementation decision (e.g. building a ramp that turns out unnecessary).
+metadata:
+  type: feedback
+---
+
+**Rule:** when a design doc or ADR cites a specific engine/project setting as the reason for a required fix (e.g. "the project's actual `NavMeshSettings.agentClimb` is 0.40, not the assumed 0.75, which is why the engawa needs a ramp"), verify that citation directly against the live project before treating it as a constraint — `ProjectSettings/NavMeshAreas.asset` for the baked default, and/or `UnityEngine.AI.NavMesh.GetSettingsByIndex(i)` at runtime for what a `NavMeshSurface` will actually use.
+
+**Why:** [ADR-0006](../../../../docs/adr/0006-world2-zone-scale-and-arena-metric.md) §3.3 stated the project's `agentClimb` was 0.40 (attributed to B115), used as the load-bearing justification for building a local ramp/step-wedge at the engawa rather than raising the global setting. Checked directly during the B116 re-layout: `ProjectSettings/NavMeshAreas.asset` shows `agentClimb: 0.75` for the project's only agent type (`Humanoid`, id 0), unchanged in git history all the way back to the very first commit that added the file. `NavMesh.GetSettingsByIndex(0)` at runtime confirms the same 0.75 live. A 0.35m engawa step is comfortably within 0.75m climb, and `NavMesh.CalculatePath` onto the rebuilt boards returned `PathComplete` without the ramp doing any load-bearing work. The 0.40 figure appears to have been a stale or mistaken measurement from whoever wrote B115/ADR-0006, carried forward into a design decision without being re-checked.
+
+**How to apply:** this doesn't mean skip the fix the ADR asked for — the ramp/stepping-stone was still built (cheap, thematically justified, and a reasonable margin regardless of the true climb value) — but it means **don't skip the verification step just because a design doc already did the math**. A wrong number in an accepted ADR is still wrong, and the fastest way to find out is a two-line `execute_code` check against the live project, not trusting the citation. Flag the correction back to whoever owns the ADR (`technical-director` here) rather than silently propagating the same wrong number into the next document.

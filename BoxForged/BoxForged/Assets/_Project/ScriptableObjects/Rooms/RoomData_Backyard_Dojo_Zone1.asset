@@ -13,6 +13,30 @@ MonoBehaviour:
   m_Name: RoomData_Backyard_Dojo_Zone1
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.RoomDataSO
   roomName: Garden Gauntlet
-  maxConcurrentEnemies: 2
-  spawnPoints: []
+  maxConcurrentEnemies: 4
+  spawnPoints:
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 11.81, y: 0, z: 19.09}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 20.86, y: 0, z: 9.55}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 4201322907947373338, guid: bc9f5703dc6c145e7b28153b0c7d057c, type: 3}
+    position: {x: 12.73, y: 0, z: 15.56}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 20.15, y: 0, z: 18.03}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 4201322907947373338, guid: bc9f5703dc6c145e7b28153b0c7d057c, type: 3}
+    position: {x: 21.57, y: 0, z: 14.5}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 30.55, y: 0, z: 17.32}
+    facingY: 225
+    spawnCount: 1
   bossOwnedWin: 0

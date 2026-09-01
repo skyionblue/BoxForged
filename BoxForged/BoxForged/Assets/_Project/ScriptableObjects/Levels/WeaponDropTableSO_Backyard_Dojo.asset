@@ -18,30 +18,30 @@ MonoBehaviour:
     useRarityOverride: 0
     rarityOverride: 0
   - weaponObject: {fileID: 11400000, guid: a34d921b411374cbbbe0bbd9327a9060, type: 2}
-    worldPosition: {x: -2.77, y: 0, z: 5.10}
+    worldPosition: {x: -2.77, y: 0, z: 5.1}
     useRarityOverride: 0
     rarityOverride: 0
   - weaponObject: {fileID: 11400000, guid: ecdd0ab8998eb4981bee65936c44b1c2, type: 2}
-    worldPosition: {x: 19.77, y: 0, z: 21.14}
+    worldPosition: {x: 22.33, y: 0, z: 24.48}
     useRarityOverride: 0
     rarityOverride: 0
   - weaponObject: {fileID: 11400000, guid: 34c0cd0993d254022a0eba1ee1f490e8, type: 2}
-    worldPosition: {x: 20.57, y: 0, z: 21.24}
+    worldPosition: {x: 33.74, y: 0, z: 18.54}
     useRarityOverride: 0
     rarityOverride: 0
   - weaponObject: {fileID: 11400000, guid: 9f7be8a4e51544621a90be5a6012834d, type: 2}
-    worldPosition: {x: 31.38, y: 0, z: 26.31}
+    worldPosition: {x: 30.052038, y: 0, z: 37.123104}
     useRarityOverride: 0
     rarityOverride: 0
   lootZoneObjects: []
   cardboardPiles:
   - worldPosition: {x: 4.2426, y: 0, z: -2.1213}
     amount: 3
-  - worldPosition: {x: 18.89, y: 0, z: 21.21}
+  - worldPosition: {x: 20.152542, y: 0, z: 22.98097}
     amount: 3
-  - worldPosition: {x: 32.88, y: 0, z: 25.81}
+  - worldPosition: {x: 37.123104, y: 0, z: 30.052038}
     amount: 3
   workbenchPositions:
   - {x: -1.7678, y: 0, z: 4.5962}
-  - {x: 22.33, y: 0, z: 16.89}
+  - {x: 24.83, y: 0, z: 19.80}
   envProps: []
