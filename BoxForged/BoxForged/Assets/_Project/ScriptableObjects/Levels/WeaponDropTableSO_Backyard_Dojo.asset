@@ -12,8 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453eb7d0435a248ad935f39d2f476f31, type: 3}
   m_Name: WeaponDropTableSO_Backyard_Dojo
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.WeaponDropTableSO
-  scatteredObjects: []
+  scatteredObjects:
+  - weaponObject: {fileID: 11400000, guid: 0cd7030c2e13b4550a58f9004bfdc1ad, type: 2}
+    worldPosition: {x: 6.09, y: 0, z: -1.27}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: a34d921b411374cbbbe0bbd9327a9060, type: 2}
+    worldPosition: {x: -2.77, y: 0, z: 5.10}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: ecdd0ab8998eb4981bee65936c44b1c2, type: 2}
+    worldPosition: {x: 19.77, y: 0, z: 21.14}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 34c0cd0993d254022a0eba1ee1f490e8, type: 2}
+    worldPosition: {x: 20.57, y: 0, z: 21.24}
+    useRarityOverride: 0
+    rarityOverride: 0
+  - weaponObject: {fileID: 11400000, guid: 9f7be8a4e51544621a90be5a6012834d, type: 2}
+    worldPosition: {x: 31.38, y: 0, z: 26.31}
+    useRarityOverride: 0
+    rarityOverride: 0
   lootZoneObjects: []
-  cardboardPiles: []
-  workbenchPositions: []
+  cardboardPiles:
+  - worldPosition: {x: 4.2426, y: 0, z: -2.1213}
+    amount: 3
+  - worldPosition: {x: 18.89, y: 0, z: 21.21}
+    amount: 3
+  - worldPosition: {x: 32.88, y: 0, z: 25.81}
+    amount: 3
+  workbenchPositions:
+  - {x: -1.7678, y: 0, z: 4.5962}
+  - {x: 22.33, y: 0, z: 16.89}
   envProps: []

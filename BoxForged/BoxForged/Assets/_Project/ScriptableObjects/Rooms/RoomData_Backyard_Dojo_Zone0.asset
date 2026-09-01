@@ -13,6 +13,26 @@ MonoBehaviour:
   m_Name: RoomData_Backyard_Dojo_Zone0
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.RoomDataSO
   roomName: The Back Gate / Dojo Courtyard
-  maxConcurrentEnemies: 2
-  spawnPoints: []
+  maxConcurrentEnemies: 4
+  spawnPoints:
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 2.1213, y: 0, z: 8.4853}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 8.4853, y: 0, z: 2.1213}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 8.4853, y: 0, z: 8.4853}
+    facingY: 225
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 5.3033, y: 0, z: 13.0815}
+    facingY: 220
+    spawnCount: 1
+  - enemyPrefab: {fileID: 2391382314098214396, guid: 3736973c5adff4ef89bd4d36379a1828, type: 3}
+    position: {x: 7.7782, y: 0, z: -0.7071}
+    facingY: 240
+    spawnCount: 1
   bossOwnedWin: 0
