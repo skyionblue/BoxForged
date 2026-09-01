@@ -10600,11 +10600,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2406133164726427506, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 2406133164726427506, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2406133164726427506, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10634,6 +10634,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4807040789361459882, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
+      propertyPath: orthographic size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4807040789361459883, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
+      propertyPath: _ground
+      value: 
+      objectReference: {fileID: 1566171672}
     - target: {fileID: 5111062476808439299, guid: 7380b273c815a44eea01a2f80fdd8122, type: 3}
       propertyPath: m_Name
       value: pfb_MinimapCamera
@@ -12699,6 +12707,10 @@ PrefabInstance:
     - target: {fileID: 2974375931941352411, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
       propertyPath: m_Name
       value: pfb_enemy_grasscutter
+      objectReference: {fileID: 0}
+    - target: {fileID: 4967965880334216525, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: ImpulseDefinition.AmplitudeGain
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
       propertyPath: m_LocalPosition.x

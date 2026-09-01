@@ -47,3 +47,4 @@ MonoBehaviour:
   _poolSize: 8
   _defaultHeightOffset: 1.8
   _overlaySourceMaterial: {fileID: 2100000, guid: 6d0138210c7df4f69aa63e07c4b7be07, type: 2}
+  _laneSourceMaterial: {fileID: 2100000, guid: d80c9312d6d9b4155a8e8e933d8dc70b, type: 2}

@@ -135,6 +135,8 @@ Rejected: the fallback (no legal landing site); a new `AttackTelegraphKind` memb
 
 Implementation is `docs/BACKLOG.md` **B118** (`unity-gameplay-engineer`); visual treatment is `ui-ux-designer`. **The arena's grant condition is not discharged until ADR-0006 §Validation 10 passes on device** — player at the south rim, boss at the north rim, 4.7 m off-frame.
 
+> **Update, 2026-09-01:** B118 implemented — channel (`AttackTelegraphLane`, `ShowGroundLane`, separate 2-slot pool, `_ZTest` shader property) and `GrasscutterAI.SpinDash`'s heading-commit fix are both in. Play-Mode-verified via reflection that the committed heading is unaffected by player movement during the wind-up, and that the lane/billboard pools cannot evict each other. **§Validation 10's on-device readability check — the actual condition the 20 m arena is granted on — was not and could not be performed this session; it remains open.** See `docs/BACKLOG.md` B118 for the full verification breakdown.
+
 ---
 
 ## Engine and pipeline

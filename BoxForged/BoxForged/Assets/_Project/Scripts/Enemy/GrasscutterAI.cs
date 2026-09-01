@@ -70,10 +70,15 @@ namespace Boxhead.Enemy
         [SerializeField] private float _petalSpreadAngle = 20f;
 
         [Header("Spin-Dash — Phase 2")]
+        [Tooltip("ADR-0007 §4 hard floor: 0.75 s — proven by the escape arithmetic (0.38 s to clear 1.9 m laterally on foot + ~0.35 s recognition) to be the minimum wind-up that leaves the ground-plane lane telegraph dodgeable. Clamped up to the floor in OnValidate/Awake if set lower; do not reduce below it even for tuning, and do not widen the dash lane without lengthening this to match.")]
         [SerializeField] private float spinDashRevDuration = 0.9f;
         [SerializeField] private float spinDashSpeed        = 13f;
         [Tooltip("ADR-0006 §1.2 hard cap — not a tuning knob. Ratio-derived (0.325 of the 20 m arena) against SpinCycle's playtested 0.284; do not raise without a corresponding arena-size decision.")]
         [SerializeField] private float spinDashMaxDistance = 6.5f;
+        [Tooltip("ADR-0007 §4: the dash's own hit-test radius. The ground-plane lane telegraph's drawn width is derived from this (width = 2 × _dashContactRadius = 3.0 m by default) so the visible band and the actual hitbox cannot drift apart — never hardcode a second copy of this number at either call site.")]
+        [SerializeField] private float _dashContactRadius = 1.5f;
+        [Tooltip("ADR-0007 §4: fallback half-length for the full-chord ground-plane lane on a side where the Building-layer raycast finds no wall (should not happen in the built arena, but a missing wall must not silently collapse the lane to zero length). Not a dash-travel tuning knob — that stays spinDashMaxDistance.")]
+        [SerializeField] private float _dashLaneFallbackLength = 20.0f;
 
         [Header("Cut-Grass Trail — pooled (Phase 2, laid by Spin-Dash)")]
         [Tooltip("Optional visual material for the pooled hazard quads. Left unassigned they still function (damage + pooling), just with Unity's default material — see class remarks on B32's shader-reference lesson: do not runtime Shader.Find here.")]
@@ -155,6 +160,22 @@ namespace Boxhead.Enemy
         private enum BossState { Idle, Approaching, WindUp, Attacking, Staggered, PhaseTransition, Dead }
         private enum Phase { Kata, Rev }
 
+        // ADR-0007 §4: proven floor for spinDashRevDuration — see that field's tooltip.
+        private const float SpinDashRevDurationFloor = 0.75f;
+
+        // ADR-0007 §4 code-review Must-Fix 2: a zero/negative _dashContactRadius makes
+        // IsPlayerWithinRange(_dashContactRadius) unhittable and collapses the lane's drawn
+        // width (2 × radius) toward zero; a zero/negative _dashLaneFallbackLength collapses the
+        // fallback-side lane length to zero when a wall raycast finds nothing. Same
+        // floor-clamp convention as SpinDashRevDurationFloor above (OnValidate + Awake).
+        private const float DashContactRadiusFloor      = 0.1f;
+        private const float DashLaneFallbackLengthFloor = 0.1f;
+
+        // ADR-0007 §4: the sample radius ClampToNavMesh's initial NavMesh.SamplePosition call
+        // uses; shared with SpinDash's post-clamp sanity check on finalEnd so both call sites
+        // agree on what "close enough to the NavMesh" means.
+        private const float NavMeshSampleDistance = 2f;
+
         private BossState _state = BossState.Idle;
         private Phase _phase = Phase.Kata;
 
@@ -185,6 +206,19 @@ namespace Boxhead.Enemy
         private NavMeshAgent _agent;
         private static readonly float PathUpdateInterval = 0.25f;
         private float _pathUpdateTimer;
+
+        // ADR-0007 §4: the Spin-Dash's heading, committed once at rev start (before WindUp) and
+        // never re-aimed — see SpinDash's remarks for why this field exists at all (the fix for
+        // Fact 2's undodgeable re-aim-on-launch bug). Exposed only for the reflection-based
+        // commit-timing verification this ADR requires; nothing else should read it.
+        private Vector3 _committedDashDir;
+        private AttackTelegraphHandle _spinDashLaneHandle = AttackTelegraphHandle.None;
+
+        // Zero-allocation chord measurement for the ground-plane lane (ADR-0007 §4) — buffer and
+        // layer mask resolved once in Awake, matching CameraOcclusion/LevelBuilder's convention
+        // of caching LayerMask.GetMask("Building") rather than re-resolving it per call.
+        private readonly RaycastHit[] _dashLaneRaycastBuffer = new RaycastHit[8];
+        private int _buildingLayerMask;
 
         // Cut-Grass Trail pool — pre-warmed once in Awake, Activate()/Deactivate()-recycled.
         // Never Instantiate()/Destroy()'d during gameplay (TDD §3.2 steady-state GC budget).
@@ -239,6 +273,29 @@ namespace Boxhead.Enemy
                 _baseColor = _material.GetColor("_BaseColor");
             }
 
+            // ADR-0007 §4: runtime defense in depth alongside OnValidate — OnValidate is
+            // Editor-only, so a build (or a prefab instance whose override predates OnValidate
+            // ever running) must still be caught here, not silently ship an undodgeable rev.
+            if (spinDashRevDuration < SpinDashRevDurationFloor)
+            {
+                Debug.LogWarning($"[GrasscutterAI] spinDashRevDuration ({spinDashRevDuration}) is below the ADR-0007 escape-window floor of {SpinDashRevDurationFloor} s — clamping. The ground-plane lane telegraph cannot make Spin-Dash dodgeable if the wind-up itself doesn't leave time to clear it.", this);
+                spinDashRevDuration = SpinDashRevDurationFloor;
+            }
+
+            if (_dashContactRadius < DashContactRadiusFloor)
+            {
+                Debug.LogWarning($"[GrasscutterAI] _dashContactRadius ({_dashContactRadius}) is below the floor of {DashContactRadiusFloor} m — clamping. A zero/negative radius makes Spin-Dash's own hit test unhittable and collapses the ground-plane lane's drawn width toward zero.", this);
+                _dashContactRadius = DashContactRadiusFloor;
+            }
+
+            if (_dashLaneFallbackLength < DashLaneFallbackLengthFloor)
+            {
+                Debug.LogWarning($"[GrasscutterAI] _dashLaneFallbackLength ({_dashLaneFallbackLength}) is below the floor of {DashLaneFallbackLengthFloor} m — clamping. A missing wall on one side must not collapse the ground-plane lane to zero length.", this);
+                _dashLaneFallbackLength = DashLaneFallbackLengthFloor;
+            }
+
+            _buildingLayerMask = LayerMask.GetMask("Building");
+
             _waitAttackActive     = new WaitForSeconds(attackActiveDuration);
             _waitStagger          = new WaitForSeconds(staggerDuration);
             _waitBladeGap         = new WaitForSeconds(bladeComboBeatGap);
@@ -262,6 +319,22 @@ namespace Boxhead.Enemy
 
             WarmTrailPool();
         }
+
+#if UNITY_EDITOR
+        // ADR-0007 §4: catches the floor in the Inspector at edit time; Awake's runtime clamp
+        // above is the build-safe backstop since OnValidate never runs outside the Editor.
+        private void OnValidate()
+        {
+            if (spinDashRevDuration < SpinDashRevDurationFloor)
+                spinDashRevDuration = SpinDashRevDurationFloor;
+
+            if (_dashContactRadius < DashContactRadiusFloor)
+                _dashContactRadius = DashContactRadiusFloor;
+
+            if (_dashLaneFallbackLength < DashLaneFallbackLengthFloor)
+                _dashLaneFallbackLength = DashLaneFallbackLengthFloor;
+        }
+#endif
 
         private void WarmTrailPool()
         {
@@ -760,39 +833,87 @@ namespace Boxhead.Enemy
         // Never parryable — dodge perpendicular to the lane. ADR-0006 §1.2: travel capped at
         // ≤ 6.5 m, hard constant. ADR-0005 §4 (mandatory): the landing point is
         // NavMesh-clamped before the move commits — see ClampToNavMesh.
+        //
+        // ADR-0007 §4 (load-bearing fix): the heading is computed and committed to
+        // _committedDashDir HERE, before WindUp is entered — not after, against the player's
+        // live position at launch. At 13 m/s against the player's 5 m/s, an attack that re-aims
+        // after its own tell finishes is not dodgeable by movement at all; the comment above
+        // ("dodge perpendicular to the lane") is only true once the heading is committed before
+        // the player has to react to it. The ground-plane lane telegraph is raised on this same
+        // committed heading, in the same frame, so the tell and the eventual attack always agree.
         private IEnumerator SpinDash()
         {
-            yield return StartCoroutine(WindUp(Color.red, AttackTelegraphKind.MeleeUnparryable, _waitSpinDashRev));
-            if (_state == BossState.Dead) yield break;
-            _state = BossState.Attacking;
-            SetColor(_baseColor);
-            SafeSetTrigger(AnimAttack);
-
             Vector3 startPos  = transform.position;
             Vector3 aimTarget = _player != null ? _player.position : transform.position + transform.forward;
             Vector3 dir       = aimTarget - startPos;
             dir.y = 0f;
             if (dir.sqrMagnitude < 0.01f) dir = transform.forward;
             dir.Normalize();
+            _committedDashDir = dir;
 
-            Vector3 rawEnd     = startPos + dir * spinDashMaxDistance;
+            // ADR-0007 §4: full-chord ground-plane lane — wall inner face to wall inner face
+            // along the committed heading, not just the dash's own travel distance. A 6.5 m
+            // segment starting at a north-rim boss would be entirely off-frame for a south-rim
+            // player; a chord to both walls always has its near end inside the frustum.
+            float laneWidth    = _dashContactRadius * 2f;
+            float laneDuration = spinDashRevDuration + spinDashMaxDistance / Mathf.Max(0.1f, spinDashSpeed);
+            (Vector3 laneStart, float laneLength) = ComputeDashLaneChord(startPos, _committedDashDir);
+            _spinDashLaneHandle = AttackTelegraphService.ShowGroundLane(
+                laneStart, _committedDashDir, laneLength, laneWidth,
+                AttackTelegraphKind.AreaUnparryable, laneDuration);
+
+            yield return StartCoroutine(WindUp(Color.red, AttackTelegraphKind.MeleeUnparryable, _waitSpinDashRev));
+            if (_state == BossState.Dead)
+            {
+                AttackTelegraphService.Hide(_spinDashLaneHandle);
+                yield break;
+            }
+            _state = BossState.Attacking;
+            SetColor(_baseColor);
+            SafeSetTrigger(AnimAttack);
+
+            Vector3 rawEnd     = startPos + _committedDashDir * spinDashMaxDistance;
             Vector3 clampedEnd = ClampToNavMesh(rawEnd, startPos);
 
-            Vector3 travel = clampedEnd - startPos;
-            travel.y = 0f;
-            float travelDist = Mathf.Min(travel.magnitude, spinDashMaxDistance);
+            // ADR-0007 §4 code-review Must-Fix 1: clamp only the DISTANCE traveled along the
+            // already-committed heading — never re-derive a new heading from the clamped point.
+            // NavMesh.SamplePosition's search radius (NavMeshSampleDistance, 2 m) means
+            // clampedEnd can sit up to ~2 m laterally off the _committedDashDir ray; the
+            // previous implementation re-derived `dirActual` from that clamped travel vector,
+            // which silently let the dash veer up to ~2 m away from the heading the ground-plane
+            // lane telegraph actually showed the player. That is not merely "over-stating" the
+            // danger zone (the old comment's claim) — a lateral snap toward the clamped point
+            // UNDER-states the danger exactly along the axis the player's dodge depends on,
+            // defeating B118's entire "telegraph the real attack, don't let the boss cheat"
+            // guarantee. Projecting the clamp onto the committed ray guarantees the dash always
+            // travels the heading that was telegraphed; it can only ever be shortened, never
+            // redirected.
+            float travelDist = Mathf.Clamp(Vector3.Dot(clampedEnd - startPos, _committedDashDir), 0f, spinDashMaxDistance);
 
             if (travelDist < 0.05f)
             {
                 // Nowhere safe to go (e.g. NavMesh sampling failed near the start point too) —
                 // abort the charge gracefully rather than commit to an unclamped position.
+                AttackTelegraphService.Hide(_spinDashLaneHandle);
                 yield return _waitAttackActive;
                 yield break;
             }
 
-            dir = travel.normalized;
-            Vector3 finalEnd = startPos + dir * travelDist;
-            transform.rotation = Quaternion.LookRotation(dir);
+            Vector3 dirActual = _committedDashDir; // never re-derived — the dash always travels the advertised heading.
+            Vector3 finalEnd  = startPos + dirActual * travelDist;
+
+            // finalEnd is a point on the committed ray, not necessarily a point ClampToNavMesh
+            // itself validated — that call searched around rawEnd, not this (generally shorter)
+            // point. Re-validate finalEnd directly before committing to it; treat a failure the
+            // same as the travelDist abort above rather than dash to an unvalidated position.
+            if (!NavMesh.SamplePosition(finalEnd, out _, NavMeshSampleDistance, NavMesh.AllAreas))
+            {
+                AttackTelegraphService.Hide(_spinDashLaneHandle);
+                yield return _waitAttackActive;
+                yield break;
+            }
+
+            transform.rotation = Quaternion.LookRotation(dirActual);
 
             if (_agent != null) _agent.enabled = false;
 
@@ -814,13 +935,16 @@ namespace Boxhead.Enemy
                     SpawnTrailSegment(transform.position);
                 }
 
-                if (!hitLanded && IsPlayerWithinRange(1.5f) && _playerCombat != null)
+                // ADR-0007 §4: the dash's own hit-test radius, promoted from a hardcoded 1.5f —
+                // this is the same value the ground-plane lane's width is derived from above, so
+                // the drawn band and the actual hitbox cannot drift apart.
+                if (!hitLanded && IsPlayerWithinRange(_dashContactRadius) && _playerCombat != null)
                 {
                     AttackResult result = _playerCombat.TryReceiveAttack(_stats.AttackDamage, parryable: false);
                     if (result == AttackResult.Hit)
                     {
                         AudioManager.Instance?.Play(SoundEvent.EnemyHit);
-                        _impulseSource?.GenerateImpulse(dir * 1.5f);
+                        _impulseSource?.GenerateImpulse(dirActual * 1.5f);
                     }
                     hitLanded = true; // one hit per dash, same convention as SpinCycleAI.SpinCharge
                 }
@@ -830,6 +954,46 @@ namespace Boxhead.Enemy
 
             transform.position = finalEnd;
             if (_agent != null) { _agent.enabled = true; _agent.Warp(transform.position); }
+        }
+
+        // ADR-0007 §4: measures the full chord of the arena along dir, wall inner face to wall
+        // inner face, by raycasting outward from origin in both directions on the Building
+        // layer and taking the FARTHEST hit each way. Farthest (not first) is what makes an
+        // interior obstruction irrelevant without a name/tag special-case — verified against
+        // Backyard_Dojo.unity that CherryTree_TrunkCollider is, in fact, also on the Building
+        // layer (layer 8), same as every BD01_WallModule; taking the farthest hit means this is
+        // correct regardless of whether the tree shares the wall's layer, since the wall is
+        // always farther from the boss than the central tree. Zero allocation: reuses
+        // _dashLaneRaycastBuffer via RaycastNonAlloc.
+        private (Vector3 start, float length) ComputeDashLaneChord(Vector3 origin, Vector3 dir)
+        {
+            const float castHeight  = 0.5f;
+            const float maxDistance = 24f;
+            Vector3 rayOrigin = origin + Vector3.up * castHeight;
+            float fallbackHalf = _dashLaneFallbackLength * 0.5f;
+
+            float forwardDist  = FarthestHitDistance(rayOrigin, dir, maxDistance, fallbackHalf);
+            float backwardDist = FarthestHitDistance(rayOrigin, -dir, maxDistance, fallbackHalf);
+
+            Vector3 laneStart = origin - dir * backwardDist;
+            float laneLength  = forwardDist + backwardDist;
+            return (laneStart, laneLength);
+        }
+
+        private float FarthestHitDistance(Vector3 origin, Vector3 dir, float maxDistance, float fallback)
+        {
+            int count = Physics.RaycastNonAlloc(origin, dir, _dashLaneRaycastBuffer, maxDistance, _buildingLayerMask);
+            if (count <= 0)
+            {
+                Debug.LogWarning($"[GrasscutterAI] ComputeDashLaneChord found no Building-layer wall along {dir} from {origin} — falling back to half of _dashLaneFallbackLength ({fallback} m) on this side. A missing wall must not silently collapse the lane to zero length.", this);
+                return fallback;
+            }
+
+            float farthest = 0f;
+            for (int i = 0; i < count; i++)
+                if (_dashLaneRaycastBuffer[i].distance > farthest)
+                    farthest = _dashLaneRaycastBuffer[i].distance;
+            return farthest;
         }
 
         // Sustained spin drags the player inward. Never parryable — dodge outward against the
@@ -963,15 +1127,14 @@ namespace Boxhead.Enemy
         // itself (never an unclamped raw position) if every step fails.
         private Vector3 ClampToNavMesh(Vector3 desired, Vector3 fallback)
         {
-            const float sampleDistance = 2f;
-            if (NavMesh.SamplePosition(desired, out NavMeshHit hit, sampleDistance, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(desired, out NavMeshHit hit, NavMeshSampleDistance, NavMesh.AllAreas))
                 return hit.position;
 
             for (int i = 1; i <= 8; i++)
             {
                 float t = i / 8f;
                 Vector3 candidate = Vector3.Lerp(desired, fallback, t);
-                if (NavMesh.SamplePosition(candidate, out NavMeshHit backoffHit, sampleDistance, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(candidate, out NavMeshHit backoffHit, NavMeshSampleDistance, NavMesh.AllAreas))
                     return backoffHit.position;
             }
 
@@ -1032,6 +1195,13 @@ namespace Boxhead.Enemy
             _state = BossState.Dead;
 
             if (_agent != null) { _agent.isStopped = true; _agent.enabled = false; }
+
+            // ADR-0007: StopAllCoroutines() below discards SpinDash's IEnumerator mid-flight
+            // without running any of its own cleanup past the current yield — a Unity coroutine
+            // stopped externally never resumes to hit a later Hide() call, so an active
+            // ground-plane lane must be explicitly hidden here rather than relying on SpinDash's
+            // own Dead-state check (which only fires if the coroutine resumes on its own).
+            AttackTelegraphService.Hide(_spinDashLaneHandle);
 
             StopAllCoroutines();
             _activeRoutine = null;

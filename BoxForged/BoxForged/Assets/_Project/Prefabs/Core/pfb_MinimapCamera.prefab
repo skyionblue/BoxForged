@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2406133164726427506}
   - component: {fileID: 4807040789361459882}
+  - component: {fileID: 4807040789361459883}
   m_Layer: 0
   m_Name: pfb_MinimapCamera
   m_TagString: Untagged
@@ -83,3 +84,16 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &4807040789361459883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111062476808439299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a749ffdae2f346739a6d6e6bb015461, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _ground: {fileID: 0}

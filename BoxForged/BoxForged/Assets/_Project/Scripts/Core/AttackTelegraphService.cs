@@ -23,11 +23,16 @@ namespace Boxhead.Core
     {
         internal readonly int PoolIndex;
         internal readonly int Generation;
+        // ADR-0007: which pool this handle belongs to (0 = billboard, 1 = ground-plane lane) so
+        // Hide() routes to the right array. Defaults to 0 (billboard) for source compatibility
+        // with every existing Show() call site, none of which pass this parameter.
+        internal readonly byte PoolId;
 
-        internal AttackTelegraphHandle(int poolIndex, int generation)
+        internal AttackTelegraphHandle(int poolIndex, int generation, byte poolId = 0)
         {
             PoolIndex  = poolIndex;
             Generation = generation;
+            PoolId     = poolId;
         }
 
         public static readonly AttackTelegraphHandle None = new AttackTelegraphHandle(-1, 0);
@@ -61,6 +66,9 @@ namespace Boxhead.Core
         [Tooltip("Source material using the BoxForged/TelegraphOverlayUnlit shader (mat_TelegraphOverlay.mat). Referencing the shader through this real asset is what makes Unity include it in a build — see B32: a runtime Shader.Find(\"BoxForged/TelegraphOverlayUnlit\") string lookup does not count as a reference, so the shader was being stripped from real builds despite working fine in the Editor. Two tinted instances (parryable / un-parryable) are derived from this once in Awake and shared by every pooled indicator.")]
         [SerializeField] private Material _overlaySourceMaterial;
 
+        [Tooltip("ADR-0007: source material for the ground-plane lane geometry, using the same shader at ZTest LEqual (mat_TelegraphLane.mat) instead of the billboard's ZTest Always. One shared, UnparryableColor-tinted instance is derived from this once in Awake for every pooled lane — reference the asset directly here; never runtime Shader.Find (B32).")]
+        [SerializeField] private Material _laneSourceMaterial;
+
         // Redundant reinforcement only — shape is the load-bearing parryable/un-parryable signal
         // (see AttackTelegraphIndicator's class remarks). Baked into the two shared materials
         // below rather than set per-activation, since indicators no longer own their own material.
@@ -68,12 +76,27 @@ namespace Boxhead.Core
         private static readonly Color UnparryableColor = new Color(1f, 0.25f, 0.2f, 0.95f);
         private static readonly int   BaseColorId      = Shader.PropertyToID("_BaseColor");
 
+        // ADR-0007: which AttackTelegraphHandle.PoolId maps to which pool.
+        private const byte BillboardPoolId = 0;
+        private const byte LanePoolId      = 1;
+
+        // ADR-0007 §3: a fixed, small, separate pool — not the billboard pool's FindSlot cursor,
+        // which evicts at its round-robin position when full. A boss lane is raised first and
+        // held for ~1.4 s while ordinary wind-ups come and go; sharing the billboard pool would
+        // make a fairness-critical indicator recyclable by a grunt's wind-up.
+        private const int LanePoolSize = 2;
+
         private AttackTelegraphIndicator[] _pool;
         private int[] _generation;
         private int _nextIndex;
 
+        private AttackTelegraphLane[] _lanePool;
+        private int[] _laneGeneration;
+        private int _laneNextIndex;
+
         private Material _parryableMaterial;
         private Material _unparryableMaterial;
+        private Material _laneMaterial;
 
         private void Awake()
         {
@@ -104,6 +127,20 @@ namespace Boxhead.Core
                 _pool[i].Initialize(_parryableMaterial, _unparryableMaterial);
                 _pool[i].gameObject.SetActive(false);
             }
+
+            // ADR-0007: a separate, fixed-size pool for ground-plane lanes — see LanePoolSize's
+            // remarks for why this must not share _pool/FindSlot.
+            _lanePool       = new AttackTelegraphLane[LanePoolSize];
+            _laneGeneration = new int[LanePoolSize];
+
+            for (int i = 0; i < LanePoolSize; i++)
+            {
+                var go = new GameObject($"AttackTelegraphLane_{i}");
+                go.transform.SetParent(transform, false);
+                _lanePool[i] = go.AddComponent<AttackTelegraphLane>();
+                _lanePool[i].Initialize(_laneMaterial);
+                _lanePool[i].gameObject.SetActive(false);
+            }
         }
 
         // Derives the 2 shared, pre-tinted material instances every pooled indicator switches
@@ -123,12 +160,26 @@ namespace Boxhead.Core
 
             _unparryableMaterial = new Material(_overlaySourceMaterial) { name = "TelegraphOverlay_Unparryable" };
             _unparryableMaterial.SetColor(BaseColorId, UnparryableColor);
+
+            if (_laneSourceMaterial == null)
+            {
+                Debug.LogError("[AttackTelegraphService] _laneSourceMaterial is not assigned — ground-plane lane telegraphs will render with no material. Assign Assets/_Project/Materials/mat_TelegraphLane.mat in the Inspector.", this);
+            }
+            else
+            {
+                // Lanes are only ever un-parryable geometry (ADR-0007 §1 — kind carries
+                // parryability/audio only, and the current single caller passes
+                // AreaUnparryable), so one tint suffices, unlike the billboard's two.
+                _laneMaterial = new Material(_laneSourceMaterial) { name = "TelegraphLane_Unparryable" };
+                _laneMaterial.SetColor(BaseColorId, UnparryableColor);
+            }
         }
 
         private void OnDestroy()
         {
             if (_parryableMaterial   != null) Destroy(_parryableMaterial);
             if (_unparryableMaterial != null) Destroy(_unparryableMaterial);
+            if (_laneMaterial        != null) Destroy(_laneMaterial);
             if (Instance == this) Instance = null;
         }
 
@@ -160,7 +211,38 @@ namespace Boxhead.Core
             go.AddComponent<AttackTelegraphService>();
         }
 
-        /// <summary>Cancels an active indicator early. Safe to call with a stale/expired handle.</summary>
+        /// <summary>
+        /// ADR-0007: raises a pooled, world-space ground-plane lane from <paramref name="start"/>,
+        /// extending <paramref name="length"/> meters along <paramref name="direction"/>,
+        /// <paramref name="width"/> meters wide, for <paramref name="duration"/> seconds. Unlike
+        /// <see cref="Show"/>, this does not take or track a Transform — the lane is committed
+        /// geometry, anchored once at cast time. <paramref name="direction"/> is normalized on
+        /// the XZ plane by this method; a degenerate (near-zero, or purely vertical) direction
+        /// returns <see cref="AttackTelegraphHandle.None"/> and logs once. <paramref name="kind"/>
+        /// continues to carry parryability and the audio-cue class only — it does not select
+        /// geometry (see AttackTelegraphKind's remarks); the current convention is to call this
+        /// with <see cref="AttackTelegraphKind.AreaUnparryable"/>.
+        /// </summary>
+        public static AttackTelegraphHandle ShowGroundLane(
+            Vector3 start, Vector3 direction, float length, float width,
+            AttackTelegraphKind kind, float duration, float groundY = 0f)
+        {
+            EnsureInstance();
+            if (Instance == null) return AttackTelegraphHandle.None;
+
+            Vector3 flatDir = direction;
+            flatDir.y = 0f;
+            if (flatDir.sqrMagnitude < 0.0001f)
+            {
+                Debug.LogWarning("[AttackTelegraphService] ShowGroundLane called with a degenerate direction (near-zero, or purely vertical) — ignoring.", Instance);
+                return AttackTelegraphHandle.None;
+            }
+            flatDir.Normalize();
+
+            return Instance.ShowGroundLaneInternal(start, flatDir, length, width, kind, duration, groundY);
+        }
+
+        /// <summary>Cancels an active indicator or lane early. Safe to call with a stale/expired handle.</summary>
         public static void Hide(AttackTelegraphHandle handle)
         {
             if (Instance == null || !handle.IsValid) return;
@@ -182,11 +264,36 @@ namespace Boxhead.Core
                 AudioManager.Instance.Play(MapAudioCue(kind));
 
             _pool[index].Activate(target, kind, height, duration > 0f ? duration : 1f);
-            return new AttackTelegraphHandle(index, _generation[index]);
+            return new AttackTelegraphHandle(index, _generation[index], BillboardPoolId);
+        }
+
+        private AttackTelegraphHandle ShowGroundLaneInternal(
+            Vector3 start, Vector3 direction, float length, float width,
+            AttackTelegraphKind kind, float duration, float groundY)
+        {
+            int index = FindLaneSlot();
+            _laneGeneration[index]++;
+
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.Play(MapAudioCue(kind));
+
+            _lanePool[index].Activate(
+                start, direction,
+                Mathf.Max(0.01f, length), Mathf.Max(0.01f, width),
+                groundY, duration > 0f ? duration : 1f);
+            return new AttackTelegraphHandle(index, _laneGeneration[index], LanePoolId);
         }
 
         private void HideInternal(AttackTelegraphHandle handle)
         {
+            if (handle.PoolId == LanePoolId)
+            {
+                if (handle.PoolIndex < 0 || handle.PoolIndex >= _lanePool.Length) return;
+                if (_laneGeneration[handle.PoolIndex] != handle.Generation) return; // stale — slot was reused
+                _lanePool[handle.PoolIndex].Deactivate();
+                return;
+            }
+
             if (handle.PoolIndex < 0 || handle.PoolIndex >= _pool.Length) return;
             if (_generation[handle.PoolIndex] != handle.Generation) return; // stale — slot was reused
             _pool[handle.PoolIndex].Deactivate();
@@ -208,6 +315,25 @@ namespace Boxhead.Core
 
             int evict = _nextIndex;
             _nextIndex = (_nextIndex + 1) % _pool.Length;
+            return evict;
+        }
+
+        // ADR-0007: same round-robin-with-eviction policy as FindSlot, over the separate
+        // 2-slot lane pool.
+        private int FindLaneSlot()
+        {
+            for (int i = 0; i < _lanePool.Length; i++)
+            {
+                int idx = (_laneNextIndex + i) % _lanePool.Length;
+                if (!_lanePool[idx].IsActive)
+                {
+                    _laneNextIndex = (idx + 1) % _lanePool.Length;
+                    return idx;
+                }
+            }
+
+            int evict = _laneNextIndex;
+            _laneNextIndex = (_laneNextIndex + 1) % _lanePool.Length;
             return evict;
         }
 
