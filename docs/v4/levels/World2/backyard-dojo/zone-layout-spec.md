@@ -1,9 +1,31 @@
 # World 2 — The Backyard (Dojo): Zone Layout & Encounter Spec
 
-**Status:** Design spec, ready for implementation handoff. Not yet built.
+> ## ⚠ PARTIALLY SUPERSEDED — read [ADR-0006](../../../../adr/0006-world2-zone-scale-and-arena-metric.md) first
+>
+> **2026-09-01.** The owner playtested the built Stage A geometry and reported **zone 1 and zone 2 both too small**. ADR-0006 resolves that and also resolves this spec's own §4.6 escalation and §8 Q1. **Dimensions in this document are the old, too-small ones.**
+>
+> | | This spec | **ADR-0006** |
+> |---|---|---|
+> | Zone 0 | X ±7.5 × Z −3.0…17.0 | **unchanged** |
+> | Zone 1 | 16.5 m × 22.0 m, Z 17.0…39.0 | **20.0 m × 28.0 m, X −8.0…+12.0, Z 17.0…45.0** |
+> | Zone 2 | r = 8.5 m, 17.0 m across, centre `(0,0,47.5)` | **r = 10.0 m, 20.0 m across, centre `(0,0,55.0)`, Z 45.0…65.0** |
+> | Grasscutter Spin-Dash | ≤ 8 m | **≤ 6.5 m** |
+> | §4.6's conflict | escalated, unresolved | **resolved — metric M2; the tree stays at centre and the arena grows** |
+> | Combat radius | whole-roster enclosing circle ≤ 9 m | **metric M1 — per concurrency window, closing enemies only** |
+>
+> **Also resolved by ADR-0006, from `docs/BACKLOG.md` B115's findings:**
+> - **The shed is really ~7.4 × 9.5 × 6.4 m**, not §3.2's assumed 3.0 × 8.0 × 4.2 m. It stays at **native scale** and now **straddles the west stockade line** (X −11.2…−3.8; east face and doorway at X = −3.8; the shed body replaces that run of wall). §3.2's X budget summed to 20.9 m of elements against a 16.5 m zone — the built zone 1 was over-subscribed by 4.4 m, which is most likely why it feels cramped.
+> - **The engawa's NavMesh gap** (`PathPartial` onto the boards; the project bakes `agentClimb: 0.40`, not §3.2's assumed 0.75) is fixed with a **local ramp / step wedge inside the bake**, not a project-wide `agentClimb` change. Board height stays 0.35 m and width stays 3.0 m — the tightrope is the design.
+> - **Zone 2's 57.7% camera-clearance diagnostic** is a depth problem and should improve with the enlargement.
+>
+> **Superseded sections:** §0 (coordinate frame — `[ENV - Static]` is rotated **45°**, verified in the scene file; this spec's "every coordinate is a world coordinate" is no longer true), §1.1, §1.2, §1.6 (`ZONE2_BOUNDARY_WIDTH` 8.8 → **9.8**; zone-2 gate/trigger Z 39/41 → **45/47**), §1.7 (`_arenaBoundaryRadius` 30 → **35**), §3's footprint header, §3.2's shed dimensions and `agentClimb` assumption, **§4 in full**, §5's budget table, §4.6, §8 Q1.
+>
+> **Not superseded and not reopened:** the encounter design and array-order pacing (§2.2, §3.4), the Skeptic beat (§3.5), the shed-as-solid-exterior resolution and its north–south long-axis rule (§3.3), the Assembly Beat camera finding (§1.4), the aggro-delay mechanism finding (§1.5), the perimeter rules (§1.7's wall height, collider-to-mesh, `Building` layer), the asset findings (§5.1), the material allocation (§5.4), the new-geometry list (§5.5 — ADR-0006 §5.2 **adds** an 8.0 m BD-01 variant), and the import-policy prerequisite (§5.6). Interior positions must be **re-derived**, not scaled.
+
+**Status:** Design spec, **partially superseded by ADR-0006** (see banner). Stage A geometry built to this spec's dimensions (`docs/BACKLOG.md` B115); re-layout to ADR-0006's dimensions is B116.
 **Date:** 2026-09-01
-**Scene:** `Assets/_Project/Scenes/Backyard_Dojo.unity` (scaffolded, empty)
-**Binding architecture:** [ADR-0005](../../../../adr/0005-world2-single-continuous-scene.md) — one continuous scene, three `RoomManager` zones
+**Scene:** `Assets/_Project/Scenes/Backyard_Dojo.unity` (**built — Stage A geometry, at this spec's now-superseded dimensions**)
+**Binding architecture:** [ADR-0005](../../../../adr/0005-world2-single-continuous-scene.md) — one continuous scene, three `RoomManager` zones — as amended by [ADR-0006](../../../../adr/0006-world2-zone-scale-and-arena-metric.md)
 **Supersedes:** `unity-blueprint.md` (entirely) and `gdd.md` §2 "Room Structure" + §10 "Run integration". The rest of `gdd.md` (§1 tone/palette, §3 Crane Duelist, §4 returning enemies, §5 Grasscutter, §6 weapons, §7 ENV props, §8 difficulty scaling, §9 lore hook, §11 craftsmanship dressing, §12 open questions) **remains live reference and is not superseded.**
 **Story canon:** `docs/story/zones/backyard-dojo.md`, `docs/story/enemies/crane-duelist.md`, `docs/story/enemies/grasscutter-boss.md` — CANON, not modified by this document.
 
@@ -450,6 +472,13 @@ Shot B must be authored and verified against the real chair instance, not assume
 
 ### 4.6 Finding: §3's "clear circle r ≥ 8.5 m" and §4's "cherry tree at centre" are literally incompatible
 
+> **RESOLVED 2026-09-01 by [ADR-0006](../../../../adr/0006-world2-zone-scale-and-arena-metric.md) §1 and §2.2.** This finding was correct and its algebra is adopted verbatim. The decision went **further than the amendment this section requested**, for two reasons that arrived after it was written:
+>
+> 1. **The owner playtested the arena and reported it too small**, so a redefinition with no dimension change was no longer sufficient.
+> 2. **A well-formed metric shows the current arena fails anyway.** The wording proposed below — *"outer walkable radius ≥ 8.5 m, no interior obstruction exceeding 0.8 m in diameter"* — passes only because it drops any radial-band requirement, and with it the one figure World 1 had actually measured. M2 keeps it: **radial fight band ≥ 8.5 m**, which the current arena misses at `8.5 − 0.35 =` **8.15 m**. The corrected metric independently says the arena is too small, from a direction unrelated to the playtest.
+>
+> **Outcome:** metric M2 replaces the clear-circle reading; the arena grows to **r = 10.0 m (20.0 m across)**, radial band **9.65 m**; **the tree stays at centre** (§4.6's "alternative" is rejected — the victory beat's bloom shot cannot be framed with the tree at the north rim, 20 m ahead against F = 15.3 m); and the Spin-Dash is cut to **≤ 6.5 m**, since at 8 m in a 17 m court it erased 47% of the arena per commitment against World 1's playtested 28%. ADR-0006 Fact 4 also retires §4.1's *"the arena must not grow"* — that rested on equating a 17 m diameter with a **follower** camera's 16.8 m per-position visible width, and at r = 8.5 the boss at the opposite rim was already off-frame.
+
 This is the hardest constraint in the brief and it does not resolve cleanly. Stating it plainly rather than fudging a number.
 
 ADR-0005 §3 requires a **minimum clear circle of r ≥ 8.5 m**, measured the way World 1 measured its 8.44 m: the *largest inscribed obstacle-free circle*, computed against visual mesh footprints (ADR-0004 §2). ADR-0005 §4 simultaneously specifies the cherry tree **at the arena's centre**, and the story canon requires it there (*"The cherry tree at the center of the court is younger than everything around it"*).
@@ -688,7 +717,7 @@ Nothing below is optional; each item exists because World 1 paid for it.
 
 | # | Question | Owner | Blocks |
 |---|---|---|---|
-| 1 | **§4.6: `r ≥ 8.5 m` clear circle vs the cherry tree at centre.** Amend the metric to "outer walkable radius ≥ 8.5 m, no interior obstruction > 0.8 m diameter" (recommended), or move the tree to the north rim? | `technical-director` + owner | Zone 2 acceptance criteria |
+| 1 | ~~**§4.6: `r ≥ 8.5 m` clear circle vs the cherry tree at centre.**~~ **RESOLVED 2026-09-01 — [ADR-0006](../../../../adr/0006-world2-zone-scale-and-arena-metric.md).** Metric replaced (M2: outer radius ≥ 10.0 m, radial fight band ≥ 8.5 m, obstruction ≤ 2% of floor and ≤ 1.0 m wide, boss traversal ≤ 0.35 × diameter); **arena grown to r = 10.0 m**; tree stays at centre; Spin-Dash cut to ≤ 6.5 m | ~~`technical-director` + owner~~ **done** | Zone 2 acceptance criteria |
 | 2 | **§1.4: the Assembly Beat's CANON imagery** ("the shed's roof lifts", "a tree at the far end") is undeliverable on the gameplay rig. Authorize a 3 s scripted intro camera (recommended, but unbudgeted scope), or cut the imagery from the visible beat? | Owner | Zone 0 intro |
 | 3 | **§5.1: the Polyworks Asian prop set is absent.** Install the package (needs explicit owner approval per `studio-core.md`), or ship the 8-prop kit this spec is built on (recommended)? | Owner | Nothing — this spec assumes the 8-prop kit |
 | 4 | **§5.1: v1 ENV prefabs vs unused v2 models** (`prop_cherryblossom_v2`, `prop_steppingstone_v2`, `prop_targetdummy_v2`). Which generation does World 2 build against? Do not mix | `asset-engineer` / `art-director` | §5.4's material count |

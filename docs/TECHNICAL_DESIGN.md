@@ -341,7 +341,7 @@ So: **the environment layer is portable; the encounter layer is not.**
 1. Promote `RoomData` to **`RoomDataSO`**, with spawn points as `Vector3` data rather than scene references.
 2. Extend `LevelBuilder` to spawn enemy spawn points from that data, as it already does for props, pickups, cardboard, and workbenches.
 3. Rebuild scenes as **thin composition roots** — ground, boundaries, lighting, volumes, manager/player/HUD prefabs. No gameplay content authored in-scene.
-4. Add **camera-clearance validation** to the builder: assert ≥ 8 m rear / ≥ 6 m overhead clear volume over walkable area, and combat radius ≤ 9 m. Fail loudly in the Editor.
+4. Add **camera-clearance validation** to the builder: assert ≥ 8 m rear / ≥ 6 m overhead clear volume over walkable area, and combat radius ≤ 9 m. Fail loudly in the Editor. *(Combat radius is measured per §6.4.1's metric M1, not over the whole spawn roster — restated 2026-09-01 by [ADR-0006](adr/0006-world2-zone-scale-and-arena-metric.md). M1 and M2 are both computable from `RoomDataSO` plus scene geometry and are **not yet implemented in `LevelBuilder`**; both were violated silently for a full design pass, which is the argument for coding them.)*
 
 Extraction must happen **before** the scenes are abandoned, or the data is lost. Rebuilding first and extracting later means authoring every room twice.
 
@@ -350,6 +350,22 @@ The payoff beyond this milestone: a contributor authors a room by creating a dat
 ### 6.4 Room dimensions are now constrained by the camera
 
 `Player/PlayerController.cs:21` sets `_arenaBoundaryRadius = 18f` — a 36 m-diameter arena against 16.8 m of visible width. Over half of an arena fight would happen off screen. **Combat space must shrink to roughly 8–9 m radius**, independent of any creative decision.
+
+#### 6.4.1 How the ≤ 9 m combat radius is measured — restated 2026-09-01
+
+**Restated by [ADR-0006](adr/0006-world2-zone-scale-and-arena-metric.md) §2.1.** The 9 m figure is retained; what changed is what it is measured over. It had been read as *"the enclosing circle of a zone's whole spawn roster"*, which describes a state the runtime cannot produce and which World 1's shipped 59.5 m street does not satisfy — so it was documented but unenforced, and it blocked a playtest-driven fix to World 2 with 0.04 m of false headroom.
+
+> **Metric M1.** The live enemy set a `RoomManager` zone can produce is exactly a contiguous window of at most `maxConcurrentEnemies` entries in `RoomDataSO.spawnPoints[]`, because `TrySpawnNext` advances a monotonic `_nextSpawnPointIndex` and `OnSpawnedEnemyDied` refills one slot per death (`Systems/RoomManager.cs:359-424`).
+>
+> A zone passes when, for **every** such window, the minimum enclosing circle of the window's **closing** spawns — those whose AI pursues the player — has radius **≤ 9 m**.
+>
+> **Position-holding spawns are excluded** from that circle (canon-stationary duellists, dormant risers before they rise, pre-placed inactive bosses), and each must sit **≥ 5 m outside** it so the player meets it as a distinct engagement.
+
+The exclusion follows from §2.4, which is where the 9 m figure comes from: it derives from `R ≥ 3.3 m`, the requirement that the player see a **closing** grunt's entire wind-up before it reaches attack range. An enemy that never closes cannot violate that — the player chooses when to approach it.
+
+#### 6.4.2 Boss arenas — metric M2
+
+Boss arenas are measured separately, by **[ADR-0006](adr/0006-world2-zone-scale-and-arena-metric.md) §2.2**, against visual mesh footprints (not renderer AABBs, not colliders): outer walkable radius ≥ the world's authored value, **radial fight band ≥ 8.5 m** everywhere, interior obstruction ≤ 2% of floor area and ≤ 1.0 m wide, and **boss longest committed traversal ≤ 0.35 × arena diameter** (World 1's playtested reference is 0.284). The retired *"largest inscribed obstacle-free circle ≥ 8.5 m"* reading is unsatisfiable for any arena with a central feature — it evaluates to `(R − r_t)/2`, demanding a 34.7 m arena for a 0.70 m tree trunk.
 
 ### 6.5 Debt to clear during the rebuild, not carry forward
 

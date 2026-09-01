@@ -12,9 +12,10 @@ Index and summary of accepted technical decisions and package approvals. Full co
 | [0002](adr/0002-full-scene-rebuild.md) | Full scene rebuild on extracted room data | **Proposed** | 2026-08-19 |
 | [0003](adr/0003-attack-telegraph-channel.md) | Occlusion-independent attack telegraph channel | **Proposed** | 2026-08-19 |
 | [0004](adr/0004-world1-single-continuous-scene.md) | World 1 is one continuous scene, zoned by `RoomManager` | **Accepted** | 2026-08-25, finalized 2026-08-26 |
-| [0005](adr/0005-world2-single-continuous-scene.md) | World 2 is one continuous scene; single-scene becomes the default | **Accepted** | 2026-08-31 |
+| [0005](adr/0005-world2-single-continuous-scene.md) | World 2 is one continuous scene; single-scene becomes the default | **Accepted** | 2026-08-31, §3/§4 amended 2026-09-01 by 0006 |
+| [0006](adr/0006-world2-zone-scale-and-arena-metric.md) | World 2 zone scale, and the two budget metrics that were measuring the wrong thing | **Accepted** | 2026-09-01 |
 
-ADR-0001–0003 await owner approval. ADR-0004 was accepted 2026-08-26 once the owner resolved every question it had left open; it is the implementation spec for the city scene but does not by itself authorize a commit. ADR-0005 was accepted 2026-08-31 with the owner having explicitly delegated the scene-architecture choice to `technical-director`; its open questions are content decisions and do not block scaffolding.
+ADR-0001–0003 await owner approval. ADR-0004 was accepted 2026-08-26 once the owner resolved every question it had left open; it is the implementation spec for the city scene but does not by itself authorize a commit. ADR-0005 was accepted 2026-08-31 with the owner having explicitly delegated the scene-architecture choice to `technical-director`; its open questions are content decisions and do not block scaffolding. ADR-0006 amends ADR-0005 §3/§4 and restates `TECHNICAL_DESIGN.md` §6.4 after the owner playtested World 2's built geometry.
 
 > **Status conflict, surfaced not resolved (2026-08-25):** this table lists 0001–0003 as Proposed, but `adr/0002-full-scene-rebuild.md`'s own header says **Accepted** and `docs/ROADMAP.md` records production as authorized on 2026-08-19. Sprint 0 shipped against 0001/0003. Owner should confirm which is correct and the losing source should be corrected.
 
@@ -70,6 +71,8 @@ World 2 (The Backyard/Dojo) is **one continuous scene, `Backyard_Dojo.unity`**, 
 
 **This also promotes single-continuous-scene from "a World 1 deviation" to the project default** for team-built worlds, retiring ADR-0002's "one scene per room" corollary as the default while **preserving** its `RoomDataSO`/`LevelBuilder` data-driven encounter layer, which is the load-bearing half.
 
+> **Update, 2026-09-01:** ADR-0005 §6 item 1 ("author the ENV root at yaw 0") was reversed by explicit owner direction after acceptance — `Backyard_Dojo.unity`'s `[ENV - Static]` is now rotated 45°, matching World 1's diagonal composition, with the camera intentionally left un-rotated to produce the visible skew. The coordinate-transform tax that lesson existed to avoid did materialize (gates, triggers, spawn points, and drop-table coordinates all needed re-deriving). See ADR-0005 §6 item 1 for the full record.
+
 Decided on facts about the project, not preference:
 
 - **The scene-per-room path is currently dead code with no valid targets.** `RandomRoomPool` is empty (`GameManager.cs:52`), `LoadNextRoom()`'s exhausted branch logs an error instead of loading (`:607-615`), every per-room scene was deleted (commit `84a3a44e`), and `ZoneStartScene[1] = "TownSquare_Room1"` names a scene that never existed. Choosing the "documented default" would mean reviving a path with no working reference implementation.
@@ -85,6 +88,29 @@ Also decided: **whole-scene** performance budgets replacing per-room ones (< 100
 Rejected: scene-per-room, a second one-off deviation, a hybrid boss-only scene, additive per-zone loading, five zones per the v4 GDD, a streaming/world-partition system, and copying the zone director.
 
 Blocking prerequisites recorded: the **large-agent NavMesh** decision (the Grasscutter is the second boss to exceed the single baked agent type's 0.5 radius) and the **texture import policy** before any new dojo art.
+
+**Amended 2026-09-01 by ADR-0006** — the two acceptance metrics quoted above ("combat radius ≤ 9 m", "clear circle r ≥ 8.5 m") were both measuring states that cannot occur, and the Spin-Dash cap of 8 m was undefended slack. See below.
+
+### ADR-0006 — World 2 zone scale, and the two budget metrics that were measuring the wrong thing
+
+The owner playtested World 2's built Stage A geometry and reported **zone 1 and zone 2 both too small** (zone 0 not flagged). Investigating that found two acceptance criteria in ADR-0005 §3 that could not be satisfied as written, and one boss constraint that had never been derived.
+
+**New dimensions.** Zone 1 → **20.0 m × 28.0 m** (from 16.5 × 22.0; the 20 m width is `BACKLOG` B107's playtested World 1 figure for the identical complaint, not a fresh derivation). Zone 2 → **r = 10.0 m, 20.0 m across, centre `(0, 0, 55.0)`** (from r = 8.5 / 17.0). Zone 0 **unchanged** — it is the calibration point, at ~294 m² of free floor. Grasscutter Phase-2 Spin-Dash **≤ 8 m → ≤ 6.5 m**. Cherry tree stays at the arena centre and may now be 8.0 m tall instead of 7.0 m.
+
+**Two metrics restated, both preserving the playtested numbers rather than discarding them:**
+
+- **M1 — combat radius** (`TECHNICAL_DESIGN.md` §6.4.1, project-wide). Still ≤ 9 m, but measured over each contiguous `maxConcurrentEnemies` window of `spawnPoints[]` — the only live set `RoomManager` can produce — counting **closing** enemies only. The whole-roster reading describes a state the runtime cannot produce and World 1's 59.5 m street does not satisfy it.
+- **M2 — boss-arena fight floor** (§6.4.2). Outer radius ≥ authored value, **radial fight band ≥ 8.5 m** (what World 1's measured 8.44 m actually described), interior obstruction ≤ 2% of floor and ≤ 1.0 m wide, boss traversal ≤ **0.35 × diameter** (World 1's playtested 0.284). The retired "largest inscribed obstacle-free circle" reading evaluates to `(R − r_t)/2` and so demands a **34.7 m** arena for a 0.70 m trunk. **World 1 passes M2 unchanged.**
+
+**Diagnosis, for the record.** Zone 1's problem was fragmentation, not area: its total free floor already matched zone 0's, but the Crane Duelist fight had ~50 m² of usable floor. Zone 2's problem was the boss, not the metres: at an 8 m dash in a 17 m court the boss erased 47% of the arena per commitment against World 1's playtested 28%. And *"17 m is already at the camera's 16.8 m limit"* equated a diameter with a **follower** camera's per-position visible width — at r = 8.5 the boss at the opposite rim was already off-frame, so the growth ban rested on a limit already passed.
+
+**Budget.** ~122.6k tris of 300k. Worst-case wall draw calls **fall by 9** versus the built scene, because the enlargement is paid for by an 8.0 m BD-01 variant on straight runs, and a 16-gon at r = 10.0 has 3.978 m sides — so the bigger arena uses the **same 14 modules** at native scale. Prop counts are **frozen** while area grows. Draw calls remain gated on B112's SRP-Batcher-at-zero investigation, which this decision neither improves nor worsens.
+
+Granted **on** one condition: the ground-plane dash-lane telegraph (ADR-0003 channel) must exist before the arena is accepted at 20 m, because it replaces simultaneous on-frame visibility as the fairness mechanism.
+
+Rejected: pure redefinition with no dimension change (the current arena fails a well-formed M2 at 8.15 m of 8.5 m); moving the tree off-centre (the victory beat's bloom shot cannot be framed at 20 m against F = 15.3 m); enlarging without cutting the dash (ratio-preservation would demand 28.6 m); uniform scale-up of all three zones; prop-thinning alone; widening the engawa; and adding a wave affordance to `RoomDataSO`.
+
+Implementation is `docs/BACKLOG.md` **B116** (`unity-gameplay-engineer`) — a re-layout, not World 1's rigid translation. **M1 and M2 are not yet implemented in `LevelBuilder`'s validation**, and both were violated silently for a full design pass.
 
 ---
 
