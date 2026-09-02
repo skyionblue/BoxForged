@@ -183,6 +183,10 @@ namespace Boxhead.Enemy
                 if (_playerCombat != null)
                     _playerCombat.OnCounterStrike += OnCounterStrikeLanded;
             }
+            else
+            {
+                Debug.LogWarning("[CraneDuelistAI] No GameObject tagged 'Player' found.", this);
+            }
 
             _stats.OnDeath += HandleDeath;
             _stats.OnHit += OnHitReceived;
