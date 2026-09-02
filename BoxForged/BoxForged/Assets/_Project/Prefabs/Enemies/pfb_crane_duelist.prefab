@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pfb_crane_duelist
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
       propertyPath: m_Controller
       value: 
@@ -67,5 +71,157 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8135760271752764209}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1215771291010982459}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8961467783506396334}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6487483068059305000}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6158523620747710686}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 490861422528581960}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7409576270543399650}
   m_SourcePrefab: {fileID: 100100000, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+--- !u!1 &9096217019480281349 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1015a7ad1500a4e1ebe72d96e433b0d1, type: 3}
+  m_PrefabInstance: {fileID: 8285823963266886740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!143 &8135760271752764209
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096217019480281349}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.35
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &1215771291010982459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096217019480281349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 899b58500c34842c2ae1edae7590e739, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.EnemyStats
+  maxHealth: 90
+  attackDamage: 22
+  _countsForWinCondition: 1
+  _startInvulnerable: 0
+  _cardboardDropMin: 1
+  _cardboardDropMax: 3
+  hitSparkPrefab: {fileID: 0}
+--- !u!114 &8961467783506396334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096217019480281349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 422626d55be2e4aab879d643648b05e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.CraneDuelistAI
+  trackingRange: 12
+  idleTurnSpeed: 70
+  beakThrustRange: 3.8
+  frontArcHalfAngle: 50
+  settleDuration: 1.1
+  thrustActiveDuration: 0.22
+  thrustCooldown: 2.2
+  offBalanceDuration: 1
+  counterStrikeDamage: 45
+  pivotSweepRange: 2
+  pivotSweepWindUp: 0.35
+  pivotSweepActiveDuration: 0.25
+  pivotSweepCooldown: 1.5
+  hitStaggerDuration: 0.4
+  telegraphHeightOffset: 2.9
+--- !u!114 &6487483068059305000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096217019480281349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d0768145a604e57856fe0de2f53a17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Enemy.EnemyHealthBar
+  _offset: {x: 0, y: 2.4, z: 0}
+  _barWidth: 0.8
+  _barHeight: 0.17
+--- !u!114 &6158523620747710686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096217019480281349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a69a4243179d4c848db82e1c8f54dc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.UI.MinimapIndicator
+  _color: {r: 1, g: 0.4, b: 0.7, a: 1}
+  _discRadius: 0.45
+  _altitudeY: 38
+  _minimapLayer: 20
+--- !u!114 &490861422528581960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096217019480281349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa8356321922243fe96c25536f82a4f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Player.FootstepReceiver
+--- !u!114 &7409576270543399650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096217019480281349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e58fb1cb2ad1b4326b8eb4352a9b4dd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Core.FootstepReceiver

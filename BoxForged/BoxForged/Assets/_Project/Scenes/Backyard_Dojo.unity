@@ -118,7 +118,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: a20dc75985c284684bd425d88d3a25fc, type: 2}
 --- !u!1001 &31312973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5315,17 +5315,25 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3949447046378326753, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.2409852
+      objectReference: {fileID: 0}
+    - target: {fileID: 3949447046378326753, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.0709846
+      objectReference: {fileID: 0}
     - target: {fileID: 4168756911536295865, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.1394062
+      value: 2.2861483
       objectReference: {fileID: 0}
     - target: {fileID: 4168756911536295865, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.0709887
+      value: 1.0709816
       objectReference: {fileID: 0}
     - target: {fileID: 4168756911536295865, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.5000038
+      value: 2.5000048
       objectReference: {fileID: 0}
     - target: {fileID: 4330109301219679936, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_AnchorMax.y
@@ -5374,6 +5382,10 @@ PrefabInstance:
     - target: {fileID: 4378331882869641716, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4385893979030953852, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4717238100906331832, guid: f22ab94ff407a49dfbe1ad64b8535cd6, type: 3}
       propertyPath: m_AnchorMax.x
@@ -9239,7 +9251,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &1566171672
 Transform:
@@ -9736,6 +9748,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1652590273}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1659546192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1659546193}
+  m_Layer: 0
+  m_Name: GrasscutterIntroCamAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1659546193
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659546192}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 36.3453, y: 1.8, z: 37.072}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1675381080
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10815,6 +10858,10 @@ PrefabInstance:
       propertyPath: field of view
       value: 45
       objectReference: {fileID: 0}
+    - target: {fileID: 6557108487862274945, guid: 259303d139d344aa58393498224a47ec, type: 3}
+      propertyPath: CustomBlends
+      value: 
+      objectReference: {fileID: 11400000, guid: 608c20c7471df49a682d53bd585c7ae2, type: 2}
     - target: {fileID: 8232530049384139975, guid: 259303d139d344aa58393498224a47ec, type: 3}
       propertyPath: m_Cameras.Array.size
       value: 0
@@ -12697,6 +12744,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2598356050918453954, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
+      propertyPath: _introCamAnchor
+      value: 
+      objectReference: {fileID: 1659546193}
+    - target: {fileID: 2598356050918453954, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
       propertyPath: _imaginationVolume
       value: 
       objectReference: {fileID: 1315146802}
@@ -12714,7 +12765,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 44.54773
+      value: 36.3453
       objectReference: {fileID: 0}
     - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
       propertyPath: m_LocalPosition.y
@@ -12722,7 +12773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 44.54772
+      value: 44.972
       objectReference: {fileID: 0}
     - target: {fileID: 8438081107125364433, guid: 80bfc5f49ff504587bd57a794ac89936, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12777,3 +12828,4 @@ SceneRoots:
   - {fileID: 1315146803}
   - {fileID: 1873093013}
   - {fileID: 4062205995756422584}
+  - {fileID: 1659546193}

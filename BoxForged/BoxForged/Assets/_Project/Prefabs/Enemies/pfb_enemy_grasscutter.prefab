@@ -534,8 +534,8 @@ Transform:
   m_GameObject: {fileID: 2974375931941352411}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.92387956, z: 0, w: -0.38268346}
-  m_LocalPosition: {x: 44.54773, y: 0, z: 44.54772}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7455604746553258509}
@@ -579,7 +579,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2.2
+  m_Height: 4
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -753,6 +753,8 @@ MonoBehaviour:
   spinDashRevDuration: 0.9
   spinDashSpeed: 13
   spinDashMaxDistance: 6.5
+  _dashContactRadius: 1.5
+  _dashLaneFallbackLength: 20
   _trailHazardMaterial: {fileID: 0}
   _trailPoolSize: 14
   _trailSpawnInterval: 0.12
@@ -775,16 +777,19 @@ MonoBehaviour:
   _reelRoot: {fileID: 1316692983201982439}
   _cherryTreeLookTarget: {fileID: 0}
   _cherryTreeNameContains: cherry
-  _introTriggerRange: 9
-  _introTickOverRange: 14
+  _introTreeLookHeight: 4.5
+  _introTriggerRange: 9.6
+  _introTickOverRange: 11.5
   _introTreeHoldDuration: 1.4
   _introRiseDuration: 1.6
   _introSpinUpDuration: 2.2
   _introPostRisePause: 0.5
-  _buriedYOffset: -0.6
+  _buriedYOffset: -4.45
+  _introBossLookHeight: 2.13
+  _introCamAnchor: {fileID: 0}
   _introCamHeight: 1.8
-  _introCamDistance: 7
-  _introCamFoV: 32
+  _introCamDistance: 7.9
+  _introCamFoV: 45
   _normalCameraFoV: 45
   _introCamPriority: 100
   _reelIdleRPM: 20
@@ -792,7 +797,7 @@ MonoBehaviour:
   _reelRevRPM: 220
   _reelRpmLerpSpeed: 60
   _reelStopRate: 90
-  _telegraphHeightOffset: 2.6
+  _telegraphHeightOffset: 3.2
 --- !u!1 &3389862849293371169
 GameObject:
   m_ObjectHideFlags: 0

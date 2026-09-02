@@ -62,6 +62,15 @@ namespace Boxhead.Player
         public bool IsInvincible => State == CombatState.Dodging;
         public bool IsInHitPhase { get; private set; }
 
+        /// <summary>
+        /// Duration of the post-parry counter window (see <see cref="CounterWindowRoutine"/>).
+        /// Exposed so an attacker whose own off-balance/stagger telegraph is shorter than this
+        /// (e.g. CraneDuelistAI's counter-eligibility timer) can size itself to actually cover
+        /// the player's real window instead of hardcoding a value that can silently drift out of
+        /// sync with this one.
+        /// </summary>
+        public float CounterWindowDuration => counterWindowDuration;
+
         // ── Special ability HUD surface ───────────────────────────────────────
         /// <summary>True when a weapon ability or fighting style special is available.</summary>
         public bool HasSpecialAbility => _currentAbility != null || _activeStyle != null;

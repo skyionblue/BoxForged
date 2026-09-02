@@ -161,6 +161,12 @@ Of the three options the design pass put forward, **(a) redefine only** is rejec
 
 #### §1.1 The cherry tree stays at `(0, 0, 55.0)` — option (c) is rejected, and the reason is a camera, not a preference
 
+> **SUPERSEDED FOR THIS PLACEMENT — 2026-09-01, by explicit owner decision.** The cherry tree is built at design `(0, ·, 62.530)`, the north-rim position this section rejects, and the owner has confirmed that is intentional: *"I moved the tree to the back of the area because it made more sense back there."* Per `.claude/rules/studio-core.md` §Creative decision discipline that is CANON and is not re-litigated. See [ADR-0008](0008-boss-intro-camera-authored-vantage.md) §Amendment.
+>
+> **The four grounds below are deliberately left intact**, both as a record of what was traded away and because they may still be sound general guidance for arena dressing. What they are no longer is a reason to move this tree. Their live consequences are tracked, not argued: ground 1 (the victory beat's bloom shot) is ADR-0008 §Validation 8; ground 3 (the orbital movement grammar) is `docs/BACKLOG.md` **B125**; ground 4 (the boss's dormancy spot) is resolved by ADR-0008 §2 moving the **boss**, not the tree. Ground 2 (canon) is a story question for `story-room`, not an architecture one.
+>
+> Two of this section's own numbers were also measured against the built asset on 2026-09-01 and do not hold: the canopy is an **ellipse of half-axes 4.4 × 2.5 m** against the "r ≤ 3.5" in the table below, its underside starts at **y ≈ 1.9** against "≥ 4.0", and **only the trunk capsule has a collider** — the canopy has none, so every physics-based clearance sweep in this ADR's §Validation silently passes through it. See `docs/BACKLOG.md` **B126**.
+
 The design pass offered moving the tree to the north rim as the alternative if the metric amendment were refused. Rejected on four grounds, the first of which is decisive and appears not to have been checked:
 
 1. **It breaks the victory beat's first shot.** `zone-layout-spec.md` §4.5 Shot A frames the bloom from `(0, 3.0, 40.5)` looking north and up at the canopy. With the tree at the north rim, the canopy is ~20 m ahead of a camera whose forward ground reach is F = 15.3 m, and its crown is above the top ray. **The bloom — the zone's emotional payoff and the Imagination Restore trigger — cannot be framed.** A centred tree is 7.5 m from Shot A's new station and frames cleanly.

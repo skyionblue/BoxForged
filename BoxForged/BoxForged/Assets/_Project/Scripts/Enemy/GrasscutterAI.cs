@@ -123,37 +123,39 @@ namespace Boxhead.Enemy
         [Tooltip("Direct scene reference to the cherry tree, for the intro's first camera cut. Assign the CherryTree_TrunkCollider (or its parent) instance already authored in Backyard_Dojo.unity. Falls back to a name search (same defensive convention as SpinCycleAI.FindSaloon) if left unassigned.")]
         [SerializeField] private Transform _cherryTreeLookTarget;
         [SerializeField] private string    _cherryTreeNameContains = "cherry";
-        [Tooltip("Player must close to within this distance of the dormancy spot before the rise cinematic begins — GDD: \"As Kid approaches, the reel ticks over... and it rises.\"")]
-        [SerializeField] private float _introTriggerRange  = 9f;
-        [Tooltip("Reel starts a slow idle tick-over this far out, purely as an approach cue, before the trigger range commits to the full cinematic.")]
-        [SerializeField] private float _introTickOverRange = 14f;
+        [Tooltip("Absolute world Y the intro's Phase B shot aims at on the tree's XZ position — NOT an offset from the tree transform's own Y (ADR-0008 Amendment 2 §4/#7). 4.50 m is the canopy mesh's triangle-area-weighted centroid, re-measured live; Renderer.bounds.center.y (3.810) sits in the trunk and is not usable here.")]
+        [SerializeField] private float _introTreeLookHeight = 4.50f;
         [SerializeField] private float _introTreeHoldDuration = 1.4f;
         [SerializeField] private float _introRiseDuration     = 1.6f;
         [SerializeField] private float _introSpinUpDuration   = 2.2f;
         [SerializeField] private float _introPostRisePause    = 0.5f;
         [Tooltip("How far \"sunk in the grass\" the boss starts before rising to its authored dormancy position.")]
-        [SerializeField] private float _buriedYOffset = -0.6f;
+        [SerializeField] private float _buriedYOffset = -4.45f;
+        [Tooltip("Height above standPos (the boss's feet) that the intro's Phase C shot aims at, instead of the bare feet position — ADR-0008 Amendment 2 §4/#6. 2.13 = 50.1% of the measured 4.250 m boss height; restores SpinCycleAI._introCamLookHeight, which this port originally dropped.")]
+        [SerializeField] private float _introBossLookHeight = 2.13f;
 
         [Header("Intro — Cinematic Camera")]
-        [Tooltip("World 1 boss-intro pattern reused: a dedicated priority-overridden vcam, created in Awake so frame 1 never shows the top-down gameplay view. Unlike SpinCycleAI's continuous dolly, the GDD calls for hard cuts (\"camera cuts to the cherry tree, then to the mower\"), so this vcam is repositioned instantly between fixed framings rather than lerped.")]
+        [Tooltip("ADR-0008 Amendment 2 (\"authored vantage\"): a hand-placed scene Transform (GrasscutterIntroCamAnchor in Backyard_Dojo.unity) whose .position is used directly by ComputeIntroCamPosition when assigned. This replaces the old player-axis-derived camera position, which could never guarantee wall/tree clearance because its distance from the arena centre depended on the player's live position. When null, falls back to the legacy player-axis computation using _introCamDistance/_introCamHeight below — see OnValidate/Awake for the missing-reference warning.")]
+        [SerializeField] private Transform _introCamAnchor;
+        [Tooltip("World 1 boss-intro pattern reused: a dedicated priority-overridden vcam, created in Awake so frame 1 never shows the top-down gameplay view. Unlike SpinCycleAI's continuous dolly, the GDD calls for hard cuts (\"camera cuts to the cherry tree, then to the mower\"), so this vcam is repositioned instantly between fixed framings rather than lerped. Both hard-cut framings (FrameIntroCamera's Phase B/C calls) share the SAME camera position — see that method's remarks — so this height/distance pair only needs to work for one vantage point, not two independently. Only used as part of the ComputeIntroCamPosition fallback when _introCamAnchor is unassigned.")]
         [SerializeField] private float _introCamHeight   = 1.8f;
-        [SerializeField] private float _introCamDistance = 7f;
-        [SerializeField] private float _introCamFoV      = 32f;
+        [Tooltip("Fallback only, used when _introCamAnchor is unassigned (ADR-0008 Amendment 2). Previously the boss's real intro-camera distance, re-derived twice as the boss's true height and the arena's real geometry were measured (14 -> 9 -> 7.9): first against a mis-measured 4.70 m boss height (an inflated SkinnedMeshRenderer.bounds artifact — see B119/ADR-0008 Amendment 2 Fact 1), then against the boss's actual 4.250 m height and the third-derivation staging. 7.9 m is not a live camera distance any more once the anchor is assigned; it only matters if the anchor reference is ever lost.")]
+        [SerializeField] private float _introCamDistance = 7.9f;
+        [SerializeField] private float _introCamFoV      = 45f;
         // ADR-0001: must match pfb_CM_FollowCam's Lens.FieldOfView (45) — see SpinCycleAI's
         // identical field/comment; kept here for the same reason (no live camera reference wired).
         [SerializeField] private float _normalCameraFoV  = 45f;
         [SerializeField] private int   _introCamPriority = 100;
 
         [Header("Reel Spin")]
-        [SerializeField] private float _reelIdleRPM     = 20f;
         [SerializeField] private float _reelKataRPM     = 45f;
         [SerializeField] private float _reelRevRPM      = 220f;
         [SerializeField] private float _reelRpmLerpSpeed = 60f;
         [Tooltip("Deceleration rate used only while Dead — GDD defeat beat: \"the reel jams, grinds, stops.\"")]
         [SerializeField] private float _reelStopRate = 90f;
 
-        [Tooltip("Height above the boss the overhead telegraph indicator floats at (ADR-0003). Smaller than AttackTelegraphService's project-wide 3.2 m default, tuned for this boss's roughly human-plus-mower scale rather than SpinCycle's much taller silhouette.")]
-        [SerializeField] private float _telegraphHeightOffset = 2.6f;
+        [Tooltip("Height above the boss the overhead telegraph indicator floats at (ADR-0003). Was 2.6 m (smaller than AttackTelegraphService's project-wide 3.2 m default) back when this boss's silhouette was roughly human-plus-mower scale, shorter than SpinCycle. B27's fix brought this boss's visual height up to roughly match SpinCycle's, so it now uses the same 3.2 m project-wide default SpinCycle relies on instead of a bespoke smaller value. (The boss's actual measured height is 4.250 m, not the previously-cited 4.70 m — see B119/ADR-0008 Amendment 2 Fact 1, an inflated SkinnedMeshRenderer.bounds artifact from a rotated root bone.)")]
+        [SerializeField] private float _telegraphHeightOffset = 3.2f;
 
         // ── State ─────────────────────────────────────────────────────────────
 
@@ -264,6 +266,16 @@ namespace Boxhead.Enemy
             _animator = GetComponentInChildren<Animator>();
             CacheAnimatorParameters();
 
+            // ADR-0008 Amendment 2 §5: runtime defense in depth alongside OnValidate below —
+            // OnValidate is Editor-only, so a build (or a prefab instance whose override predates
+            // OnValidate ever running) must still be caught here. An unassigned anchor silently
+            // falls back to the old player-axis computation, which cannot guarantee wall/tree
+            // clearance — this is a staging regression, not a crash, so it warns rather than throws.
+            if (_introCamAnchor == null)
+            {
+                Debug.LogWarning("[GrasscutterAI] _introCamAnchor is unassigned — falling back to the player-axis-derived intro camera position, which is not guaranteed clear of walls or the cherry tree (ADR-0008 Amendment 2). Assign the scene's GrasscutterIntroCamAnchor Transform.", this);
+            }
+
             CreateIntroCamera();
 
             _renderer = GetComponentInChildren<Renderer>();
@@ -333,6 +345,17 @@ namespace Boxhead.Enemy
 
             if (_dashLaneFallbackLength < DashLaneFallbackLengthFloor)
                 _dashLaneFallbackLength = DashLaneFallbackLengthFloor;
+
+            // ADR-0008 Amendment 2 §5: catches the missing reference in the Inspector at edit
+            // time; Awake's runtime warning above is the build-safe backstop since OnValidate
+            // never runs outside the Editor. Skipped on the prefab ASSET itself — a prefab asset
+            // can never hold a scene Transform reference, so this would warn permanently every
+            // time the asset is opened/edited with no way to resolve it. Only the scene instance
+            // (which can and must have this wired) is checked here.
+            if (_introCamAnchor == null && !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this))
+            {
+                Debug.LogWarning("[GrasscutterAI] _introCamAnchor is unassigned — the intro camera will fall back to the player-axis-derived position, which is not guaranteed clear of walls or the cherry tree (ADR-0008 Amendment 2). Assign the scene's GrasscutterIntroCamAnchor Transform.", this);
+            }
         }
 #endif
 
@@ -357,16 +380,15 @@ namespace Boxhead.Enemy
         // first Brain update so frame 1 never shows the top-down gameplay view — identical
         // rationale/technique to SpinCycleAI.CreateIntroCamera.
         //
-        // Unlike SpinCycleAI, this boss's intro is proximity-gated rather than
-        // activation-gated: BossIntro's Phase B/C framing calls (FrameIntroCamera) don't fire
-        // until the player closes to within _introTriggerRange, which can be many seconds (or
-        // never, if the player doesn't approach) after this vcam is enabled at priority 100. A
-        // vcam enabled-but-never-positioned defaults to world (0,0,0)/identity, so the Brain
-        // would cut to that empty-space framing for the entire dormancy window. Fixed by
-        // immediately framing the vcam on the boss's own authored dormancy position (the only
-        // thing there is to look at yet) so there is never a bad frame to show, matching the
-        // "nothing wrong to look at even before the trigger" resolution — Phase B/C simply
-        // reframe this same vcam once the real cinematic beats begin.
+        // As of the 2026-09-02 activation-gated rework (see BossIntro's header comment), this
+        // boss now matches SpinCycleAI's own trigger timing: BossIntro's Phase B cut fires
+        // immediately once Start() runs, essentially the same frame as this method. So the frame
+        // this call produces is only ever a single-frame placeholder covering the brief Awake->
+        // Start gap — a vcam enabled-but-never-positioned would default to world (0,0,0)/identity,
+        // and this avoids the Brain ever cutting to that empty-space framing, however briefly.
+        // Framed on the boss's own (not-yet-buried) authored position since _player isn't
+        // resolved yet at Awake time anyway (see the position-fallback note below) — Phase B
+        // reframes this same vcam to the tree immediately after.
         private void CreateIntroCamera()
         {
             if (_introVcamGO != null) return;
@@ -382,10 +404,17 @@ namespace Boxhead.Enemy
             _introVcam.Priority = prio;
             _introVcam.enabled  = true;
 
-            // _player is not yet resolved at this point (Awake runs before Start), so
-            // FrameIntroCamera's fallback (-transform.forward) is used for the initial framing
-            // direction — deterministic and good enough since BossIntro's own Phase B/C calls
-            // reframe this vcam correctly once the player reference exists.
+            // Camera position: ComputeIntroCamPosition() returns _introCamAnchor.position when
+            // assigned (the shipping case — see ADR-0008 Amendment 2), independent of _player.
+            // Only the unassigned-anchor fallback needs a player reference for its direction, and
+            // even then _player is not yet resolved here (Awake runs before Start) — that path
+            // falls back further to -transform.forward, deterministic and good enough since
+            // BossIntro's own Phase B/C calls reframe this vcam correctly once the player exists.
+            //
+            // Look target: bare transform.position (feet), not standPos + _introBossLookHeight
+            // like Phase C — doesn't matter which now that this is only a single-frame
+            // placeholder (see method header above), but kept simple since there's nothing
+            // meaningful to frame yet at this point in Awake regardless.
             FrameIntroCamera(transform.position);
         }
 
@@ -463,106 +492,151 @@ namespace Boxhead.Enemy
         // ticks over, grass and petals kick up, and it rises. Camera cuts to the cherry tree,
         // then to the mower spinning up — mirrors the World 1 boss-intro cadence." Reuses
         // SpinCycleAI's cadence (dedicated priority-overridden vcam, invulnerable throughout,
-        // hand back to gameplay at the end) but the trigger is proximity-based (not immediate on
-        // zone activation) and the camera hard-cuts between two framings rather than dollying.
+        // hand back to gameplay at the end) — and, as of an owner decision on 2026-09-02, ALSO
+        // matches SpinCycleAI on trigger timing: activation-gated, firing immediately on zone
+        // activation, not proximity-gated. (A proximity-gated version shipped earlier the same
+        // day and was reverted: waiting for the player to approach closer, with nothing visible
+        // in the meantime, read as "nothing happens when I enter the boss area" — worse, a
+        // separate same-day input-lock fix froze the player before they could ever close that
+        // distance, a hard soft-lock. Cutting straight to the cherry tree on activation removes
+        // both problems at once.) The camera still hard-cuts between framings rather than
+        // dollying, per the GDD's "camera cuts to..." language.
         private IEnumerator BossIntro()
         {
             _stats?.SetInvulnerable(true);
             _state = BossState.Idle;
             if (_agent != null) _agent.enabled = false;
 
-            Vector3 standPos  = transform.position; // authored dormancy position
-            Vector3 buriedPos = standPos + Vector3.up * _buriedYOffset;
-            transform.position = buriedPos;
-
-            // ── Phase A: dormant — wait for the player to approach ──
-            bool tickingStarted = false;
-            while (_player == null || Vector3.Distance(transform.position, _player.position) > _introTriggerRange)
+            try
             {
-                if (!tickingStarted && _player != null &&
-                    Vector3.Distance(transform.position, _player.position) <= _introTickOverRange)
+                Vector3 standPos  = transform.position; // authored dormancy position
+                Vector3 buriedPos = standPos + Vector3.up * _buriedYOffset;
+                transform.position = buriedPos;
+
+                // Input lock: the cinematic starts immediately below, with no approach phase to
+                // protect, so there's no reason to leave this until later — lock right away.
+                // Same PermitPulperBossIntro precedent as before (disable PlayerController for
+                // the duration; _playerController cached once in Start(), same reference
+                // WhirlwindPull uses). No separate manual camera-input script exists in this
+                // project to lock alongside it (grepped _Project/Scripts: only automatic
+                // follow/injector/occlusion/framing cameras — CameraFollowTargetInjector,
+                // CameraStackWirer, AspectAdaptiveCameraFraming, MinimapCameraFollow, CameraOcclusion —
+                // none read touch/drag/pinch input, so there is nothing else to disable here).
+                if (_playerController != null) _playerController.enabled = false;
+
+                // ── Phase B: camera cuts to the cherry tree ──
+                Vector3 treeLook = ResolveCherryTreeLookPoint();
+                FrameIntroCamera(treeLook);
+                float holdTimer = 0f;
+                while (holdTimer < _introTreeHoldDuration) { holdTimer += Time.deltaTime; yield return null; }
+
+                // ── Phase C: hard cut to the mower — it rises out of the grass, reel spins up ──
+                // ADR-0008 Amendment 2 §4/#6: aim above standPos (the boss's feet), not at the bare
+                // feet position, or the boss reads as cropped/cut off at the bottom of frame.
+                FrameIntroCamera(standPos + Vector3.up * _introBossLookHeight);
+
+                float riseTimer = 0f;
+                while (riseTimer < _introRiseDuration)
                 {
-                    tickingStarted   = true;
-                    _reelTargetRPM   = _reelIdleRPM;
+                    riseTimer += Time.deltaTime;
+                    float t = Mathf.Clamp01(riseTimer / _introRiseDuration);
+                    transform.position = Vector3.Lerp(buriedPos, standPos, t);
+                    yield return null;
                 }
-                yield return null;
+                transform.position = standPos;
+
+                float spinTimer = 0f;
+                while (spinTimer < _introSpinUpDuration)
+                {
+                    spinTimer += Time.deltaTime;
+                    float t = spinTimer / _introSpinUpDuration;
+                    _reelTargetRPM = Mathf.Lerp(0f, _reelRevRPM, t * t); // quadratic ease-in
+                    if (spinTimer >= _introSpinUpDuration * 0.5f && spinTimer < _introSpinUpDuration * 0.5f + Time.deltaTime)
+                        _impulseSource?.GenerateImpulse(0.2f);
+                    yield return null;
+                }
+                _reelTargetRPM = _reelKataRPM;
+
+                // ── Phase D: hand control back to the gameplay camera, combat begins ──
+                float pauseTimer = 0f;
+                while (pauseTimer < _introPostRisePause) { pauseTimer += Time.deltaTime; yield return null; }
+
+                if (_introVcam != null) _introVcam.enabled = false;
+
+                if (_agent != null)
+                {
+                    _agent.enabled   = true;
+                    _agent.Warp(transform.position);
+                    _agent.isStopped = true;
+                }
+
+                if (_player != null)
+                {
+                    Vector3 toPlayer = _player.position - transform.position;
+                    toPlayer.y = 0f;
+                    if (toPlayer.sqrMagnitude > 0.01f)
+                        transform.rotation = Quaternion.LookRotation(toPlayer.normalized);
+                }
+
+                _introComplete = true;
+                _state         = BossState.Approaching;
+
+                _stats?.SetInvulnerable(false);
             }
-
-            // ── Phase B: camera cuts to the cherry tree ──
-            Vector3 treeLook = ResolveCherryTreeLookPoint();
-            FrameIntroCamera(treeLook);
-            float holdTimer = 0f;
-            while (holdTimer < _introTreeHoldDuration) { holdTimer += Time.deltaTime; yield return null; }
-
-            // ── Phase C: hard cut to the mower — it rises out of the grass, reel spins up ──
-            FrameIntroCamera(standPos);
-
-            float riseTimer = 0f;
-            while (riseTimer < _introRiseDuration)
+            finally
             {
-                riseTimer += Time.deltaTime;
-                float t = Mathf.Clamp01(riseTimer / _introRiseDuration);
-                transform.position = Vector3.Lerp(buriedPos, standPos, t);
-                yield return null;
+                // Covers normal completion and any in-body early exit (yield break/exception)
+                // inside the try above — always restores the player's controls exactly once.
+                //
+                // Does NOT by itself cover an external stop: verified directly in this Unity
+                // version (isolated try/finally coroutine test, StartCoroutine + external
+                // StopAllCoroutines()) that Unity's StopCoroutine()/StopAllCoroutines() do NOT call
+                // Dispose() on the stopped enumerator, so this finally block never runs when
+                // something else stops this coroutine — the same behavior HandleDeath's
+                // AttackTelegraphService.Hide() comment already documents for SpinDash's lane
+                // telegraph (ADR-0007). The real guarantee for that path is the explicit
+                // `_playerController.enabled = true` at both actual external-stop call sites
+                // (HandleDeath and OnDestroy, next to their own StopAllCoroutines() calls) — this
+                // finally is a correctness nicety for the normal path, not the safety net.
+                //
+                // _agent.enabled and _stats.SetInvulnerable(false) are deliberately NOT restored
+                // here: HandleDeath() already explicitly disables the agent as part of its own
+                // death handling, and invulnerability doesn't need clearing for a boss about to be
+                // destroyed — unconditionally redoing either here would fight HandleDeath's intent.
+                if (_playerController != null) _playerController.enabled = true;
             }
-            transform.position = standPos;
-
-            float spinTimer = 0f;
-            while (spinTimer < _introSpinUpDuration)
-            {
-                spinTimer += Time.deltaTime;
-                float t = spinTimer / _introSpinUpDuration;
-                _reelTargetRPM = Mathf.Lerp(0f, _reelRevRPM, t * t); // quadratic ease-in
-                if (spinTimer >= _introSpinUpDuration * 0.5f && spinTimer < _introSpinUpDuration * 0.5f + Time.deltaTime)
-                    _impulseSource?.GenerateImpulse(0.2f);
-                yield return null;
-            }
-            _reelTargetRPM = _reelKataRPM;
-
-            // ── Phase D: hand control back to the gameplay camera, combat begins ──
-            float pauseTimer = 0f;
-            while (pauseTimer < _introPostRisePause) { pauseTimer += Time.deltaTime; yield return null; }
-
-            if (_introVcam != null) _introVcam.enabled = false;
-
-            if (_agent != null)
-            {
-                _agent.enabled   = true;
-                _agent.Warp(transform.position);
-                _agent.isStopped = true;
-            }
-
-            if (_player != null)
-            {
-                Vector3 toPlayer = _player.position - transform.position;
-                toPlayer.y = 0f;
-                if (toPlayer.sqrMagnitude > 0.01f)
-                    transform.rotation = Quaternion.LookRotation(toPlayer.normalized);
-            }
-
-            _introComplete = true;
-            _state         = BossState.Approaching;
-
-            _stats?.SetInvulnerable(false);
         }
 
-        // Hard-cuts the intro vcam to a fixed shot looking at lookPoint from a point offset back
-        // along the boss<->player axis, at _introCamHeight — an instant reframe rather than a
-        // dolly, matching the GDD's "camera cuts to..." language (SpinCycleAI's continuous dolly
-        // does not apply here since there is no doorway to walk out of).
+        // Hard-cuts the intro vcam to a fixed shot looking at lookPoint, from a SINGLE shared
+        // vantage point (see ComputeIntroCamPosition) — an instant reframe rather than a dolly,
+        // matching the GDD's "camera cuts to..." language (SpinCycleAI's continuous dolly does
+        // not apply here since there is no doorway to walk out of).
+        //
+        // Bug fix (owner playtest, post-B27): the camera position used to be re-derived from
+        // `lookPoint` itself (`camPos = lookPoint + towardCam * _introCamDistance`), with
+        // `towardCam` always the boss<->player direction regardless of what lookPoint was. That
+        // was coherent for Phase C (looking at the boss — offset direction and look target are
+        // both boss-relative) but not for Phase B (looking at the cherry tree): the tree's
+        // position has no geometric relationship to the boss<->player axis, so depending on
+        // which side the player approached from, the offset could land the camera on the wrong
+        // side of the tree, or too close to/behind it — "goes behind the tree and sits there."
+        // Fix: BOTH phases now share the exact same camera position (see ComputeIntroCamPosition —
+        // an authored anchor Transform when assigned, never re-derived per-phase) and only the
+        // look target changes between calls — a true "hard cut between two framings" of the same
+        // vantage point, matching the class comment above BossIntro(). Tree and boss dormancy are NOT close together in the
+        // authored Backyard_Dojo.unity scene (~9.6 m apart at the current staging — a claim of
+        // ~0.5 m here was stale and has been measured wrong; see ADR-0008 Amendment 2 §4/#14).
+        // One vantage point still frames both correctly, but not because the two subjects are
+        // near each other: it works because _introCamAnchor (ADR-0008 Amendment 2 §5) is a single
+        // hand-authored Transform whose position was derived and verified (convex-polygon wall
+        // clearance, exact ray-triangle canopy tests) to see both subjects cleanly, combined with
+        // two independent look heights — _introTreeLookHeight for Phase B, _introBossLookHeight
+        // for Phase C — that each aim correctly at their own subject from that one shared point.
         private void FrameIntroCamera(Vector3 lookPoint)
         {
             if (_introVcamGO == null) return;
 
-            Vector3 towardCam = _player != null
-                ? (transform.position - _player.position)
-                : -transform.forward;
-            towardCam.y = 0f;
-            if (towardCam.sqrMagnitude < 0.0001f) towardCam = Vector3.forward;
-            towardCam.Normalize();
-
-            Vector3 camPos = lookPoint + towardCam * _introCamDistance;
-            camPos.y = _introCamHeight;
+            Vector3 camPos = ComputeIntroCamPosition();
             _introVcamGO.transform.position = camPos;
             _introVcamGO.transform.rotation = Quaternion.LookRotation((lookPoint - camPos).normalized);
 
@@ -571,10 +645,45 @@ namespace Boxhead.Enemy
             _introVcam.Lens  = lens;
         }
 
+        // The single shared vantage point both BossIntro Phase B and Phase C frame from. Primary
+        // source (ADR-0008 Amendment 2 §5): _introCamAnchor, a hand-authored Transform, returned
+        // as-is — never re-derived from lookPoint or the player, so the position itself never
+        // depends on which target is being looked at or where the player is standing. Fallback
+        // only (unassigned/lost anchor reference, warned about in OnValidate/Awake): offset back
+        // from the boss's own position along the boss<->player axis, at _introCamHeight — this is
+        // also what's used for the very first (pre-trigger) framing in CreateIntroCamera before
+        // _player is resolved, if no anchor is assigned, via the -transform.forward fallback below.
+        private Vector3 ComputeIntroCamPosition()
+        {
+            // ADR-0008 Amendment 2 §5: an authored anchor Transform is now the primary source —
+            // see _introCamAnchor's tooltip. The player-axis computation below only remains as a
+            // fallback for a lost/unassigned reference (warned about in OnValidate/Awake), since
+            // it can never itself guarantee wall/tree clearance (its distance from the arena
+            // centre depends on the player's live position at trigger time).
+            if (_introCamAnchor != null)
+                return _introCamAnchor.position;
+
+            Vector3 towardCam = _player != null
+                ? (transform.position - _player.position)
+                : -transform.forward;
+            towardCam.y = 0f;
+            if (towardCam.sqrMagnitude < 0.0001f) towardCam = Vector3.forward;
+            towardCam.Normalize();
+
+            Vector3 camPos = transform.position + towardCam * _introCamDistance;
+            camPos.y = _introCamHeight;
+            return camPos;
+        }
+
         private Vector3 ResolveCherryTreeLookPoint()
         {
+            // ADR-0008 Amendment 2 §4/#7: aim at the tree's XZ position raised to an ABSOLUTE
+            // world height, not an offset from the tree transform's own (trunk-base) Y — the two
+            // are not interchangeable once the anchor/framing math depends on the exact look
+            // height reaching the canopy's real visual centroid rather than a fixed offset above
+            // wherever the trunk collider's pivot happens to sit.
             if (_cherryTreeLookTarget != null)
-                return _cherryTreeLookTarget.position + Vector3.up * 1.5f;
+                return new Vector3(_cherryTreeLookTarget.position.x, _introTreeLookHeight, _cherryTreeLookTarget.position.z);
 
             // Fallback: locate by name, same defensive convention as SpinCycleAI.FindSaloon —
             // scans root objects once, not a per-frame call.
@@ -583,11 +692,14 @@ namespace Boxhead.Enemy
             for (int i = 0; i < roots.Length; i++)
             {
                 Transform hit = SearchByNameContains(roots[i].transform, _cherryTreeNameContains);
-                if (hit != null) return hit.position + Vector3.up * 1.5f;
+                if (hit != null) return new Vector3(hit.position.x, _introTreeLookHeight, hit.position.z);
             }
 
-            Debug.LogWarning("[GrasscutterAI] Could not resolve the cherry tree for the intro's first camera cut (assign _cherryTreeLookTarget or ensure a scene object name contains \"" + _cherryTreeNameContains + "\") — falling back to the boss's own position.", this);
-            return transform.position;
+            Debug.LogWarning("[GrasscutterAI] Could not resolve the cherry tree for the intro's first camera cut (assign _cherryTreeLookTarget or ensure a scene object name contains \"" + _cherryTreeNameContains + "\") — falling back to the boss's own XZ position at the tree look height.", this);
+            // Same absolute-height treatment as the two paths above — NOT bare transform.position,
+            // which since ADR-0008 Amendment 2's _buriedYOffset (-4.45) sits well underground
+            // during Phase A and would aim the camera into the dirt.
+            return new Vector3(transform.position.x, _introTreeLookHeight, transform.position.z);
         }
 
         private Transform SearchByNameContains(Transform t, string contains)
@@ -1203,6 +1315,18 @@ namespace Boxhead.Enemy
             // own Dead-state check (which only fires if the coroutine resumes on its own).
             AttackTelegraphService.Hide(_spinDashLaneHandle);
 
+            // Same lesson applies to BossIntro's player-input lock: StopAllCoroutines() below
+            // discards that coroutine's IEnumerator without ever resuming it, and — verified
+            // directly in this Unity version with an isolated try/finally coroutine test — Unity's
+            // StopAllCoroutines()/StopCoroutine() do NOT call Dispose() on the stopped enumerator,
+            // so a finally block inside BossIntro's try never runs on an external stop either. In
+            // practice this path is unreachable while _stats stays invulnerable for BossIntro's
+            // entire duration (TakeDamage() no-ops under _invulnerable, so HandleDeath can't fire
+            // mid-intro today), but re-enabling here — not just relying on BossIntro's own
+            // try/finally — is the same defense-in-depth this method already uses for the dash
+            // lane above, and costs nothing if _playerController is already enabled.
+            if (_playerController != null) _playerController.enabled = true;
+
             StopAllCoroutines();
             _activeRoutine = null;
 
@@ -1368,6 +1492,15 @@ namespace Boxhead.Enemy
                 _introVcamGO = null;
                 _introVcam   = null;
             }
+
+            // Same defense-in-depth as HandleDeath's identical line (see its comment for the
+            // verified reason a BossIntro-only try/finally isn't enough): this covers a BossIntro
+            // interrupted by scene teardown/GameObject destruction WITHOUT going through
+            // HandleDeath first (e.g. the player leaves Backyard_Dojo mid-cinematic). A player
+            // permanently frozen because this coroutine was cut off would be a worse bug than the
+            // missing input lock this exists to fix — null-check only, since the player object may
+            // already be mid-teardown itself in the same scene unload.
+            if (_playerController != null) _playerController.enabled = true;
 
             StopAllCoroutines();
             _activeRoutine = null;

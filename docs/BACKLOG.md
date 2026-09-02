@@ -1322,3 +1322,339 @@ Original checklist preserved below for reference.
 **Not in scope:** the lane's visual treatment, including whether the committed travel segment is distinguished from the rest of the chord (`ui-ux-designer`); screen-edge indicators for the still-off-frame boss body (ADR-0003 Alternative 4 — the lane covers the attack, not the opponent); retrofitting `ShowGroundLane` to `SpinCycleAI.SpinCharge` or `WagonWheelRollerAI` (World 1 is shipped and playtested — separate decision, separate play pass); the orthogonal geometry/class refactor of `AttackTelegraphKind` (ADR-0007 §1 records the condition under which it should be paid); authoring `SoundData` clips for any `SoundEvent.Telegraph*` (none exist for any kind yet — pre-existing gap).
 
 **Coupling to note before you start: B117 is on the same method.** Its `NavMesh.Raycast`-instead-of-`SamplePosition` path clamp and item 6's heading commit both change `SpinDash`'s movement resolution, and B117's own entry flags "does the shortened/redirected dash still read well against the telegraph" as its open question. They are separable — a shortened dash cannot make a full-chord lane a lie — but if you take both, take the telegraph first so B117 has something to read against.
+
+---
+
+### B119. Grasscutter boss too small + intro camera tree-shot bug — scale **FIXED 2026-09-01, then RESCALED AGAIN 2026-09-01 by owner decision (2.0 → 2.5, boss is now 4.250 m)**, `unity-gameplay-engineer`. Camera/staging **DECIDED 2026-09-01 by `technical-director` as [ADR-0008](adr/0008-boss-intro-camera-authored-vantage.md) and RE-DERIVED TWICE the same day — first after an owner correction about the cherry tree, then after the rescale. Camera/staging implementation still not started. Its two former blockers (B122's NavMesh bake, and the open size question B123) are now RESOLVED. Read "Resolution — final" below; the two earlier versions are superseded.**
+
+**Owner playtested the built Grasscutter fight and found two real problems. Both fixed in `GrasscutterAI.cs` and `pfb_enemy_grasscutter.prefab`; scenes untouched (confirmed via `git diff --stat` before and after).**
+
+**1. Boss too small — confirmed by direct measurement, fixed by a uniform 2× scale on the prefab root.** `pfb_enemy_grasscutter`'s `Renderer` bounds measured **2.35 m tall** (`NavMeshAgent.height = 2.2`) against `pfb_enemy_spincycle`'s **4.70 m** (`NavMeshAgent.height = 4`) despite both prefabs' *documented* scale reading ≈(1,1,1) — a genuine per-model Meshy export-scale mismatch, not an authored size difference (the lore describes Grasscutter as matching SpinCycle's drum-chested presence). Root cause check: SpinCycle's own root transform is actually **already at `localScale (2,2,2)`**, not identity — its `CharacterController`/`NavMeshAgent` values were pre-authored assuming that 2× multiply. Grasscutter's root was genuinely at `(1,1,1)`. Fix: set Grasscutter's **prefab root** `localScale` to `(2,2,2)` (not a child "VisualRoot" transform — checked first, see below). Re-measured post-fix: **4.70 m tall exactly**, matching SpinCycle to the centimeter (width now 5.39×5.27 vs SpinCycle's 3.98×2.31 — wider, expected, since Grasscutter's reel-blade apparatus extends further sideways than a humanoid's arms; height is the dimension the owner's bug report was about and it now matches exactly).
+   - **Why root, not a child transform:** checked this project's "compose, don't overwrite" convention (weapon-pivot fix history) before touching anything — that convention exists for prefabs with a *non-identity baked rotation* on the root, where overwriting silently destroys a needed correction. Grasscutter's root scale was plain identity `(1,1,1)`, nothing to compose against. Structurally, `NavMeshAgent`/`SphereCollider`/`Rigidbody`/`EnemyHealthBar` are components on the SAME root GameObject as the `VisualRoot` child (siblings, not root-vs-child) — scaling only `VisualRoot` would have left `EnemyHealthBar`'s `_offset` (a `localPosition` under the root, `(0,2.2,0)`) un-doubled, since that component lives on the root, not on `VisualRoot`. Scaling the root instead lets `EnemyHealthBar`'s existing `transform.lossyScale`-based compensation (it already inverse-scales its own bar's `localScale` and reads `_offset` as `localPosition`, both automatically respecting parent scale) do the right thing with **zero code change**. Confirmed this is exactly SpinCycle's own working pattern, not a new one.
+   - **Hitbox/pathing follow-through:** per **B114** (2026-08-31, already-decided) `NavMeshAgent.radius` is a project-wide boss-consistency constant, not a per-model visual-scale derivation — left at **1** (unchanged, matches SpinCycle, do not diverge from B114 without a `technical-director` revision). `NavMeshAgent.height` bumped **2.2 → 4** to match SpinCycle exactly (same reasoning — boss-to-boss consistency over a literal 2× multiply, which would have given 4.4). The root's `SphereCollider` (`radius 0.55`, `center (0, 0.95, 0)`) needed **no edit at all** — Unity scales collider dimensions by the GameObject's `lossyScale` automatically, so it now measures an effective world radius of **1.1 m** / center height **1.9 m**, doubled for free by the same root-scale change. `_telegraphHeightOffset` (ADR-0003 overhead tell) bumped **2.6 → 3.2** — its own tooltip said 2.6 was deliberately smaller than `AttackTelegraphService`'s 3.2 m project default *because* Grasscutter used to be shorter than SpinCycle; now that it matches SpinCycle's height, it uses the same 3.2 m default SpinCycle relies on.
+   - **Incidental diff, not a behavior change:** saving via `PrefabUtility.SaveAsPrefabAsset` also materialized two previously-implicit-default fields as explicit prefab overrides (`_dashContactRadius: 1.5`, `_dashLaneFallbackLength: 20` — both from B118, already in the script's defaults, now just spelled out in the `.prefab` YAML). Confirmed identical to the C# defaults; flagging only so nobody mistakes it for an unrelated edit in the diff.
+
+**2. Intro camera "goes behind the tree and sits there" — root-caused and fixed: `FrameIntroCamera` derived its camera position from the wrong axis for the tree shot.** The pre-fix method computed `camPos = lookPoint + towardCam * _introCamDistance`, where `towardCam` was unconditionally the **boss→player** direction, regardless of `lookPoint`. Coherent for Phase C (looking at the boss — offset direction and look target are both boss-relative) but not Phase B (looking at the cherry tree) — the tree's position has no geometric relationship to the boss↔player axis, so depending on the player's approach bearing, the offset could park the camera on the wrong side of the tree or too close behind it. **Fix:** both hard-cut phases now share one camera position, computed once by a new `ComputeIntroCamPosition()` anchored on the **boss's own position** (never on `lookPoint`); `FrameIntroCamera(lookPoint)` only swaps what the shared position looks at. This is now provably independent of player approach direction by construction — verified with three different scripted player positions (origin, and two ~90°-apart bearings around the boss); all three produced camera framings where the ray toward the tree-look-point only ever hits the tree itself (within 0.35 m of the target — i.e., it reaches the subject, not something blocking it), at every tested approach angle.
+   - **`_introCamDistance` bumped 7 → 14**, required by fix #1's scale-up, not optional polish: at the old 7 m / 32° FoV, the visible frame at boss distance is only ~4 m tall — a 4.70 m boss would no longer fit vertically (under-framed / clipped top-and-bottom). 14 m is not a guess: solving for the distance that preserves the *original* framing ratio (old boss occupied 2.35/4.01 ≈ 59% of frame height at 7 m) for the new 4.70 m height gives ≈13.98 m ≈ 14. It also happens to exactly match SpinCycleAI's own `_introCamEndDistance` (14), an independent boss-of-the-same-height precedent — strong corroboration, not a coincidence chased for its own sake.
+
+**New finding, NOT fixed — flag for level-design/`technical-director`, pre-existing (not introduced by this fix): the boss's current dormancy placement in `Backyard_Dojo.unity`, `(44.55, 0, 44.55)`, sits in a tight wall corner.** An omnidirectional raycast sweep from the boss's position found a `Building`-layer wall only **2.1–2.6 m** away across roughly a 180° arc (0°–165°), and the `CherryTree_TrunkCollider` itself only **0.12–0.22 m** away on the opposite side (effectively overlapping the boss). Consequence: `ComputeIntroCamPosition`'s boss↔player-axis offset, when the player approaches from the arena's open side (the only side with room, per the sweep), retreats the camera straight into that ~2.1–2.6 m wall — verified this is **not** something introduced by today's fix: the same arithmetic shows the *original* 7 m distance also crossed the same wall (just with ~4.6 m less penetration depth than the new 14 m does). No `_introCamDistance` value fixes this — anything past ~2.5 m clips the wall, and anything under ~2.5 m badly under-frames a 4.70 m boss. This needs either (a) repositioning the boss's authored dormancy point a few meters clear of the corner (likely the cheapest real fix — a `technical-director`/level-design call, not a code change), or (b) a wall-avoidance raycast clamp on the intro vcam akin to `CameraOcclusion.cs`'s pattern (a new, precedent-breaking piece of scope for a boss-intro camera — SpinCycleAI's equivalent has no such clamp because World 1's doorway shot was built with clearance in mind from the start). Left undecided rather than picked unilaterally, since it is a design/placement question outside this fix's two named bugs.
+
+**Verification:** compile clean, zero new warnings (only pre-existing project-wide `FindObjectsSortMode` obsolete warnings and unused-field warnings, unrelated to this change). `git diff --stat` on `Backyard_Dojo.unity` and `CulDeSac_WildWestCity.unity` both empty — no scene state touched. All measurements above taken via `PrefabUtility.LoadPrefabContents` + `Renderer.bounds` / component reads and live scene raycasts in Edit Mode (no Play Mode needed for this pass).
+
+---
+
+#### Resolution — FINAL (2026-09-01, `technical-director`, third derivation) — **this supersedes the "Resolution" section that follows it**
+
+**Full decision: [ADR-0008](adr/0008-boss-intro-camera-authored-vantage.md), Amendment 2.** Two items were implemented directly by `technical-director` this pass; the camera/staging spec remains a `unity-gameplay-engineer` task.
+
+##### Done this pass (implemented and verified, not committed)
+
+**1. Boss rescaled to match SpinCycle — owner decision, resolving B123.** `pfb_enemy_grasscutter.prefab` root `m_LocalScale` **`(2,2,2)` → `(2.5, 2.5, 2.5)`**, written as a one-line YAML edit rather than `PrefabUtility.SaveAsPrefabAsset` (which last time materialised two unrelated implicit defaults into the diff — see this item's own "Incidental diff" note above).
+
+- **Measured live on the scene instance, not the prefab asset: 4.250001 m** vs SpinCycle's 4.250760 m. Delta **−0.00076 m** against a stated tolerance of **±0.01 m**.
+- The arithmetic `4.251 / 1.70 ≈ 2.5004` was deliberately **not** trusted. Five candidate scales were measured; the base unscaled model is exactly **1.700 m**, so **2.5 is exact enough and is a clean authorable number** — 2.5004471 would buy 0.76 mm and cost every future reader a double-take.
+- **Method:** vertices are skinned explicitly — `Σᵢ wᵢ · (bones[i].localToWorldMatrix · bindposes[i] · v)` over all 32 546 verts — which never touches a bounding volume, so it cannot repeat B123's root-bone inflation. Validated three ways before being trusted: it reproduces the previous pass's Grasscutter (3.40000) and SpinCycle (4.25076) figures to five decimals on the *unmodified* prefabs, and independently reproduces the cherry tree's area-weighted centroid at 4.462.
+- Scene instance carries **zero** `m_LocalScale` overrides (checked via `PrefabUtility.GetPropertyModifications`), so the prefab value propagates. Verified on disk afterwards.
+- New silhouette: radius **1.820 → 2.275 m**, footprint **3.562 × 1.573 → 4.452 × 1.966 m**. `Renderer.bounds.size.y` now reads **5.8699** — still not a height, still not to be quoted.
+
+**Downstream check of everything B119's first scale fix touched** — the question was whether the "scale the root, let `lossyScale`-aware components compensate" mechanism still holds:
+
+| Field | Verdict | Why |
+|---|---|---|
+| `NavMeshAgent.radius = 1` | **no change** | B114 project-wide boss constant, not a visual derivation. Note it now under-represents the true silhouette by more, 2.275 vs 1 — same class of gap as SpinCycle's (1.924 vs 1), so it is consistent, not new. |
+| `NavMeshAgent.height = 4` | **no change** | Matches SpinCycle exactly, and the two bosses are now genuinely the same height — which is the first time that justification has actually been true. |
+| `SphereCollider` r 0.55, centre (0, 0.95, 0) | **no change needed** | Unity scales collider dimensions by `lossyScale`. World radius 1.100 → **1.375**, centre y 1.900 → **2.375**. Ratio to body height preserved. Tracks automatically. |
+| `EnemyHealthBar._offset (0, 2.2, 0)` | **no change needed** | Applied as `_barRoot.localPosition` (line 192) with the bar's own `localScale` inverse-compensated from `transform.lossyScale` (lines 195-6). World height 4.40 → **5.50**; on-screen bar size unchanged. Tracks automatically. |
+| `_telegraphHeightOffset = 3.2` | **no change — but NOT because it tracks** | ⚠ It is a **world-space** offset: `AttackTelegraphIndicator` does `transform.position = target.position + Vector3.up * heightOffset`. It is completely scale-independent and would have needed an explicit new value at any other target height. It survives only because B119 set it to 3.2 to "match SpinCycle now that the heights match" — a justification that was **false at 3.40 m and becomes true at 4.250 m**. Right answer, previously right by accident. |
+
+**Also re-checked: spec item #13, the prefab's own baked root position, and the bigger boss makes it materially worse.** `pfb_enemy_grasscutter.prefab` still carries `m_LocalPosition (44.54773, 0, 44.54772)` = design **(0, 0, 63.0)**, 0.47 m from the cherry tree's trunk axis and masked in this scene by the instance override. At the old size the boss overlapped the 0.35 m trunk capsule by 1.70 m and had 1.40 m of its height inside foliage. **At 2.5× it overlaps the trunk by 2.155 m and has 2.25 m — over half its height — inside the canopy.** Any new instance of this prefab spawns bodily inside the tree. Still spec item #13; still zero it.
+
+**2. NavMesh baked for `Backyard_Dojo.unity` — B122 CLOSED, and the root cause was not an unpressed button.**
+
+`Ground` — the 66.6 × 66.6 m plane that is the scene's **only** walkable surface — carried `m_StaticEditorFlags: 0`. World 1's `Ground` carries `4294967295`. Baking with it unflagged **succeeds** and yields 67.6 m² / 38 triangles of wall-tops, shed roof and koi-pond lid, with **no floor at all** and bounds stopping short of the Blossom Court. That is the dangerous failure mode: a bake that reports success and produces a plausible-looking asset.
+
+- Fixed by setting the **`NavigationStatic` bit only** (0 → 8), *not* by copying World 1's "Everything" — the GI, batching and occlusion bits have separate rendering consequences that are not this task's call.
+- Baked with `UnityEditor.AI.NavMeshBuilder.BuildNavMesh()`, the **legacy Navigation-window path**, matching World 1's mechanism (`Scenes/<Scene>/NavMesh.asset` referenced from `NavMeshSettings.m_NavMeshData`). There is no `NavMeshSurface` in this scene.
+- Result: **1 139 verts / 485 tris / 1 216.1 m²**, covering the whole level. Asset written to `Assets/_Project/Scenes/Backyard_Dojo/NavMesh.asset` (34 KB) and the scene saved.
+- **Verified:** `NavMesh.SamplePosition` at the boss's new position → **true** (0.074 m); at the gate → true; `NavMesh.CalculatePath(gate → boss)` → **`PathComplete`**.
+- **B122's open question is answered:** both scenes carry *identical* `m_BuildSettings` (`agentRadius 0.5`, `agentClimb 0.4`). The 0.75 in B116's note is the **project agent-type default**, which the per-scene build settings override. **0.4 is authoritative for the bake, and matches World 1** — no reconciliation change made.
+- **LFS:** `NavMesh.asset` resolves to `filter: unspecified` — it is *not* LFS-bound, same as World 1's. 34 KB straight to git, no quota impact (per `feedback_lfs_push_caution`).
+
+Two new findings from the bake are filed as **B127** and **B128** below.
+
+##### Implementation spec — camera/staging (`unity-gameplay-engineer`, still not started)
+
+Design coords are `[ENV - Static]`-local (`[ENV - Static]` is at yaw 45°; `world = ((x + z)/√2, y, (z − x)/√2)`). Items #1–#13 keep their numbering from the superseded spec so the diff is legible.
+
+| # | Change | Value |
+|---|---|---|
+| 1 | `CherryTree_TrunkCollider` | **DO NOT MOVE.** Design `(0, 2, 62.53)` is an owner decision. |
+| 2 | `CherryTree_BlossomCourt` | **DO NOT MOVE.** Design `(0, 3.810, 62.53)`. |
+| 3 | Boss dormancy — scene-instance `m_LocalPosition` (root object → **world space**) | `(39, 0, 38.5)` → **`(36.3453, 0, 44.9720)`** = design `(−6.10, 0, 57.50)`. **Keep** the rotation override (world yaw 225°). *(Was `(36.416, 0, 45.608)` in the superseded spec — moved inward; that point gives only 0.652 m of blade clearance at the new size.)* |
+| 4 | New empty root-level GameObject `GrasscutterIntroCamAnchor`, **world** | **`(36.3453, 1.8000, 37.0720)`** = design `(−0.5139, 1.80, 51.9139)`. Rotation irrelevant — only `position` is read. |
+| 5 | `GrasscutterAI` — new `[SerializeField] private Transform _introCamAnchor` | `ComputeIntroCamPosition()` returns `_introCamAnchor.position` when assigned; keep the existing player-axis computation as fallback; warn in `OnValidate` **and** `Awake` when null. Wire to #4 on the scene instance. |
+| 6 | `GrasscutterAI` — new `_introBossLookHeight = 2.13f` | Phase C aims at `standPos + Vector3.up * _introBossLookHeight` instead of `standPos` (the **feet**). 2.13 = 50.1 % of the measured 4.250 m. Restores `SpinCycleAI._introCamLookHeight`, which the port dropped. |
+| 7 | `GrasscutterAI` — new `_introTreeLookHeight = 4.50f` | Phase B aims at the tree's XZ raised to this **absolute** height, replacing `treeTransform.position + up * 1.5`. 4.50 is the tree mesh's **triangle-area-weighted centroid** (re-measured this pass: **4.462**) — *not* `Renderer.bounds.center.y` (3.810, which sits in the trunk). |
+| 8 | `_introCamFoV` | 32 → **45**, matching `pfb_CM_FollowCam` and `_normalCameraFoV`. Vertical FoV, so aspect-independent. |
+| 9 | `_introTriggerRange` | 9 → **9.6** *(was 8.5)* |
+| 10 | `_introTickOverRange` | 14 → **11.5** *(was 11.0)* |
+| 11 | `_introCamDistance` (fallback only now) | 14 → **7.9** *(was 6.5)* |
+| 12 | `_buriedYOffset` | −0.6 → **−4.45** *(was −3.60)* — must be `≤ −4.250001`; −4.45 keeps a 0.20 m margin. |
+| 13 | `pfb_enemy_grasscutter.prefab`'s **own** root `m_LocalPosition` | `(44.54773, 0, 44.54772)` = design `(0, 0, 63.0)` → **`(0, 0, 0)`**. See the worsened-landmine note above. |
+| 14 | **NEW — correct three stale tooltips** in the uncommitted `GrasscutterAI.cs` WIP | They assert numbers this pass disproved: `_introCamDistance`'s tooltip cites "the 4.70 m-tall boss" and a 9 m solution; `_telegraphHeightOffset`'s cites "~4.70 m"; `FrameIntroCamera`'s remarks claim "Tree and boss dormancy sit only ~0.5 m apart" — they are **9.6 m** apart at the new staging, and that sentence is the stated justification for sharing one vantage. Fix the reasoning, not just the digits. |
+
+**#8–#12 must be written into `pfb_enemy_grasscutter.prefab`, not just the C# defaults.** The prefab carries `_introCamDistance: 14` while the script default now reads `9f` — proof in the file that editing the default changes nothing that ships. Re-read the YAML after saving; a clean compile is not evidence.
+
+**Implement #3–#14 as one unit.** Half of it is worse than none: `_buriedYOffset = −4.45` without #6 gives a fully-buried boss framed at its feet.
+
+##### Why these numbers (all measured live this pass; ADR-0008 §2/§4/§5 for full tables)
+
+- **Boss at design `(−6.10, 57.50)`, r = 6.60 m of 10.0, 13.9 m from the gate mouth.** Live 3600-ray `Building` sweep (six `_clearOnBossZone` props *and* the trunk capsule excluded, run at y = 0.5/1.0/2.0): nearest wall **3.5295 m** → **+1.254 m** past the 2.275 m blade tips. Plan distance to the trunk axis **8.070 m** against a required `2.275 + 4.503 = 6.778` → **+1.292 m**, with the boss's full height clear of foliage. The trade was enumerated, not guessed: requiring 0.75/1.00/1.25/1.50 m of blade clearance caps r at 7.10/6.85/6.60/6.32, and **≥ 1.75 m is infeasible**. 1.25 m chosen — it costs 0.25 m of r and this boss spin-dashes into things.
+- **East is impossible, not merely worse.** Mirroring the boss to design `(+6.10, 57.50)` puts its anchor at design `(11.69, 51.92)` — **12.09 m from the arena centre, outside the 10 m wall**. The west pocket is forced by I1, which also happens to be the side that gives the world-yaw match.
+- **Anchor on world +Z from the boss**, so intro yaw = `pfb_CM_FollowCam`'s locked yaw and FoV 45 = its lens: the Phase D handoff is a pure pitch-and-position cut.
+- **I1:** anchor 3.129 m from the arena centre; live sweep **7.1485 m** to the nearest wall. Camera, boss and both look points are interior points of a **convex** polygon.
+- **Tree clearance:** 448 silhouette rays vs `Building` physics **and exact ray-triangle over all 3 032 canopy triangles** (an upgrade on the previous pass's 0.2 m voxelisation) → **0 blocked**. Nearest tree geometry to the camera→boss segment **4.2685 m**. Anchor→tree-look linecast: no hits.
+- **Framing:** boss fills **64.8 %** (frame y −1.092…5.466, headroom 1.216 m, ground line 1.092 m ahead of the feet); tree fills **80.9 %** whole / 59.9 % foliage-only, with 2.067 m of sky. Tightest horizontal margins at 4:3: **+2.09 m** past the boss, **+1.55 m** past the canopy. SpinCycle's playtested reveal is 63 %.
+
+##### ⚠ The finding that changes the invariant: `_buriedYOffset` silently shrinks `_introTriggerRange`
+
+`BossIntro` sets `transform.position = buriedPos` **before** the Phase A wait loop, and that loop compares a **3-D** `Vector3.Distance` to the player (whose pivot is at its feet). So the serialized trigger range is a **slant range**, and the radius that matters on the floor is `√(trigger² − buried²)`.
+
+The previous spec's chain, `11.0 > 8.5 > 6.309`, held only because `√(8.5² − 3.6²) = 7.70` still exceeded 6.309 — **by luck; the burial term was never in the comparison.** At the new camera distance the naive choice fails outright: `√(9.0² − 4.45²) = 7.82 < 7.90`. Deepening the burial to satisfy I3 *tightens* I2, and nothing in the field names says so.
+
+**I2 is therefore restated horizontally** (ADR-0008 §4), and the chain is verified in that form:
+
+> `12.060 (activation) > 10.604 (tickOver_h) > 8.506 (trigger_h) > 7.900 (anchor→boss)`
+
+`activation` was also being measured wrongly: the previous 12.777 m was to `RoomTrigger_Zone2`'s **centre**, but it is a **9.8 × 3.0 m box** and the player activates on first contact with its surface. First contact is provably the **south face** — there is **no navmesh inside the arena polygon** west of design x = −4.90 or east of x = +4.90 at z < 45.50 (0 points either side, swept at 0.05 m), so the player cannot flank to a nearer face. True figure **12.060 m**.
+
+**Verified by sweep:** 7 200 bearings × 9 body heights on the trigger circle, clipped to the **baked NavMesh** *and* the arena polygon, with a `Building` line-of-sight test → **0 in frustum, 0 visible, 0 occluding at 4:3, 16:9, 20:9 and 21:9**. Closest reachable trigger position to the anchor: 0.606 m at **−0.681 m along-track**, i.e. behind the camera.
+
+*(Recommended follow-up, not bundled: make Phase A compare horizontal distance so the trigger stops depending on burial depth. Filed as **B129**.)*
+
+##### The one judgment call: item #12, `_buriedYOffset` → −4.45
+
+Unchanged in character from the superseded spec, and **stronger now**: at 0.6 m the dormant boss shows **3.65 m of its 4.250 m body** from the gate, where before it showed 2.80 m of 3.40 m. Burying it makes "not spoiled in the tree shot" an invariant rather than a device-dependent margin. Its cost — an arena that reads empty during the approach — is unchanged, and it still raises the value of the unimplemented kick-up beat (B124). **ADR-0008 §Alternatives 7 remains the fallback if the owner prefers the boss visible, but its coordinates were derived for the 3.40 m boss and must be re-derived before use.**
+
+---
+
+#### Resolution (2026-09-01, `technical-director`) — **SUPERSEDED TWICE. Kept for the trail only; use "Resolution — FINAL" above.**
+
+**Full decision and derivation: [ADR-0008](adr/0008-boss-intro-camera-authored-vantage.md) (amended 2026-09-01). Summary and the implementable spec follow. Nothing below is implemented — this is a `unity-gameplay-engineer` task, and it now has a hard prerequisite (B122).**
+
+##### What changed, and why the first resolution was wrong
+
+The first resolution asserted that the cherry tree sitting at design `z = 62.53` — 7.53 m north of the Blossom Court's `(0, 55.0)` centre — was an unintended B116 regression, and its spec items #1–#2 moved the tree back to the centre.
+
+**The owner has corrected that premise: *"I moved the tree to the back of the area because it made more sense back there."*** The north-rim position is intentional. Per `CLAUDE.md` and `.claude/rules/studio-core.md` §Creative decision discipline this is CANON, it is not re-litigated, and **[ADR-0006](adr/0006-world2-zone-scale-and-arena-metric.md) §1.1's rejection of a north-rim tree is superseded for this specific placement by owner authority.** ADR-0006 §1.1's four grounds are *not* deleted — they stay on record as possibly-sound general guidance, and the two that have now been knowingly overridden are tracked as consequences (the boss's dormancy point moves, below; zone 2 loses its central obstruction, B125) rather than as bugs.
+
+Spec items #1 and #2 of the first resolution are **withdrawn**. The tree does not move. Everything else was re-derived from scratch with the tree pinned.
+
+**What survived the correction, re-verified rather than assumed:**
+- **No `_introCamDistance` value could ever have worked.** `ComputeIntroCamPosition` retreats *away from the player*, so the camera's radius from the arena centre is `r_boss + D` — 22.0 m in a 10.0 m arena at the original staging. An authored anchor Transform is still the right architectural fix.
+- **The `CourtMakiwara_A/B` clip found in review is a false positive.** `ZoneDirector._clearOnBossZone` was re-read from the serialized array and contains exactly the six court props; they are `SetActive(false)` before the boss activates.
+
+##### What re-measuring the scene turned up (all figures taken live, Edit Mode, 2026-09-01)
+
+The arena itself is correct: centre design `(0, 55.000)`, wall inner face **10.0001 m** by a 3600-ray sweep, circumradius 10.196, dressing ring 8.0 — ADR-0006 §1.4 re-verified. Four other things are not what the docs say, and three of them changed the answer:
+
+1. **The boss is 3.40 m tall, not 4.70 m.** B119's "4.70 m tall exactly, matching SpinCycle to the centimeter" is `SkinnedMeshRenderer.bounds.size.y`, which Unity derives by transforming `localBounds` through the **root bone** — and this rig's `Hips` carries a non-yaw rotation, so the AABB inflates. Measured from baked mesh vertices: Grasscutter **3.400 m** (feet at y = 0, footprint 3.56 × 1.57 m, max radius 1.820), SpinCycle **4.251 m**. The two bosses are *not* the same height. Every framing number below is derived from 3.400. Whether the Grasscutter *should* match SpinCycle is a creative call → **B123**.
+2. **The canopy is far bigger than ADR-0006 §1.1's envelope, and it has no collider.** Measured from the mesh it is an **ellipse** of half-axes 4.4 (design X) × 2.5 (design Z), foliage from y ≈ 1.9 to 7.67 — against a specified "trunk r ≤ 0.35, canopy underside ≥ 4.0, canopy r ≤ 3.5." Only the 0.35 m trunk capsule is on the `Building` layer; **the canopy has no collider at all**, so a `Physics.Linecast` clearance sweep passes straight through 8.8 m of foliage and reports the shot clean. All canopy clearance below is computed against a 0.2 m voxelisation of the tree's actual triangles. → **B126**.
+3. **The scene has no baked NavMesh.** `m_NavMeshData: {fileID: 0}`; `NavMesh.CalculateTriangulation()` returns 0 vertices. B116's reported `PathComplete` validations cannot have been run against the scene as saved. → **B122, and it blocks this task.**
+4. **There is no tall grass.** No GameObject in the scene has "grass" in its name, so the GDD's *"dormant in the tall grass"* has no geometry, and `_buriedYOffset = -0.6` leaves 2.80 m of a 3.40 m boss standing in plain sight through the whole approach and the whole tree shot. → **B124**.
+
+##### Implementation spec
+
+Design coords are `[ENV - Static]`-local (`[ENV - Static]` is at yaw 45°; `world = ((x + z)/√2, y, (z − x)/√2)`). World coords are given for the two objects that are not ENV children.
+
+| # | Change | Value |
+|---|---|---|
+| 1 | `CherryTree_TrunkCollider` | **DO NOT MOVE.** Design `(0, 2, 62.53)` is an owner decision. |
+| 2 | `CherryTree_BlossomCourt` | **DO NOT MOVE.** Design `(0, 3.810, 62.53)`. |
+| 3 | Boss dormancy — `pfb_enemy_grasscutter` scene instance `m_LocalPosition` (**root object, so this is world space**) | `(39, 0, 38.5)` → **`(36.416, 0, 45.608)`** = design `(−6.5, 0, 58.0)`. **Keep** the existing rotation override (world yaw −135°, facing the gate). |
+| 4 | New empty scene GameObject, e.g. `GrasscutterIntroCamAnchor`, root-level, **world** | **`(36.416, 1.800, 39.300)`** = design `(−2.039, 1.80, 53.539)`. Rotation irrelevant — only `position` is read. |
+| 5 | `GrasscutterAI` — new `[SerializeField] private Transform _introCamAnchor` | `ComputeIntroCamPosition()` returns `_introCamAnchor.position` when assigned; keep the existing player-axis computation as the fallback; warn in `OnValidate` **and** `Awake` when null. Wire to #4 on the scene instance. |
+| 6 | `GrasscutterAI` — new `_introBossLookHeight = 1.70f` | Phase C aims at `standPos + Vector3.up * _introBossLookHeight` instead of `standPos` (the **feet**). 1.70 = 50% of the measured 3.400 m. Restores `SpinCycleAI._introCamLookHeight`, which the port dropped. |
+| 7 | `GrasscutterAI` — new `_introTreeLookHeight = 4.50f` | Phase B aims at the tree's XZ raised to this **absolute** height, replacing `treeTransform.position + up * 1.5` (= y 3.5, measured off a capsule-centre artifact). 4.50 is the tree mesh's **triangle-area-weighted centroid** (4.462) — *not* `Renderer.bounds.center.y`, which is 3.810 and sits in the trunk, because the bounding box's floor is the root flare at y ≈ 0. |
+| 8 | `_introCamFoV` | 32 → **45**, matching `pfb_CM_FollowCam`'s FoV and `_normalCameraFoV` exactly. Vertical FoV, so aspect-independent. |
+| 9 | `_introTriggerRange` | 9 → **8.5** |
+| 10 | `_introTickOverRange` | 14 → **11.0**. It must come *down*: activation is 12.777 m from the new boss position, so 14 would fire the tick-over instantly at zone entry with no approach beat. |
+| 11 | `_introCamDistance` (fallback only now) | 14 → **6.5** |
+| 12 | `_buriedYOffset` | −0.6 → **−3.60** — see "the one judgment call" below. |
+| 13 | `pfb_enemy_grasscutter.prefab`'s **own** root `m_LocalPosition` | `(44.54773, 0, 44.54772)` = design **`(0, 0, 63.0)`** — ADR-0006 §1.4's old north-rim dormancy point, baked into the prefab asset and currently masked by the scene instance's override. Design `(0, 63.0)` is **0.47 m from the cherry tree's trunk axis**, i.e. inside the tree. Any new instance of this prefab spawns in the canopy. Zero it to `(0, 0, 0)` (an enemy prefab has no business carrying a world position) or set it to #3's value; do not leave it as a hidden landmine. Verified on disk 2026-09-01. |
+
+**#8–#12 must be written into `pfb_enemy_grasscutter.prefab`, not just the C# defaults.** The prefab carries `_introCamDistance: 14` and the scene instance reads 14 — confirmed this session from the live `SerializedObject`. A written serialized value shadows the class default, so the earlier edit of `= 14f` to `= 9f` in the script changed nothing that ships. Re-read the prefab YAML after saving. A clean compile is not evidence the change took.
+
+##### Why these numbers (all measured live; see ADR-0008 §4/§5 for the full tables)
+
+- **Boss at design `(−6.5, 58.0)`, r = 7.16 m of 10.0** — the arena's north-west, unambiguously the far half and diametrically clear of the gate. The north *axis* is no longer available: with the canopy's southern edge at design z = 59.2, a boss on x ≈ 0 tops out at z ≈ 57.9, which is the arena centre by another name. Live 3600-ray sweep from the boss: nearest wall **2.929 m** → **+1.149 m** past the measured 1.78 m half-width, **+1.929 m** past `NavMeshAgent.radius = 1`.
+- **Anchor placed so the camera→boss axis is world +Z** — measured world yaw **0.00°**, identical to `pfb_CM_FollowCam`'s locked yaw, and FoV 45 identical to its lens. The Phase D handoff to gameplay becomes a pure pitch-and-position cut: **zero yaw rotation, zero focal-length change.** This is why the boss went west rather than east — it is the side on which the reveal bearing and the gameplay bearing agree.
+- **I1 (walls):** anchor is 2.509 m from the arena centre → **7.491 m** of clearance (live sweep: 7.493 m, six `_clearOnBossZone` props excluded). Camera, boss and both look points are interior points of a **convex** polygon, so no sightline can cross the boundary at any approach bearing.
+- **Tree clearance:** 448 boss-silhouette rays tested against `Building` physics **and** the tree's voxelised mesh → **0 blocked**. Nearest tree voxel to the camera→boss segment: **4.097 m**. Anchor→tree-look linecast: no `Building` hits.
+- **I2 (the player):** 12.777 (activation) > 11.0 (tickOver) > 8.5 (trigger) > **6.309** (anchor→boss). A 7 200-bearing × 9-height sweep of the trigger sphere, clipped to the arena and evaluated at **21:9**, finds **0 positions in frame and 0 occluding**; the closest a trigger position comes to the anchor is 2.191 m at **−2.188 m** along-track, i.e. behind the camera.
+- **I3 (the reveal)** — new, see below.
+- **Framing:** boss fills **65.1%** of frame height with +0.90 m headroom and the ground line visible (frame covers y −0.93 … 4.30); tree fills **75.5%** (frame covers y 0.95 … 9.08, whole canopy inside with 1.41 m of sky). Tightest horizontal margins, at 4:3: **+1.70 m** past the boss, **+0.70 m** past the canopy. SpinCycle's playtested reveal fills 63%, which is the band `reference_boss_intro_camera` records as this project's target. *(B119's own 59% figure is not counted as corroboration — it was derived from the pre-scale-up boss and the same inflated-bounds height that Fact 1 above disproves.)*
+
+##### The one judgment call in this spec: item #12, `_buriedYOffset` −0.6 → −3.60
+
+**This is a visible staging change and the owner should see it in play.** The reasoning:
+
+With the tree pinned at the north rim, "keep the boss out of the tree shot" can no longer be bought with comfortable horizontal separation. The best staging that satisfies everything else clears the 20:9 frame edge by **0.1°**, and modern phones are 19.5:9–21:9. Chasing a 2° margin across an unknown device population is the same "correctness depends on a sampled configuration" failure this whole ADR exists to end.
+
+Burying the boss below the opaque ground plane makes it an **invariant instead of a margin** (ADR-0008's I3): a subject wholly below y = 0 is occluded from every interior vantage at every aspect ratio. It is also what the GDD already asks for — *"dormant in the tall grass … and it rises"* — which the current 0.6 m sink on a 3.40 m body plainly is not, especially with no grass in the scene to cover the difference (B124). With it, the boss's top sits at y = −0.20 during Phase B; the tree-shot frustum margin is **+16.0° / +13.4° / +11.2° / +10.7°** at 4:3 / 16:9 / 20:9 / 21:9 *even ignoring the ground plane*.
+
+Its cost: the arena reads as empty during the approach, where today a 2.80 m mower is visible from the gate. That raises the value of the unimplemented *"grass and petals kick up"* beat (B124) — without it there is no diegetic cue before the cut.
+
+**If the owner prefers the dormant boss visible, use this fallback instead — same architecture, two different coordinates, no other change:**
+
+> Boss world **`(35.532, 0, 45.432)`** = design `(−7.0, 0, 57.25)`; anchor world **`(36.396, 1.800, 39.292)`** = design `(−2.048, 1.80, 53.519)`; `_buriedYOffset` stays **−0.6**. All of #5–#11 unchanged. Verified: I1 anchor clearance 7.473 m, boss wall margin 0.916 m, 0/448 occlusion rays blocked, I2 0-in-frame / 0-occluding at 21:9, boss fill 66.2%, tree fill 75.3%. Its costs are the margin (tree-shot exclusion **+17.5° / +10.0° / +3.8° / +2.4°** by aspect — adequate but device-dependent) and the loss of the world-yaw match (boss-shot yaw −8.00° instead of 0.00°).
+
+##### Before you start
+
+**B122 (bake the NavMesh) is a hard prerequisite.** `GrasscutterAI` disables its `NavMeshAgent` for the intro and `Warp`s it at the end; with no NavMesh baked, that hands off into undefined behaviour. Bake first, then confirm `SamplePosition` at the boss's new position and `CalculatePath` from the gate returns `PathComplete`.
+
+**Do not** implement the wall-avoidance raycast clamp (B119 option (b) above). ADR-0008 §Alternatives rejects it — and it would have been actively wrong here: the canopy has no collider, so a raycast clamp would have driven the camera into 8.8 m of foliage while reporting itself clear.
+
+**Do not** re-verify canopy clearance with `Physics.Linecast`. Same reason. Voxelise or ray-triangle-test the mesh.
+
+**Validation: ADR-0008 §Validation 1–9 in full.** The blocking ones: bake the NavMesh (1); re-read the prefab YAML (2); run the `Building` sweep with the six `_clearOnBossZone` props **deactivated** (3); test the canopy against the mesh, not the collider (4); I2 sweep at 21:9 (5); and a paused Play-Mode screenshot of Phase B at both 16:9 and 20:9 confirming no part of the boss is visible (6).
+
+---
+
+### B120. Boss intros do not lock player movement — the player can walk into their own cutscene — **FIXED 2026-09-02, Grasscutter/World 2 (including a same-day soft-lock regression); World 1 still open**
+**Impact:** cosmetic but first-impression-facing. **Priority: P2 → P3 for the fixed half, unchanged P2 for World 1.** Pre-existing in World 1, shipped, surfaced 2026-09-01 while deriving [ADR-0008](adr/0008-boss-intro-camera-authored-vantage.md). Fixed for `GrasscutterAI` 2026-09-02 by `unity-gameplay-engineer` after an owner playtest confirmed the exact symptom ("I had to move the character around to get it to start, and... I was able to move the character around, which should not happen").
+
+> **Resolution (Grasscutter/World 2 only).** `GrasscutterAI.BossIntro()` now disables the player's `PlayerController` at the start and wraps the method body in `try`/`finally` that re-enables it on normal completion. **The `finally`-alone plan this item originally proposed does not actually work in this Unity version** — verified directly with an isolated `StartCoroutine` + external `StopAllCoroutines()` test that Unity does **not** call `Dispose()` on a coroutine's enumerator when it's stopped externally, so a `finally` block never runs on that path. This is the same behavior `HandleDeath`'s pre-existing `AttackTelegraphService.Hide()` comment already documented for `SpinDash`'s lane telegraph (ADR-0007) — it just hadn't been connected to this item yet. The real guarantee is instead an explicit `_playerController.enabled = true` at both actual external-stop call sites, `HandleDeath()` and `OnDestroy()` (next to their existing `StopAllCoroutines()` calls), matching that established convention. Both the normal-completion path and both external-stop sites were verified live in Play Mode via reflection (direct field/method invocation, not real-time waits). No separate manual camera-input script exists in this project (grepped `_Project/Scripts`: only automatic follow/injector/occlusion/framing cameras), so there was nothing else to lock alongside `PlayerController`.
+>
+> **A second, related bug the owner reported in the same playtest was fixed alongside it:** "I was not able to see the boss at all, and then he was just there." Root cause: `CinemachineBrain`'s project-wide `DefaultBlend` is `EaseInOut, 2 s`, applied to every vcam priority transition — but `BossIntro`'s phases (1.4 s tree hold, 1.6 s rise) are shorter than that, so each new framing interrupted the still-in-progress blend from the previous one and the camera never settled on a clean shot. Fixed with a new `CinemachineBlenderSettings` asset (`Assets/_Project/Cinemachine/CBS_GrasscutterIntroHardCuts.asset`, `Cut`/0 s entries both directions between `pfb_CM_FollowCam` and `CM_GrasscutterIntroCam`) assigned to `CinemachineBrain.CustomBlends` — but **only as a scene-instance override on `Backyard_Dojo.unity`'s Main Camera**, not on the shared `pfb_Main_Camera.prefab` asset. That distinction matters: **`pfb_Main_Camera`/`CinemachineBrain` is NOT a `DontDestroyOnLoad` singleton — confirmed by grep, there is no such call anywhere in `_Project/Scripts`.** Each scene (`Backyard_Dojo.unity`, `CulDeSac_WildWestCity.unity`) places its own independent instance of the same source prefab. Assigning the instance override in `Backyard_Dojo.unity` leaves `pfb_Main_Camera.prefab` itself and `CulDeSac_WildWestCity.unity` completely untouched (confirmed via git diff) — the project-wide 2 s default other transitions rely on is preserved everywhere, and World 1 is neither helped nor hurt. Verified live in Play Mode: `CinemachineBrain.ActiveBlend` was `null` and `Camera.main.transform` snapped directly to each vcam's position/rotation within one frame in both directions.
+>
+> **World 1 is unchanged and still open.** `SpinCycleAI` has the identical missing-input-lock hole this item originally reported, and B119/ADR-0008's own history notes World 1 has the same 2-second-blend smear on its boss intro. Neither was touched this pass (out of scope — explicitly scoped to Backyard_Dojo/Grasscutter only). Extending the same two fixes to `SpinCycleAI` is a straightforward fast-follow: (1) disable `PlayerController` in `SpinCycleAI`'s intro coroutine with explicit re-enable at its own `HandleDeath`/`OnDestroy` (not a bare `finally`, per the finding above), and (2) a second `CinemachineBlenderSettings` asset (or added entries in a shared one) keyed to World 1's actual intro-vcam and follow-cam names — SpinCycleAI's vcam has a different name than `CM_GrasscutterIntroCam`, so it would not match the pairs created here even if `CulDeSac_WildWestCity.unity`'s Brain instance were given the same asset.
+>
+> **Same-day regression, found via owner playtest, fixed same session.** The fix above shipped with `_playerController.enabled = false` at the very TOP of `BossIntro()`, before Phase A's proximity-wait loop. Since Phase A's loop depended on the player being able to keep approaching (`Vector3.Distance(...) > _introTriggerRange`), locking input before that loop could ever exit was a hard soft-lock: the player froze the moment the zone activated — which could be several meters from the boss — and could never close the remaining distance to ever trigger Phase B. "Nothing happens when I enter the boss area" was this bug, not a missing or misconfigured trigger. Moved the lock to fire immediately after Phase A instead (which, per the next paragraph, is now immediately after zone activation with no wait in between, so this is close to moot in the current code — documented for the historical record and in case a future change reintroduces an approach phase).
+>
+> **Design change, same session, same owner playtest: the whole proximity-gated Phase A is gone.** Owner: *"I think the intro just needs to go straight to the blossom tree when the player enters instead of it being nothing at first, then into the rest of the scene."* `BossIntro()` no longer waits for the player to close within `_introTriggerRange` before cutting to the tree — Phase B now fires immediately once `Start()` runs, i.e. immediately on zone activation, matching `SpinCycleAI`'s own activation-gated model (Grasscutter was the one boss doing it differently, and that difference is what caused both the original "nothing happens... then he was just there" complaint and this soft-lock). Removed as dead code: the `_introTriggerRange`/`_introTickOverRange` fields, the Phase A wait loop, and the distance-gated reel idle-tick (`_reelIdleRPM`, now unused and removed — the reel simply starts its spin-up from rest in Phase C, no separate approach-cue tick). **This retires ADR-0008 §4's I2/I3 invariant chain** (`activation_h > tickOver_h > trigger_h > anchor→boss`) — that whole derivation existed to guarantee Phase A's distance-gated trigger was geometrically clean, and there is no more distance-gated trigger to guarantee anything about. **ADR-0008's camera ANCHOR geometry (§2 boss position, §3 authored vantage, the wall/tree clearance sweeps) is unaffected and still fully valid** — that was always about where the camera physically sits, independent of when the cut happens. `_buriedYOffset`/`_introBossLookHeight`/`_introTreeLookHeight` are all unchanged and still load-bearing for Phase C's framing.
+
+*(Original report retained below.)*
+
+Neither `SpinCycleAI` nor `GrasscutterAI` disables player input for the intro's duration, and `PlayerController` has no movement gate to call — no `SetControlEnabled`-style hook exists. ADR-0008's I2 invariant guarantees the frame is clean **at trigger time**; a player who holds forward through the Grasscutter's ~5.7 s intro (1.4 s tree hold + 1.6 s rise + 2.2 s spin-up + 0.5 s pause) covers far more than the 8.5 m to the boss and will walk into the boss shot. World 1 has the same hole and evidently has not been reported, so this is polish, not a blocker.
+
+**Proposed:** a narrow, explicit movement gate on `PlayerController` (not a global `Time.timeScale` change — the boss intro's own animation and the reel spin-up depend on time advancing), set for the intro coroutine's lifetime and cleared in a `finally` so a mid-intro death or scene unload cannot strand the player frozen. Fixing it upgrades ADR-0008's I2 from "clean at trigger" to "clean throughout." Project-wide blast radius, so it wants its own task and a World 1 regression pass — deliberately not bundled into B119.
+
+### B121. B116's completion note misreports what it changed, and its M2 figure was computed from the spec rather than measured
+**Impact:** process, not runtime. **Priority: P3.** **Re-scoped 2026-09-01** after the owner confirmed the tree's position is intentional — see the note below on which half of this finding survives.
+
+B116 reports *"Fixed by re-centring both at the new centre `(0,0,55.0)`"* while `git log -L` on the trunk's transform shows `z: 47.5` → `z: 62.53`. It also reports *"M2 by 1°-step `Building`-layer raycast sweep from the new arena centre (… radial band 9.65 m …)"*; 9.65 is arithmetically `10.0 − 0.35` for a **centred** 0.35 m trunk, a number the built layout cannot produce.
+
+**What the owner correction does and does not change.** The owner has since confirmed the north-rim position is an intentional design decision (*"I moved the tree to the back of the area because it made more sense back there"*), so the **outcome** was desired and is now CANON — [ADR-0008](adr/0008-boss-intro-camera-authored-vantage.md) §Amendment. That retires the "wrong placement" half of this item. It does **not** retire the rest, and the distinction is the whole point:
+
+1. **The note is still inaccurate about what it did.** It documents a re-centring; the diff is a 15 m move to the opposite side of the arena. A reader auditing B116 from its note alone would build a wrong model of the scene — which is exactly what happened: ADR-0008's first version spent a full derivation on a "regression" that was a design decision, because no record connected the move to an intent. A completion note that describes the opposite of its diff is a defect regardless of whether the diff was wanted.
+2. **The M2 figure is still unmeasured**, and now provably so: the built layout gives ≈ 2.1 m against a ≥ 8.5 m requirement, and the tree's real footprint is an **ellipse of half-axes 4.4 × 2.5 m**, not the 0.35 m trunk the 9.65 m figure assumes. M2 has never been measured against any scene that could produce the published number. Re-running it is ADR-0008 §Validation 9.
+3. **A second, independent instance of the same pattern surfaced in the same re-measurement:** B116 reports `NavMesh.CalculatePath` `PathComplete` validations onto the engawa boards, workbenches and the boss marker, and the scene has **no baked NavMesh at all** (`m_NavMeshData: {fileID: 0}`). See **B122**.
+
+This is now the third and fourth recorded instance of the same pattern (see `.claude/agent-memory/technical-director/project_docs_drift_from_code.md`).
+
+**Proposed, unchanged and reinforced:** where a completion note quotes a measured figure, it must also quote the *object positions the measurement was taken from*, so a reader can cross-check the figure against the asset YAML without re-running the sweep. **Add a second rule:** where a completion note describes a *move*, it must quote the before and after coordinates. Either rule alone would have caught B116 at review time rather than two tasks later, and the second would have surfaced the tree as a design question instead of letting it be mistaken for a regression.
+
+### B122. `Backyard_Dojo.unity` has no baked NavMesh — **FIXED 2026-09-01** (`technical-director`)
+**Impact:** runtime, was blocking. **Priority: P0 → closed.** Found and fixed 2026-09-01 by `technical-director`.
+
+> **Resolution.** The root cause was **not** that nobody ran the bake. `Ground` — the 66.6 × 66.6 m plane that is the scene's only walkable surface — carried `m_StaticEditorFlags: 0`, against World 1's `4294967295`. Baking in that state *succeeds* and produces 67.6 m² of wall-tops and koi-pond lid with no floor, stopping short of the Blossom Court entirely — a silent wrong answer, not a visible failure. Fixed by setting the `NavigationStatic` bit only (0 → 8), deliberately not copying World 1's "Everything" (its GI/batching/occlusion bits are a separate rendering decision). Re-baked via `UnityEditor.AI.NavMeshBuilder.BuildNavMesh()` — the legacy Navigation-window path, matching World 1's `Scenes/<Scene>/NavMesh.asset` mechanism; there is no `NavMeshSurface` in this scene. **Result: 1 139 verts / 485 tris / 1 216.1 m².** Verified `SamplePosition` at the boss's new position (true, 0.074 m) and `CalculatePath(gate → boss)` → **`PathComplete`**. **The `agentClimb` question is answered:** both scenes carry identical `m_BuildSettings` (`agentRadius 0.5`, `agentClimb 0.4`); the 0.75 in B116's note is the *project agent-type default*, which per-scene settings override — 0.4 is authoritative and matches World 1, so nothing was changed. `NavMesh.asset` is not LFS-bound (34 KB direct to git), same as World 1's. Two side-findings filed as **B127** and **B128**. B116's reported `PathComplete` validations still cannot have been run against the scene as saved — that half of **B121** stands.
+
+*(Original report retained below.)*
+
+The scene's `NavMeshSettings` carries `m_NavMeshData: {fileID: 0}`, there is no `Scenes/Backyard_Dojo/` data folder on disk (contrast `Scenes/CulDeSac_WildWestCity/`, which has one), and `NavMesh.CalculateTriangulation()` returns **0 vertices**. `NavMesh.SamplePosition` fails at the arena centre, at the boss's current position, and at every candidate boss position tested.
+
+**Consequences:** `GrasscutterAI` disables its `NavMeshAgent` for the intro and calls `_agent.Warp(transform.position)` at the end of `BossIntro` — with no NavMesh that hands off into undefined behaviour. `SpinDash`/`JumpBack`'s `ClampToNavMesh` (and B117's proposed `NavMesh.Raycast` fix) have nothing to clamp against. Every enemy in World 2 is affected, not just the boss.
+
+**Also note:** B116's completion note reports `PathComplete` validations onto the engawa boards, every workbench/pickup/pile, and the boss marker. Those cannot have been run against the scene as saved. This is the second independent instance of the B121 pattern found in the same pass.
+
+**Fix:** bake, save, and confirm the `NavMeshData` asset is created next to the scene and picked up by `.gitattributes`/LFS rules before pushing (see `feedback_lfs_push_caution`). Then re-run B116's own acceptance: three-configuration flood-fill, and `CalculatePath` `PathComplete` from the gate to the engawa boards and to the boss's dormancy point. The scene's per-scene `m_BuildSettings` reads `agentRadius: 0.5`, `agentClimb: 0.4` — reconcile with B116's claim that the project's `agentClimb` is 0.75 before baking, and record which one is authoritative.
+
+### B123. The Grasscutter is 3.40 m tall, not the 4.70 m B119 reported — is that the intended size? — **ANSWERED AND FIXED 2026-09-01**
+**Impact:** creative/design. **Priority: P2 → closed.** Found 2026-09-01 by `technical-director`; owner decided the same day.
+
+> **Owner's answer: yes, the two bosses are meant to read as the same size.** The Grasscutter was rescaled from root `localScale (2,2,2)` to **`(2.5, 2.5, 2.5)`**, measured live at **4.250001 m** against SpinCycle's 4.250760 m (delta −0.76 mm, tolerance ±0.01 m). The base unscaled model is exactly 1.700 m, so 2.5 is both accurate and clean; `4.251/1.70 ≈ 2.5004` was checked by measurement rather than trusted. **This item's own warning proved correct:** it predicted a further 1.25× would "eat most of the 1.149 m wall clearance ADR-0008 §2 derived" — it does, leaving 0.652 m, which is why the boss's dormancy point moved to design `(−6.10, 57.50)` and ADR-0008 §2/§4/§5 were re-derived a third time (Amendment 2). See B119's "Resolution — FINAL".
+>
+> **The method note below stands and is now three-for-three:** the explicit-skinning measurement reproduced both prior figures exactly and independently reproduced the tree's area-weighted centroid at 4.462.
+
+*(Original report retained below.)*
+
+B119 fixed the owner's "boss too small" report with a 2× root scale and reported *"re-measured post-fix: 4.70 m tall exactly, matching SpinCycle to the centimeter."* That figure is `SkinnedMeshRenderer.bounds.size.y`, which Unity computes by transforming `localBounds` through the **root bone**; this rig's `Hips` carries a non-yaw rotation, so the axis-aligned result inflates. Measured from baked mesh vertices at the same 2× scale:
+
+| | Mesh height | `Renderer.bounds` height | Max radius from own axis |
+|---|---|---|---|
+| `pfb_enemy_grasscutter` | **3.400 m** | 4.696 m | 1.820 m |
+| `pfb_enemy_spincycle` | **4.251 m** | 3.809 (body) + 1.490 (head) | 1.924 m |
+
+So the Grasscutter is **0.85 m shorter than SpinCycle**, 80% of its height — not a match. B119's reported width (5.39 × 5.27 m) is the same artifact; the real footprint is **3.56 × 1.57 m**.
+
+**Not changed unilaterally.** 3.40 m is already a large boss and the owner's complaint was that it was small; re-scaling again is a creative call, and a further 1.25× would push the blade half-width to 2.23 m and eat most of the 1.149 m wall clearance ADR-0008 §2 derived. **Ask the owner** whether the two bosses are meant to read as the same size, and re-derive ADR-0008 §2/§5 if the answer changes the height.
+
+**Method note worth keeping:** on this project, `Renderer.bounds` is not a size measurement. It is a world AABB, it is inflated by rig rotation on skinned meshes and by the 45° `[ENV - Static]` yaw on environment meshes, and it has now produced a wrong published number twice. Measure from `sharedMesh.vertices` / `BakeMesh`.
+
+### B124. The GDD's "dormant in the tall grass … grass and petals kick up" has no implementation
+**Impact:** presentation. **Priority: P2.** Found 2026-09-01 by `technical-director`.
+
+No GameObject in `Backyard_Dojo.unity` has "grass" in its name — the tall-grass band the B116 spec placed at design Z 60.5–65.0 was never built. There is also no VFX for the "grass and petals kick up" beat that the GDD puts *before* the camera cuts to the tree.
+
+Both matter more once ADR-0008's I3 lands (`_buriedYOffset` −3.60): with the boss fully hidden until it rises, the kick-up is the only diegetic cue the player gets before the cut, and without it the arena reads as empty and the intro appears to fire arbitrarily. If the owner takes ADR-0008's no-burial fallback instead, this drops to P3.
+
+**Suggested scope:** a tall-grass card/instanced band across the boss's dormancy area, plus a one-shot particle burst parented to the boss and triggered at the `_introTickOverRange` crossing (the moment `tickingStarted` flips in `BossIntro`), which is already a distinct beat in the coroutine with no presentation attached to it.
+
+### B125. Zone 2 no longer has a central obstruction — the "orbital" movement grammar needs a decision
+**Impact:** design. **Priority: P2.** Surfaced 2026-09-01 as a consequence of the owner's cherry-tree placement.
+
+`zone-layout-spec.md` §1.3 and [ADR-0006](adr/0006-world2-zone-scale-and-arena-metric.md) §1.1 ground 3 both build zone 2's combat read around a **central** obstruction the player orbits. With the tree at the north rim by owner decision, the arena's centre is empty and the only interior obstacle sits 7.53 m off-axis, hard against the north wall — so the fight floor is now an open 20 m disc with an asymmetric occluder at one end.
+
+This is not a bug and it is not a reason to move the tree. It is a design consequence that should be decided rather than drift: either zone 2's grammar changes (open-arena spacing, with the tree as a landmark and a single-corner hazard) or something else supplies the central mass. It also has a knock-on for `Systems/CameraOcclusion.cs` vs `Systems/BuildingOcclusionFader.cs` (ADR-0001 §2.8): the fader's urgency drops now that nothing occludes the centre of the fight floor, but the tree still shadows the north third and the fader is still unbuilt.
+
+Route to `game-designer` with `technical-director`, and update `zone-layout-spec.md` §1.3 and ADR-0006 §1.1's ground 3 with whatever is decided — ADR-0006's reasoning stays on the record either way.
+
+### B126. The built cherry tree does not match ADR-0006 §1.1's canopy envelope, and its canopy has no collider
+**Impact:** art pipeline + a live measurement trap. **Priority: P3.** Found 2026-09-01 by `technical-director`.
+
+ADR-0006 §1.1 specifies *"trunk r ≤ 0.35, canopy underside ≥ 4.0, canopy r ≤ 3.5, total height ≤ 8.0."* Measured from `CherryTree_BlossomCourt`'s mesh in ENV-local space:
+
+| | Spec | Built |
+|---|---|---|
+| Total height | ≤ 8.0 m | 7.72 m (y −0.05 … 7.67) ✓ |
+| Trunk radius | ≤ 0.35 m | 0.35 m capsule ✓ (collider only) |
+| Canopy radius | ≤ 3.5 m | **ellipse, half-axes 4.4 (design X) × 2.5 (design Z)** — 1.00 m over on the wide axis |
+| Canopy underside | ≥ 4.0 m | **≈ 1.9 m** — foliage starts ~2.1 m lower than specified |
+
+**The measurement trap is the more useful half of this item:** only the 0.35 m trunk capsule is on the `Building` layer. **The canopy has no collider.** Any clearance check done with `Physics.Raycast`/`Linecast` — which is what ADR-0006 §Validation and B116's M2 both prescribe — passes straight through 8.8 m of foliage and reports clear. ADR-0008's canopy figures were computed against a 0.2 m voxelisation of the tree's actual triangles for this reason, and ADR-0008 §Validation 4 makes that mandatory for any re-check.
+
+**Decide, don't just fix:** the envelope may simply be wrong for the asset the owner wants (and the tree's position is now CANON, so the envelope is downstream of a decision that has already been made). Either amend ADR-0006 §1.1's envelope to the built values, or re-author the asset. Whichever way it goes, add a `NavMeshObstacle` or a canopy collider only if a system actually needs one — the intro camera does not (4.097 m of clearance), but M2 and the occlusion fader both do their measuring with physics.
+
+### B127. `NavMeshModifier` components in `Backyard_Dojo.unity` are inert — the scene uses the legacy bake, and 6 props carve holes their author asked them not to
+**Impact:** runtime pathing. **Priority: P2.** Found 2026-09-01 by `technical-director` while fixing B122.
+
+The scene has **8 `NavMeshModifier` components**, all set `m_IgnoreFromBuild: true` — on `RoomGate_Zone0`, `RoomGate_Zone1`, and the six `CourtMakiwara_A/B/C/D` + `CourtLantern_E/F` court props. `NavMeshModifier` belongs to the **`NavMeshSurface` workflow** (`Unity.AI.Navigation`), and this scene has **no `NavMeshSurface`** — it bakes through the legacy Navigation window, exactly like World 1. **The legacy bake ignores `NavMeshModifier` entirely.**
+
+Consequences:
+- The two `RoomGate_*` modifiers are harmless no-ops — those objects are not `NavigationStatic` anyway, so they were never going to be baked.
+- **The six court props *are* `NavigationStatic`, so they carve permanent holes in the navmesh** — despite their modifiers explicitly asking to be excluded. And `ZoneDirector._clearOnBossZone` `SetActive(false)`s all six *before* the boss fight, so during the fight the arena floor has six holes where nothing exists. The author's intent (exclude them, because the fight state is the one that matters) is recorded in the components and is being silently discarded.
+
+This did not block ADR-0008 — the holes sit on the r = 8.0 dressing ring and the verified staging does not depend on them — but it will bite any World 2 chase/kite behaviour.
+
+**Decide, don't just fix.** Either (a) honour the intent by clearing `NavigationStatic` on the six props (the fight state becomes authoritative; enemies may clip a decorative lantern pre-fight), or (b) keep the carve and delete the misleading modifiers. A static navmesh cannot represent both states — the only way to have both is a `NavMeshObstacle` with carving on each prop, which costs runtime carve updates on mobile and is almost certainly not worth it for dressing. Do not "fix" this by installing the `NavMeshSurface` workflow in one scene while World 1 uses the legacy path; that divergence is worse than either option.
+
+### B128. The baked navmesh extends far outside the dojo court — the level has no navmesh bounds
+**Impact:** runtime pathing, mobile memory (minor). **Priority: P3.** Found 2026-09-01 by `technical-director` while fixing B122.
+
+`Ground` is a single 66.6 × 66.6 m plane and the dojo court walls are only **2.4 m tall** obstacles standing on it, so the legitimate bake produces **1 216.1 m²** of walkable surface, of which the Blossom Court interior is only ~318 m². The rest is open backyard, including a continuous walkable ring **outside** the arena wall.
+
+Surfaced concretely while verifying ADR-0008's I2: an unclipped trigger-sphere sweep reported 7 344 in-frame player positions, **every one of them outside the arena wall** and unreachable during the fight. The invariant is fine — the ADR clips to the arena polygon — but the same open floor means a `NavMeshAgent` can legitimately path around the outside of the court if any code ever hands it such a destination.
+
+**Suggested:** constrain the bake with a navmesh bounds volume (or mark the out-of-play ground non-`NavigationStatic`) so the baked surface matches the playable area. Cheap, and it shrinks the runtime navmesh. Check World 1 for the same condition before deciding a project-wide convention.
+
+### B129. Boss-intro proximity triggers measure 3-D distance to a *buried* boss, so `_buriedYOffset` silently shrinks `_introTriggerRange`
+**Impact:** correctness trap, latent. **Priority: P2.** Found 2026-09-01 by `technical-director` while deriving ADR-0008 Amendment 2.
+
+`GrasscutterAI.BossIntro` assigns `transform.position = buriedPos` **before** the Phase A wait loop, then that loop compares `Vector3.Distance(transform.position, _player.position)` — a **3-D** distance from a boss that is `|_buriedYOffset|` metres underground to a player whose pivot is at its feet (`pfb_player`: `CharacterController` height 1.8, centre y 0.9, pivot y 0).
+
+So `_introTriggerRange` and `_introTickOverRange` are **slant ranges**, and the radius that actually governs on the floor is `√(range² − buriedYOffset²)`. Two fields that look independent are coupled, in a direction nobody would guess: **making the reveal better (burying deeper) makes the framing guarantee worse.**
+
+It has already nearly caused a defect. ADR-0008's first staging passed I2 only by luck — `√(8.5² − 3.6²) = 7.70 > 6.309`, with the burial term never actually in the comparison. At Amendment 2's deeper burial and longer camera distance the naive values fail outright: `√(9.0² − 4.45²) = 7.82 < 7.90`. ADR-0008 §4 now states I2 horizontally and the shipped values are chosen against that form, so **this is not currently a bug** — it is a trap the next boss inherits.
+
+**Proposed:** compare horizontal distance in Phase A (or measure from `standPos` rather than the live buried `transform.position`), so the serialized range means what its name says and stops depending on burial depth. Small and local, but it changes intro trigger timing, so it wants its own task and a World 1 regression check rather than being bundled into B119. Until then, any new buried-boss intro must apply ADR-0008 §4's horizontal form of I2.

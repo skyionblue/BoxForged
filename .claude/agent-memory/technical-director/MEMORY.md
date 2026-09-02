@@ -1,6 +1,9 @@
 # Memory Index
 
-- [Lifecycle & ADR status](project_preproduction_gate.md) — World 1 shipped; World 2 built + playtested, rescaled by ADR-0006 (B116 pending); ADR-0001/2/3 status still contradicts.
+- [Lifecycle & ADR status](project_preproduction_gate.md) — World 1 shipped; World 2 built and rescaled twice; ADR-0008 amended twice, B119 now unblocked; ADR-0001/2/3 status still contradicts.
+- [Boss-intro camera contract](reference_boss_intro_camera.md) — ADR-0008's three invariants (I2 horizontal + burial term, I3 = bury the subject), the 63–68% fill band, and 5 measurement traps.
+- [NavMesh baking](reference_navmesh_baking.md) — legacy Navigation-window bake, not NavMeshSurface. A floorless bake SUCCEEDS silently; check area, not just that an asset appeared.
+- [Cherry tree position is CANON](project_cherry_tree_position_is_canon.md) — owner put it on the north rim deliberately; never propose re-centring. A doc/diff contradiction proves the records wrong, not the code.
 - [Metrics that measure impossible states](project_unsatisfiable_metrics.md) — 3 unsatisfiable clauses in accepted ADRs, incl. a conditional grant's fallback. Prove the escape hatch too.
 - [Room-scale calibration](reference_room_scale_calibration.md) — playtested dimensions the owner accepted, plus the 3 diagnostics that explain "feels too small" (free floor per sub-space, dash÷diameter, narrow-axis sum).
 - [RoomManager is not a scene loader](project_roommanager_zone_mechanism.md) — multi-zone-in-one-scene works and is now the default; the scene-load half is dead code with no targets.

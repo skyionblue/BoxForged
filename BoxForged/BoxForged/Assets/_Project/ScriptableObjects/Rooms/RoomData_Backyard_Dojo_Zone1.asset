@@ -31,7 +31,7 @@ MonoBehaviour:
     position: {x: 20.15, y: 0, z: 18.03}
     facingY: 225
     spawnCount: 1
-  - enemyPrefab: {fileID: 4201322907947373338, guid: bc9f5703dc6c145e7b28153b0c7d057c, type: 3}
+  - enemyPrefab: {fileID: 9096217019480281349, guid: 6cc7af43392454d458c603cdb3360ea6, type: 3}
     position: {x: 21.57, y: 0, z: 14.5}
     facingY: 225
     spawnCount: 1
