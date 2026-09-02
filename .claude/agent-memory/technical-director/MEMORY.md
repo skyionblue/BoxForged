@@ -1,6 +1,6 @@
 # Memory Index
 
-- [Lifecycle & ADR status](project_preproduction_gate.md) — World 1 shipped; World 2 built and rescaled twice; ADR-0008 amended twice, B119 now unblocked; ADR-0001/2/3 status still contradicts.
+- [Lifecycle & ADR status](project_preproduction_gate.md) — World 1 + most of World 2 shipped; SPRINT.md lagged 2 phases; CLAUDE.md's "Discovery" line is stale — never agent-edit it.
 - [Boss-intro camera contract](reference_boss_intro_camera.md) — ADR-0008's three invariants (I2 horizontal + burial term, I3 = bury the subject), the 63–68% fill band, and 5 measurement traps.
 - [NavMesh baking](reference_navmesh_baking.md) — legacy Navigation-window bake, not NavMeshSurface. A floorless bake SUCCEEDS silently; check area, not just that an asset appeared.
 - [Cherry tree position is CANON](project_cherry_tree_position_is_canon.md) — owner put it on the north rim deliberately; never propose re-centring. A doc/diff contradiction proves the records wrong, not the code.

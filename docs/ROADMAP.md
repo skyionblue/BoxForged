@@ -1,6 +1,11 @@
 # BoxForged Roadmap
 
-**Status:** In production. Discovery locked 2026-08-18. Production authorized 2026-08-19 ("Start Sprint 0"). Sprint 0 (camera, telegraph, forge) complete, committed, and pushed on `feature/sprint-0-foundation-rebuild`. Phase 2 (World 1) **replanned 2026-08-25**: World 1 is now one continuous scene, `CulDeSac_WildWestCity.unity`, rather than separate room scenes. City geometry and core scaffolding are built; the zone architecture is specified in **[ADR-0004](adr/0004-world1-single-continuous-scene.md)**, **accepted 2026-08-26**. **Zone wiring is implemented and has been through four `code-reviewer` fix passes plus an owner-reported geometry revision (B107)** (all 2026-08-26) — combat/`RoomManager`/`LevelBuilder` wiring is in the scene and Play-Mode-verified; not yet committed, pending owner approval.
+**Status (reconciled against git history 2026-09-02):** In production. Discovery locked 2026-08-18. Production authorized 2026-08-19 ("Start Sprint 0"). All work below is on `feature/sprint-0-foundation-rebuild`, HEAD `497e0031`, fully pushed.
+
+- **Phase 1 / Sprint 0** (camera, telegraph, forge) — complete, committed, pushed. Acceptance-criteria gaps per item in `docs/SPRINT.md`.
+- **Phase 2 (World 1)** — **complete and committed (`b80953ca`).** Replanned 2026-08-25 as one continuous scene, `CulDeSac_WildWestCity.unity`, per **[ADR-0004](adr/0004-world1-single-continuous-scene.md)** (accepted 2026-08-26). Went through five `code-reviewer` fix passes plus an owner-reported geometry revision (B107). The legacy per-room scenes were subsequently deleted (`84a3a44e`).
+- **Phase 3 (World 2)** — **substantially delivered 2026-08-31 → 2026-09-02**, four new ADRs (0005–0008), open validation and design items tracked in `docs/SPRINT.md` §Still open for World 2. See Phase 3 below.
+- **Sprint bookkeeping:** Sprint 0 was never formally closed and no successor sprint document was opened, so Phases 2 and 3 both ran under a document titled "Sprint 0". Flagged for the owner in `docs/SPRINT.md` §Open for owner decision, along with `CLAUDE.md`'s stale "back in Discovery" lifecycle line.
 
 This roadmap reflects the podcast production model: BoxForged is being built live to demonstrate AI-assisted game development by two non-professional-developer creators. Scope is deliberately small for the team-built portion — the audience builds everything beyond it.
 
@@ -99,11 +104,22 @@ The two changes that fail **silently** if missed are both done: the covered wago
 
 `CulDeSac_Room1`, `CulDeSac_Room1_v2`, `CulDeSac_AmbushAlley`, `CulDeSac_AmbushAlley_v2`, `CulDeSac_SaloonFront`, `CulDeSac_MailboxRow`, and `CulDeSac_BossArena` are **kept on disk as reference, not deleted, not edited.** `Room1_v2` and `AmbushAlley_v2` hold the encounter tuning being migrated and must stay verifiable against it. Deletion and build-settings pruning remain separate, explicit owner decisions (ADR-0002 §5, ADR-0004 §7).
 
-### Phase 3 — World 2 Build (Backyard/Dojo)
-- Room 1 (Dojo Courtyard), Room 2 (Garden Gauntlet), Room 3 (The Garden End — Grasscutter boss)
-- Grasscutter boss AI (currently has full lore, no implementation)
-- Crane Duelist enemy (locked as World 2 enemy, no implementation)
-- Boss intro cutscene for Grasscutter
+### Phase 3 — World 2 Build (Backyard/Dojo) — **substantially delivered 2026-08-31 → 2026-09-02**
+
+**Replanned as one continuous scene**, `Backyard_Dojo.unity`, per **[ADR-0005](adr/0005-world2-single-continuous-scene.md)** (accepted 2026-08-31) — which also **promoted single-scene-per-world to the project default**, retiring ADR-0002's one-scene-per-room corollary (ADR-0002's `RoomDataSO`/`LevelBuilder` layer is preserved and load-bearing). The three "rooms" below are now three `ZoneDirector`-driven zones inside that one scene, not separate scenes.
+
+Delivered:
+- **Zone 0 "The Back Gate / Dojo Courtyard", Zone 1 "Garden Gauntlet", Zone 2 "The Garden End — Blossom Court"** — geometry, dressing, and three authored `RoomDataSO`s. Rescaled after an owner playtest per **[ADR-0006](adr/0006-world2-zone-scale-and-arena-metric.md)** (accepted 2026-09-01): zone 1 → 20.0 × 28.0 m, boss arena → r = 10.0 m. ADR-0006 also restated `TECHNICAL_DESIGN.md` §6.4's combat-radius metric **project-wide**.
+- **Grasscutter boss AI** — `GrasscutterAI` implemented `816405f2`; Spin-Dash ground-plane lane telegraph per **[ADR-0007](adr/0007-ground-plane-lane-telegraph.md)** implemented `8677467e`; boss rescaled to 4.250001 m to match SpinCycle (owner decision, B119/B123); reel-drum rig defect root-caused and fixed `497e0031` (B130).
+- **Crane Duelist enemy** — `CraneDuelistAI` implemented `418e2ab7`, placed as one spawn in zone 1.
+- **Boss intro cutscene for Grasscutter** — implemented `418e2ab7` per **[ADR-0008](adr/0008-boss-intro-camera-authored-vantage.md)** (a project-wide boss-intro camera contract, amended three times). Now **activation-gated**, firing on zone activation like `SpinCycleAI`, after two playtest-found bugs.
+- **NavMesh baked** (B122) — the scene had never been baked; uses the legacy Navigation-window bake, matching World 1.
+
+Still open — full detail and the "decide, don't just fix" items are in `docs/SPRINT.md` §Still open for World 2:
+- **ADR-0006 §Validation 10 has not passed on device or with a human.** The 20 m arena is granted *on* the dash-lane telegraph working; B118 is Play-Mode-verified only, so the arena size is conditionally granted rather than accepted.
+- Design decisions the owner/designer owns: B125 (zone 2 has no central obstruction any more — the orbital grammar needs a call), B126 (cherry-tree canopy envelope + missing canopy collider), B127 (inert `NavMeshModifier`s carving unwanted holes), B128 (unbounded navmesh bake), B124 (the tall-grass dormancy beat and its kick-up VFX were never built).
+- Correctness items flagged, not fixed: B117, B121, and B120's World 1 half.
+- **Leaf Pile Lurker is REJECTED for World 2** (owner decision 2026-09-02 — "we have enough enemies currently"). It was never implemented (art-only prefab, no `LeafPileLurkerAI`, no references) and its assets have now been deleted from the World 2 build. Not cut from the game overall — see `docs/CREATIVE_STATE.md`, which still carries it as a planned returning enemy in a later zone. `docs/v4/levels/World2/backyard-dojo/gdd.md` §12 Q1–Q4 also remain open.
 
 ### Phase 4 — Podcast Launch Readiness
 - Both worlds playable end-to-end

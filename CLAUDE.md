@@ -16,10 +16,8 @@ Read `docs/PROJECT_CONTEXT.md` before significant implementation, architecture, 
 
 ## Current lifecycle state
 
-BoxForged is back in **Discovery** while the concept/story is being developed further.
+BoxForged is in **Production**. Discovery was locked 2026-08-18 ("Lock discovery and begin pre-production"); production was authorized 2026-08-19 ("Start Sprint 0"). See `docs/CREATIVE_STATE.md` §Discovery lock status and `docs/SPRINT.md` §Authorization record. The three Phase 2+ narrative beats listed as open in `CREATIVE_STATE.md` do not block production. Preserve completed work unless an accepted decision explicitly supersedes it. "V4 Sprint 1"/"Sprint 2" refer to the retired pre-discovery V4 numbering and should not be resumed.
 
-- Preserve completed V4 Sprint 1 work unless an accepted discovery decision explicitly supersedes it.
-- Do not resume Sprint 2 or create new production sprints until the owner explicitly locks discovery and authorizes pre-production/production.
 - Maintain creative decisions in `docs/CREATIVE_STATE.md` as CANON / WORKING / OPEN / REJECTED.
 - For narrative work, use the current `story-room` and `narrative-discovery` skill. Do not let prose generation silently establish canon.
 

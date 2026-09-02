@@ -72,7 +72,8 @@ Kid actively recruits other kids. The invitation is the box — she shows them s
 ### World 2 Enemies
 - **Crane Duelist**: Pink lawn flamingo imagined as a one-legged spear duelist. Waits for range, patient and still until it isn't. Counter window when it wobbles after a full thrust. Room placement TBD. Full lore: `docs/story/enemies/crane-duelist.md`.
 - **Gnome Soldiers** and **Skeptic Grunts** also appear (recurring types — see below).
-- **Leaf Pile Lurkers**, **Sprinkler Sentinel**: World 2 zone-specific enemies.
+- **Sprinkler Sentinel**: World 2 zone-specific enemy.
+- **Leaf Pile Lurkers**: **REJECTED for World 2** (owner, 2026-09-02 — "we have enough enemies currently"; asset was never wired up, art-only prefab with no AI). Not cut from the game — the story bible (`docs/story/enemies/leaf-pile-lurker.md`) and `docs/story/zones/the-garage.md` still plan it as a *returning* enemy in a later zone with different behavior; that plan is untouched.
 
 ### World Order
 - **World 1 — The Cul-de-Sac (Western):** Boss is SpinCycle. Already built.

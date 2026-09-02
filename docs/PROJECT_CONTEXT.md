@@ -174,7 +174,7 @@ Current action mapping intent:
 
 ## Camera
 
-**Corrected 2026-08-19 (was previously wrong for an entire project phase — see `docs/BACKLOG.md` B21).** Accepted spec going forward (ADR-0001, Sprint 0 in progress): fixed-rotation follow, no aim/look-at component, pitch 36°, vertical FOV 45°, height 5.5m, `FollowOffset (0, 5.5, -7.57)`, yaw locked to 0°, `CinemachineHardLookAt` removed. Check `docs/SPRINT.md` for current implementation status before assuming this has landed in the prefab.
+**Corrected 2026-08-19 (was previously wrong for an entire project phase — see `docs/BACKLOG.md` B21).** Accepted spec going forward (ADR-0001; **implemented 2026-08-19, Sprint 0 complete** — ADR-0001's own on-device validation checklist is still pending): fixed-rotation follow, no aim/look-at component, pitch 36°, vertical FOV 45°, height 5.5m, `FollowOffset (0, 5.5, -7.57)`, yaw locked to 0°, `CinemachineHardLookAt` removed. Check `docs/SPRINT.md` for current implementation status before assuming this has landed in the prefab.
 
 The previously documented `(0, 12, -8)` offset with a `CinemachineHardLookAt` was never actually what the prefab contained; the real prior values were `(7.879929, 11, -10)`, FOV 40, with an undocumented ~−38.2° yaw that silently rotated player controls. Prefer citing the live `pfb_CM_FollowCam.prefab` values over prose in this document going forward.
 
@@ -222,4 +222,6 @@ Do not preserve old Blender axis/orientation recipes as global rules. Export set
 
 ## Branching history
 
-The prior V4 workflow used `main` as the integration branch and `feature/v4-*` sprint branches. V4 Sprint 1 was completed before the project returned to Discovery. Do not automatically resume the old Sprint 2 plan; reevaluate roadmap/sprint work after Discovery is locked.
+The prior V4 workflow used `main` as the integration branch and `feature/v4-*` sprint branches. V4 Sprint 1 was completed before the project returned to Discovery. Do not automatically resume the old Sprint 2 plan.
+
+**Updated 2026-09-02:** the "reevaluate after Discovery is locked" condition has been satisfied. Discovery was locked 2026-08-18 (`docs/CREATIVE_STATE.md` §Discovery lock status) and production authorized 2026-08-19; roadmap and sprint work was replanned accordingly and lives in `docs/ROADMAP.md` and `docs/SPRINT.md`. The "Sprint 0" numbering used there is a **new series** and is unrelated to the retired V4 Sprint 1/Sprint 2 numbering above. Note that `CLAUDE.md`'s "Current lifecycle state" section still describes the pre-2026-08-18 Discovery state and conflicts with every other record — flagged for the owner in `docs/SPRINT.md` §Open for owner decision.

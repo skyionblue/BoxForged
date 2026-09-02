@@ -1663,8 +1663,8 @@ It has already nearly caused a defect. ADR-0008's first staging passed I2 only b
 
 **Proposed:** compare horizontal distance in Phase A (or measure from `standPos` rather than the live buried `transform.position`), so the serialized range means what its name says and stops depending on burial depth. Small and local, but it changes intro trigger timing, so it wants its own task and a World 1 regression check rather than being bundled into B119. Until then, any new buried-boss intro must apply ADR-0008 §4's horizontal form of I2.
 
-### B130. Grasscutter's reel-drum skin-weight fix corrupted the mesh in Unity — **RE-FIXED 2026-09-02, verified in Unity, not yet committed**
-**Impact:** cosmetic bug, root-caused and fixed on second attempt; pending owner review/commit approval. **Priority: P2.** Found via owner playtest 2026-09-02, same session as B120.
+### B130. Grasscutter's reel-drum skin-weight fix corrupted the mesh in Unity — **RE-FIXED, VERIFIED, AND COMMITTED 2026-09-02 (`497e0031`)**
+**Impact:** cosmetic bug, root-caused and fixed on second attempt. **Priority: P2 → closed.** Found via owner playtest 2026-09-02, same session as B120. The "not committed" note in the closing paragraph below is superseded: the FBX re-export and the 38 prefab transform resyncs were committed as `497e0031` and pushed, owner-confirmed by playtest.
 
 **Original bug:** only a thin sliver of the Grasscutter's reel-drum geometry actually rotates when the reel spins up — most of the visible "center section" (the fluted barrel, end-cap hubs, wing-blade fans) stays static. `asset-engineer` diagnosed this correctly: those ~16,258 vertices were skinned to the rig's legacy humanoid torso bones (`Spine`/`Spine1`/`Spine2`/`Neck`/`LeftShoulder`/`RightShoulder`) instead of the custom `Reel_Root`/`Reel_Body` bones added for this boss, left over from when the reel bones were grafted onto an originally-humanoid auto-rig. `GrasscutterAI._reelRoot`'s wiring and the bone hierarchy itself are confirmed correct — this is a source-asset (Blender) weight-paint defect, not a Unity/code bug.
 

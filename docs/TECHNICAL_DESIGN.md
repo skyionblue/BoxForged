@@ -495,8 +495,8 @@ Item 10 deserves emphasis, because the textbook advice is wrong here. Self-wirin
 1. ~~**Forge transformation staging**~~ (§5.5) — **DECIDED 2026-08-19: in-world, at the workbench.**
 2. ~~**Cutscene retirement**~~ (§3.5) — **DECIDED 2026-08-19: retired.** All nine non-boss-intro videos deleted; ~300 MB recovered.
 3. ~~**PermitPulper / NoticePusher / LaundryTumbler**~~ (§7.3) — **DECIDED 2026-08-19: leave dormant.** No deletion; not fit into Worlds 1–2; revisit for World 3+.
-4. **Ability system consolidation** (§7.1) — V3 or V4? Still open. Needed before any new weapon authoring; not blocking Sprint 0.
-5. **Preserve existing room encounter data?** Still open in principle, but the technical recommendation (extract to `RoomDataSO`) is the plan of record per ADR-0002 unless the owner objects — it must happen **before** old scenes are abandoned, so it is time-sensitive.
+4. ~~**Ability system consolidation**~~ (§7.1) — **DECIDED 2026-08-19: keep V4.** See `docs/BACKLOG.md` D3. The investigation corrected the scope substantially: `WeaponData` (V3) is V4's own equipped-data layer and stays permanently, so this is not an 81-asset migration. Only 3 ability assets (Shuriken, SixShooter, DynamiteBundle) need real work, and that work is blocked on extending V4's architecture — tracked as B4, not as a data conversion.
+5. ~~**Preserve existing room encounter data?**~~ — **RESOLVED BY EXECUTION.** `RoomData` was promoted to `RoomDataSO` and every room's encounter data extracted per ADR-0002 *before* the legacy per-room scenes were deleted in `84a3a44e`. Both continuous worlds (`CulDeSac_WildWestCity`, `Backyard_Dojo`) now author encounters exclusively as `RoomDataSO` assets. Nothing time-sensitive remains here.
 6. **Boss-room camera** — still open. Accept a possible per-encounter profile if SpinCycle's airborne slam proves unreadable at 36°? Decide after playtest evidence, per ADR-0001 alternative 5.
 
 ---
