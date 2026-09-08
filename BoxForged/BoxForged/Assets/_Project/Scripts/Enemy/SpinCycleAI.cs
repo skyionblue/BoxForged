@@ -2,6 +2,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using Boxhead.Core;
 using Boxhead.Player;
@@ -151,6 +152,17 @@ namespace Boxhead.Enemy
 
         private Transform _player;
         private CombatController _playerCombat;
+        // B120: the boss intro locks invulnerability (see BossIntro) but never locked player
+        // input — CombatController.OnAttack runs synchronously off PlayerInput's SendMessage
+        // dispatch, completely independent of PlayerController.enabled, so nothing stopped the
+        // player from spamming attacks throughout the intro. Every hit was blocked by
+        // invulnerability (0 damage) until the exact frame it cleared, when an attack already
+        // "in flight" connected immediately — reading as "killed during the intro." Fix mirrors
+        // CutscenePlayer.DisablePlayerInput()/RestorePlayerInput(): disable the PlayerInput
+        // component itself (blocks OnMove/OnAttack/OnJump SendMessage dispatch entirely), caching
+        // whether it was already enabled so a restore never blindly forces it back on.
+        private PlayerInput _playerInput;
+        private bool _playerInputWasEnabled;
         private EnemyStats _stats;
         private Animator _animator;
         private Renderer _renderer;
@@ -345,6 +357,7 @@ namespace Boxhead.Enemy
             {
                 _player       = playerObj.transform;
                 _playerCombat = playerObj.GetComponent<CombatController>();
+                _playerInput  = playerObj.GetComponent<PlayerInput>();
 
                 if (_playerCombat != null)
                     _playerCombat.OnCounterStrike += OnCounterStrikeLanded;
@@ -394,159 +407,188 @@ namespace Boxhead.Enemy
         {
             _stats?.SetInvulnerable(true);
             _state = BossState.Idle;
-            drumWindow?.ResetToForward();
 
-            // Cache the designed full size so we restore it correctly at the end.
-            Vector3 fullScale = transform.localScale;
-
-            // ── Compute intro positions from the DERIVED doorway (source of truth) ──
-            // _doorwayGround / _saloonOutward were computed in Awake from the saloon's runtime
-            // transform. Outward points from the saloon out into the arena.
-            Vector3 outward = _saloonOutward;
-
-            // Start: horizontally centered on the doorway, pushed BACK into the building against
-            // outward, standing UP on the porch deck (deck height) so he begins tiny inside.
-            Vector3 insideStart = _doorwayGround - outward * _introWalkInDistance;
-            insideStart.y = _porchDeckHeight;
-
-            // Doorway threshold, at deck height — the point he passes through as he emerges.
-            Vector3 doorwayTop = _doorwayGround;
-            doorwayTop.y = _porchDeckHeight;
-
-            // End: the walk-out target out in the arena, at GROUND level (steps down off porch).
-            Vector3 walkOutTarget = new Vector3(_introWalkTarget_X, 0f, _introWalkTarget_Z);
-
-            // Teleport the boss onto the deck inside the saloon and shrink to a tiny fraction
-            // BEFORE the first rendered frame, so the intro cam sees him start tiny in the doorway.
-            transform.position   = insideStart;
-            transform.rotation   = Quaternion.LookRotation(outward);
-            transform.localScale = fullScale * 0.02f;
-
-            // ── Phase 1: Hold on the doorway ──
-            // The dedicated intro vcam (created in Awake) is already framing the doorway, so we
-            // simply hold here while the shot settles and the boss stands tiny in the opening.
-            float panTimer = 0f;
-            while (panTimer < _introPanDuration) { panTimer += Time.deltaTime; yield return null; }
-
-            // ── Phase 2: Walk out through the doorway + grow + step down off the porch ──
-            // The start point is on the deck, off the NavMesh — the agent cannot move him from
-            // there. Disable it and drive the walk with a direct transform lerp, then re-enable
-            // + Warp once he is out in the arena at ground level.
-            if (_agent != null) _agent.enabled = false;
-
-            float runDuration = Mathf.Max(0.0001f, _introRunDuration);
-            // Fraction of the walk spent crossing the deck (inside → doorway). During this leg
-            // he stays centered on the doorway and at deck height; afterward he steps down.
-            const float doorwayFrac = 0.45f;
-            float walkTimer = 0f;
-            while (walkTimer < runDuration)
+            try
             {
-                walkTimer += Time.deltaTime;
-                float t = Mathf.Clamp01(walkTimer / runDuration);
+                // B120: lock player input for the whole intro, not just movement — see the
+                // _playerInput field comment for why a PlayerController-only lock (the original
+                // B120 Grasscutter fix) does not stop CombatController.OnAttack from firing.
+                DisablePlayerInput();
+                drumWindow?.ResetToForward();
 
-                Vector3 pos;
-                if (t <= doorwayFrac)
+                // Cache the designed full size so we restore it correctly at the end.
+                Vector3 fullScale = transform.localScale;
+
+                // ── Compute intro positions from the DERIVED doorway (source of truth) ──
+                // _doorwayGround / _saloonOutward were computed in Awake from the saloon's runtime
+                // transform. Outward points from the saloon out into the arena.
+                Vector3 outward = _saloonOutward;
+
+                // Start: horizontally centered on the doorway, pushed BACK into the building against
+                // outward, standing UP on the porch deck (deck height) so he begins tiny inside.
+                Vector3 insideStart = _doorwayGround - outward * _introWalkInDistance;
+                insideStart.y = _porchDeckHeight;
+
+                // Doorway threshold, at deck height — the point he passes through as he emerges.
+                Vector3 doorwayTop = _doorwayGround;
+                doorwayTop.y = _porchDeckHeight;
+
+                // End: the walk-out target out in the arena, at GROUND level (steps down off porch).
+                Vector3 walkOutTarget = new Vector3(_introWalkTarget_X, 0f, _introWalkTarget_Z);
+
+                // Teleport the boss onto the deck inside the saloon and shrink to a tiny fraction
+                // BEFORE the first rendered frame, so the intro cam sees him start tiny in the doorway.
+                transform.position   = insideStart;
+                transform.rotation   = Quaternion.LookRotation(outward);
+                transform.localScale = fullScale * 0.02f;
+
+                // ── Phase 1: Hold on the doorway ──
+                // The dedicated intro vcam (created in Awake) is already framing the doorway, so we
+                // simply hold here while the shot settles and the boss stands tiny in the opening.
+                float panTimer = 0f;
+                while (panTimer < _introPanDuration) { panTimer += Time.deltaTime; yield return null; }
+
+                // ── Phase 2: Walk out through the doorway + grow + step down off the porch ──
+                // The start point is on the deck, off the NavMesh — the agent cannot move him from
+                // there. Disable it and drive the walk with a direct transform lerp, then re-enable
+                // + Warp once he is out in the arena at ground level.
+                if (_agent != null) _agent.enabled = false;
+
+                float runDuration = Mathf.Max(0.0001f, _introRunDuration);
+                // Fraction of the walk spent crossing the deck (inside → doorway). During this leg
+                // he stays centered on the doorway and at deck height; afterward he steps down.
+                const float doorwayFrac = 0.45f;
+                float walkTimer = 0f;
+                while (walkTimer < runDuration)
                 {
-                    // Leg 1 — cross the deck to the doorway, centered on the doorway line, deck height.
-                    float u = t / doorwayFrac;
-                    pos   = Vector3.Lerp(insideStart, doorwayTop, u);
-                    pos.y = _porchDeckHeight;
+                    walkTimer += Time.deltaTime;
+                    float t = Mathf.Clamp01(walkTimer / runDuration);
+
+                    Vector3 pos;
+                    if (t <= doorwayFrac)
+                    {
+                        // Leg 1 — cross the deck to the doorway, centered on the doorway line, deck height.
+                        float u = t / doorwayFrac;
+                        pos   = Vector3.Lerp(insideStart, doorwayTop, u);
+                        pos.y = _porchDeckHeight;
+                    }
+                    else
+                    {
+                        // Leg 2 — leave the doorway, step down off the porch to ground level in the arena.
+                        float u = (t - doorwayFrac) / (1f - doorwayFrac);
+                        pos   = Vector3.Lerp(doorwayTop, walkOutTarget, u);
+                        pos.y = Mathf.Lerp(_porchDeckHeight, 0f, u); // smooth descent off the deck
+                    }
+                    transform.position = pos;
+
+                    // Grow from tiny to full size, easing in so he "swells" as he approaches.
+                    transform.localScale = fullScale * Mathf.Lerp(0.02f, 1f, t * t);
+                    // Face the walk-out direction throughout.
+                    transform.rotation = Quaternion.LookRotation(outward);
+                    _animator?.SetFloat(AnimSpeed, walkSpeed * 1.5f);
+
+                    // Dolly the camera BACK as he emerges (start → end distance) and pan its look
+                    // point to follow him, so his growing body stays framed and he walks toward us.
+                    float dollyDist = Mathf.Lerp(_introCamStartDistance, _introCamEndDistance, t);
+                    Vector3 lookXZ = new Vector3(pos.x, 0f, pos.z);
+                    PositionIntroCamera(dollyDist, lookXZ);
+
+                    yield return null;
                 }
-                else
+
+                // Snap to the exact arena target at ground level, full size; stop the walk animation.
+                transform.position   = walkOutTarget;
+                transform.localScale = fullScale;
+                _animator?.SetFloat(AnimSpeed, 0f);
+
+                // Re-enable the agent and Warp it onto the NavMesh at the arena target so
+                // Approach() can path immediately once _introComplete is set.
+                if (_agent != null)
                 {
-                    // Leg 2 — leave the doorway, step down off the porch to ground level in the arena.
-                    float u = (t - doorwayFrac) / (1f - doorwayFrac);
-                    pos   = Vector3.Lerp(doorwayTop, walkOutTarget, u);
-                    pos.y = Mathf.Lerp(_porchDeckHeight, 0f, u); // smooth descent off the deck
+                    _agent.enabled   = true;
+                    _agent.Warp(transform.position);
+                    _agent.isStopped = true;
                 }
-                transform.position = pos;
 
-                // Grow from tiny to full size, easing in so he "swells" as he approaches.
-                transform.localScale = fullScale * Mathf.Lerp(0.02f, 1f, t * t);
-                // Face the walk-out direction throughout.
-                transform.rotation = Quaternion.LookRotation(outward);
-                _animator?.SetFloat(AnimSpeed, walkSpeed * 1.5f);
-
-                // Dolly the camera BACK as he emerges (start → end distance) and pan its look
-                // point to follow him, so his growing body stays framed and he walks toward us.
-                float dollyDist = Mathf.Lerp(_introCamStartDistance, _introCamEndDistance, t);
-                Vector3 lookXZ = new Vector3(pos.x, 0f, pos.z);
-                PositionIntroCamera(dollyDist, lookXZ);
-
-                yield return null;
-            }
-
-            // Snap to the exact arena target at ground level, full size; stop the walk animation.
-            transform.position   = walkOutTarget;
-            transform.localScale = fullScale;
-            _animator?.SetFloat(AnimSpeed, 0f);
-
-            // Re-enable the agent and Warp it onto the NavMesh at the arena target so
-            // Approach() can path immediately once _introComplete is set.
-            if (_agent != null)
-            {
-                _agent.enabled   = true;
-                _agent.Warp(transform.position);
-                _agent.isStopped = true;
-            }
-
-            // Face the player after stopping.
-            if (_player != null)
-            {
-                Vector3 toPlayer = _player.position - transform.position;
-                toPlayer.y = 0f;
-                if (toPlayer.sqrMagnitude > 0.01f)
-                    transform.rotation = Quaternion.LookRotation(toPlayer.normalized);
-            }
-
-            // Settle the camera at its final pulled-back distance, aimed at the boss, for the
-            // pause and spin-up.
-            PositionIntroCamera(_introCamEndDistance, new Vector3(transform.position.x, 0f, transform.position.z));
-
-            // ── Phase 2.5: Post-walk pause ──
-            // Boss stands at full size, fully out in the arena, before the head spins up.
-            float pauseTimer = 0f;
-            while (pauseTimer < _introPostWalkPause) { pauseTimer += Time.deltaTime; yield return null; }
-
-            // ── Phase 3: Head spins up — intro cam zooms in for the reveal ──
-            drumWindow?.StartIntroBuildUp();
-
-            float startFoV     = _introVcam != null ? _introVcam.Lens.FieldOfView : _normalCameraFoV;
-            float spinTimer    = 0f;
-            float spinDuration = 3.0f;
-            while (spinTimer < spinDuration)
-            {
-                spinTimer += Time.deltaTime;
-                float t = spinTimer / spinDuration;
-                float degPerSec = Mathf.Lerp(30f, 240f, t);
-                _drumHead?.Rotate(0f, degPerSec * Time.deltaTime, 0f, Space.Self);
-                // Zoom the INTRO cam in during the first 60% of spin-up.
-                if (_introVcam != null)
+                // Face the player after stopping.
+                if (_player != null)
                 {
-                    float zoomT = Mathf.Clamp01(t / 0.6f);
-                    var lens = _introVcam.Lens;
-                    lens.FieldOfView = Mathf.Lerp(startFoV, _introCameraFoV, zoomT * zoomT);
-                    _introVcam.Lens = lens;
+                    Vector3 toPlayer = _player.position - transform.position;
+                    toPlayer.y = 0f;
+                    if (toPlayer.sqrMagnitude > 0.01f)
+                        transform.rotation = Quaternion.LookRotation(toPlayer.normalized);
                 }
-                if (spinTimer >= spinDuration * 0.5f && spinTimer < spinDuration * 0.5f + Time.deltaTime)
-                    _impulseSource?.GenerateImpulse(0.2f);
-                yield return null;
+
+                // Settle the camera at its final pulled-back distance, aimed at the boss, for the
+                // pause and spin-up.
+                PositionIntroCamera(_introCamEndDistance, new Vector3(transform.position.x, 0f, transform.position.z));
+
+                // ── Phase 2.5: Post-walk pause ──
+                // Boss stands at full size, fully out in the arena, before the head spins up.
+                float pauseTimer = 0f;
+                while (pauseTimer < _introPostWalkPause) { pauseTimer += Time.deltaTime; yield return null; }
+
+                // ── Phase 3: Head spins up — intro cam zooms in for the reveal ──
+                drumWindow?.StartIntroBuildUp();
+
+                float startFoV     = _introVcam != null ? _introVcam.Lens.FieldOfView : _normalCameraFoV;
+                float spinTimer    = 0f;
+                float spinDuration = 3.0f;
+                while (spinTimer < spinDuration)
+                {
+                    spinTimer += Time.deltaTime;
+                    float t = spinTimer / spinDuration;
+                    float degPerSec = Mathf.Lerp(30f, 240f, t);
+                    _drumHead?.Rotate(0f, degPerSec * Time.deltaTime, 0f, Space.Self);
+                    // Zoom the INTRO cam in during the first 60% of spin-up.
+                    if (_introVcam != null)
+                    {
+                        float zoomT = Mathf.Clamp01(t / 0.6f);
+                        var lens = _introVcam.Lens;
+                        lens.FieldOfView = Mathf.Lerp(startFoV, _introCameraFoV, zoomT * zoomT);
+                        _introVcam.Lens = lens;
+                    }
+                    if (spinTimer >= spinDuration * 0.5f && spinTimer < spinDuration * 0.5f + Time.deltaTime)
+                        _impulseSource?.GenerateImpulse(0.2f);
+                    yield return null;
+                }
+
+                // ── Phase 4: Hand control back to the gameplay camera, combat begins ──
+                drumWindow?.SetSlowPhase(); // settle to slow idle spin during combat
+
+                // Disabling the intro vcam lets the untouched gameplay cam (pfb_CM_FollowCam) win
+                // the Brain again; Cinemachine blends from the intro shot to the fixed low-angle
+                // follow camera (36° pitch, no rotation — ADR-0001).
+                if (_introVcam != null) _introVcam.enabled = false;
+
+                _introComplete = true;
+                _state         = BossState.Approaching;
+
+                // Drop invulnerability only after the intro is fully torn down (camera handed back,
+                // agent warped, state set) to close a death-race on camera/agent state.
+                _stats?.SetInvulnerable(false);
+                RestorePlayerInput();
             }
-
-            // ── Phase 4: Hand control back to the gameplay camera, combat begins ──
-            drumWindow?.SetSlowPhase(); // settle to slow idle spin during combat
-
-            // Disabling the intro vcam lets the untouched gameplay cam (pfb_CM_FollowCam) win
-            // the Brain again; Cinemachine blends from the intro shot to the fixed low-angle
-            // follow camera (36° pitch, no rotation — ADR-0001).
-            if (_introVcam != null) _introVcam.enabled = false;
-
-            _introComplete = true;
-            _state         = BossState.Approaching;
-
-            // Drop invulnerability only after the intro is fully torn down (camera handed back,
-            // agent warped, state set) to close a death-race on camera/agent state.
-            _stats?.SetInvulnerable(false);
+            finally
+            {
+                // Covers normal completion and any in-body early exit (yield break/exception)
+                // inside the try above — matches GrasscutterAI.BossIntro()'s identical try/finally
+                // shape. Without this, an exception anywhere in the body (Cinemachine lens access,
+                // saloon-geometry lookups, drumWindow calls, etc.) would leave PlayerInput
+                // permanently disabled with no recovery path reachable by the player — the boss
+                // never finishes its intro, stays invulnerable, HandleDeath can never fire, and
+                // OnDestroy only runs on teardown the player can't trigger while frozen.
+                //
+                // RestorePlayerInput() is safe to call more than once (see its own doc comment),
+                // so this runs in addition to the explicit call already at the normal-completion
+                // point above — not instead of it. Does NOT by itself cover an external stop
+                // (StopCoroutine/StopAllCoroutines never call Dispose() on the stopped enumerator
+                // in this Unity version — verified directly, same as GrasscutterAI's identical
+                // comment): the real guarantee for that path is the explicit RestorePlayerInput()
+                // calls already at HandleDeath and OnDestroy, next to their own
+                // StopAllCoroutines() calls.
+                RestorePlayerInput();
+            }
         }
 
         // ── Movement ──────────────────────────────────────────────────────────
@@ -1026,6 +1068,32 @@ namespace Boxhead.Enemy
             return Vector3.Distance(transform.position, _player.position) <= range;
         }
 
+        // B120: disables the actual PlayerInput component (not PlayerController) so the
+        // SendMessage dispatch behind OnMove/OnAttack/OnJump stops entirely for the duration of
+        // the boss intro — matches CutscenePlayer.DisablePlayerInput()'s proven pattern. Caches
+        // whether it was already enabled so RestorePlayerInput never blindly forces it back on.
+        private void DisablePlayerInput()
+        {
+            if (_playerInput == null) return;
+            _playerInputWasEnabled = _playerInput.enabled;
+            _playerInput.enabled = false;
+        }
+
+        // Restores PlayerInput only if DisablePlayerInput found it already enabled. Safe to call
+        // more than once (BossIntro's own end-of-intro call, plus the HandleDeath/OnDestroy
+        // defense-in-depth calls below) — re-enabling an already-enabled component is a no-op.
+        private void RestorePlayerInput()
+        {
+            if (_playerInput == null) return;
+            if (_playerInputWasEnabled) _playerInput.enabled = true;
+            // Reset the cached flag so a stray extra call (this helper is called from multiple
+            // sites: BossIntro's finally, HandleDeath, OnDestroy) can never re-apply a stale
+            // enabled-state from a previous DisablePlayerInput() call. Unlike CutscenePlayer's
+            // RestorePlayerInput(), _playerInput itself is NOT nulled here — this is an
+            // enemy-owned persistent reference (resolved once in Start), not re-resolved per call.
+            _playerInputWasEnabled = false;
+        }
+
         // ── Phase transition ──────────────────────────────────────────────────
 
         private IEnumerator PhaseTransitionRoutine()
@@ -1076,6 +1144,16 @@ namespace Boxhead.Enemy
             _state = BossState.Dead;
 
             if (_agent != null) { _agent.isStopped = true; _agent.enabled = false; }
+
+            // Same defense-in-depth GrasscutterAI.HandleDeath already uses for its player-lock:
+            // StopAllCoroutines() below discards BossIntro's IEnumerator mid-flight without ever
+            // resuming it, and Unity's StopAllCoroutines()/StopCoroutine() do not call Dispose()
+            // on the stopped enumerator, so BossIntro's own end-of-intro RestorePlayerInput() call
+            // never runs on an external stop. In practice this path is unreachable while _stats
+            // stays invulnerable for BossIntro's entire duration (TakeDamage() no-ops under
+            // _invulnerable, so HandleDeath can't fire mid-intro today), but restoring here costs
+            // nothing if PlayerInput is already enabled.
+            RestorePlayerInput();
 
             // StopAllCoroutines kills nested attack routines (DrumSlam, Haymaker, etc.)
             // that are started via yield return StartCoroutine() — StopCoroutine on the
@@ -1262,6 +1340,12 @@ namespace Boxhead.Enemy
                 _introVcamGO = null;
                 _introVcam   = null;
             }
+
+            // Same defense-in-depth as HandleDeath's identical call (see its comment): covers
+            // BossIntro being interrupted by scene teardown/GameObject destruction without going
+            // through HandleDeath first — a player permanently frozen because this coroutine was
+            // cut off would be a worse bug than the missing input lock this exists to fix.
+            RestorePlayerInput();
 
             // HandleDeath calls StopAllCoroutines; if destroyed without dying, clean up here.
             StopAllCoroutines();

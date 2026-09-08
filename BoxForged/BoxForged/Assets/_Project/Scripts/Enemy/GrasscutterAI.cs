@@ -2,6 +2,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using Boxhead.Core;
 using Boxhead.Player;
@@ -197,6 +198,15 @@ namespace Boxhead.Enemy
         private Transform _player;
         private CombatController _playerCombat;
         private PlayerController _playerController;
+        // B120 (closing a gap this existing fix never actually covered): disabling
+        // _playerController only stops Update()-driven movement — CombatController.OnAttack runs
+        // synchronously off PlayerInput's SendMessage dispatch and is completely independent of
+        // PlayerController.enabled, so the player could still spam attacks throughout the intro
+        // even with the movement lock in place. Additive to _playerController, same three call
+        // sites (BossIntro/HandleDeath/OnDestroy), mirroring CutscenePlayer.DisablePlayerInput()/
+        // RestorePlayerInput() and the identical fix in SpinCycleAI.
+        private PlayerInput _playerInput;
+        private bool _playerInputWasEnabled;
         private EnemyStats _stats;
         private Animator _animator;
         private Renderer _renderer;
@@ -426,6 +436,7 @@ namespace Boxhead.Enemy
                 _player           = playerObj.transform;
                 _playerCombat     = playerObj.GetComponent<CombatController>();
                 _playerController = playerObj.GetComponent<PlayerController>();
+                _playerInput      = playerObj.GetComponent<PlayerInput>();
 
                 if (_playerCombat != null)
                     _playerCombat.OnCounterStrike += OnCounterStrikeLanded;
@@ -523,6 +534,11 @@ namespace Boxhead.Enemy
                 // CameraStackWirer, AspectAdaptiveCameraFraming, MinimapCameraFollow, CameraOcclusion —
                 // none read touch/drag/pinch input, so there is nothing else to disable here).
                 if (_playerController != null) _playerController.enabled = false;
+                // B120: additive to the _playerController lock above — see the _playerInput
+                // field comment for why movement-only locking never stopped CombatController's
+                // attacks. Caches whether PlayerInput was already enabled so the restore below
+                // never blindly forces it back on.
+                DisablePlayerInput();
 
                 // ── Phase B: camera cuts to the cherry tree ──
                 Vector3 treeLook = ResolveCherryTreeLookPoint();
@@ -604,6 +620,10 @@ namespace Boxhead.Enemy
                 // death handling, and invulnerability doesn't need clearing for a boss about to be
                 // destroyed — unconditionally redoing either here would fight HandleDeath's intent.
                 if (_playerController != null) _playerController.enabled = true;
+                // B120: same finally-block guarantee as the _playerController restore above,
+                // extended to the additive PlayerInput lock — see DisablePlayerInput's call site
+                // comment. Respects the cached prior-enabled state rather than forcing it on.
+                RestorePlayerInput();
             }
         }
 
@@ -1260,6 +1280,31 @@ namespace Boxhead.Enemy
             return Vector3.Distance(transform.position, _player.position) <= range;
         }
 
+        // B120: disables the actual PlayerInput component (not PlayerController) so the
+        // SendMessage dispatch behind OnMove/OnAttack/OnJump stops entirely — matches
+        // CutscenePlayer.DisablePlayerInput()'s proven pattern and SpinCycleAI's identical fix.
+        private void DisablePlayerInput()
+        {
+            if (_playerInput == null) return;
+            _playerInputWasEnabled = _playerInput.enabled;
+            _playerInput.enabled = false;
+        }
+
+        // Restores PlayerInput only if DisablePlayerInput found it already enabled. Safe to call
+        // more than once (BossIntro's own finally block, plus the HandleDeath/OnDestroy
+        // defense-in-depth calls below) — re-enabling an already-enabled component is a no-op.
+        private void RestorePlayerInput()
+        {
+            if (_playerInput == null) return;
+            if (_playerInputWasEnabled) _playerInput.enabled = true;
+            // Reset the cached flag so a stray extra call (this helper is called from multiple
+            // sites: BossIntro's finally, HandleDeath, OnDestroy) can never re-apply a stale
+            // enabled-state from a previous DisablePlayerInput() call. Unlike CutscenePlayer's
+            // RestorePlayerInput(), _playerInput itself is NOT nulled here — this is an
+            // enemy-owned persistent reference (resolved once in Start), not re-resolved per call.
+            _playerInputWasEnabled = false;
+        }
+
         // ── Phase transition ──────────────────────────────────────────────────
 
         private IEnumerator PhaseTransitionRoutine()
@@ -1326,6 +1371,12 @@ namespace Boxhead.Enemy
             // try/finally — is the same defense-in-depth this method already uses for the dash
             // lane above, and costs nothing if _playerController is already enabled.
             if (_playerController != null) _playerController.enabled = true;
+
+            // B120: same defense-in-depth as the _playerController restore directly above,
+            // extended to the additive PlayerInput lock (DisablePlayerInput's call site comment
+            // in BossIntro explains why movement-only locking isn't sufficient). Costs nothing if
+            // PlayerInput is already enabled.
+            RestorePlayerInput();
 
             StopAllCoroutines();
             _activeRoutine = null;
@@ -1501,6 +1552,10 @@ namespace Boxhead.Enemy
             // missing input lock this exists to fix — null-check only, since the player object may
             // already be mid-teardown itself in the same scene unload.
             if (_playerController != null) _playerController.enabled = true;
+
+            // B120: same defense-in-depth as the _playerController restore directly above,
+            // extended to the additive PlayerInput lock — see HandleDeath's identical comment.
+            RestorePlayerInput();
 
             StopAllCoroutines();
             _activeRoutine = null;

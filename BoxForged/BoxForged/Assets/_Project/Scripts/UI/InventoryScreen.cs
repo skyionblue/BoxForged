@@ -7,7 +7,10 @@ using Boxhead.Systems;
 namespace Boxhead.UI
 {
     /// <summary>
-    /// Full inventory panel. Opened by a HUD button. Does NOT pause time.
+    /// Full inventory panel. Opened by a HUD button. Pauses time while open (Time.timeScale = 0,
+    /// AudioListener.pause = true) — same convention as PauseMenu and ForgePanel; the game used
+    /// to keep simulating in the background behind the Bag, letting enemies/hazards act while the
+    /// player couldn't respond.
     /// Shows all 3 weapon slots and the material bag. Equip/Drop buttons are wired per-slot.
     /// </summary>
     public class InventoryScreen : MonoBehaviour
@@ -86,8 +89,35 @@ namespace Boxhead.UI
             WireSlotButtons();
         }
 
+        private void OnDisable()
+        {
+            // Safety net: this HUD screen can be disabled without being destroyed (e.g. the HUD
+            // root is toggled off for a cutscene/run-end screen while the Bag happens to be
+            // open) — OnDestroy's equivalent safety net below would never run in that case, and
+            // Close() is never called either since nothing here invokes it. Restore time scale
+            // the same way PauseMenu.OnDestroy() does so a disable can't leave the game
+            // permanently paused. Deliberately does not touch _isOpen/subscriptions — this only
+            // guards the one dangerous side effect (frozen time), not a full Close().
+            if (_isOpen)
+            {
+                Time.timeScale      = 1f;
+                AudioListener.pause = false;
+            }
+        }
+
         private void OnDestroy()
         {
+            // Safety net: if the screen is destroyed while still open, restore time scale the
+            // same way PauseMenu.OnDestroy() does, so a stray destroy (scene teardown, etc.)
+            // can't leave the game permanently paused. (OnDisable above already covers this for
+            // the disable-without-destroy case; Unity calls OnDisable before OnDestroy on actual
+            // destruction, so this is a harmless, idempotent repeat in that case.)
+            if (_isOpen)
+            {
+                Time.timeScale      = 1f;
+                AudioListener.pause = false;
+            }
+
             // Ensure subscriptions are cleaned up even if Close() was not called.
             UnsubscribeEvents();
 
@@ -135,22 +165,43 @@ namespace Boxhead.UI
         public void Open()
         {
             if (_panel == null) return;
+
+            // Guard against opening while time is already frozen by someone else (Pause menu,
+            // ForgePanel, etc.) — same idiom as WorkbenchProp.cs:70. Without this, opening the
+            // Bag over an already-paused screen and later closing the Bag alone would blindly
+            // set Time.timeScale = 1f even though the other screen still owns the pause, resuming
+            // the game out from under it. Silently no-op rather than opening on top of it.
+            if (Time.timeScale == 0f) return;
+
             if (_isOpen) Close();
             _isOpen = true;
+
+            // Pause the game while the Bag is open — same PauseMenu/ForgePanel convention.
+            // Previously this screen never touched Time.timeScale at all, so enemies/hazards kept
+            // acting in real time behind the panel.
+            Time.timeScale      = 0f;
+            AudioListener.pause = true;
 
             SubscribeEvents();
             RefreshAll();
             _panel.SetActive(true);
         }
 
-        /// <summary>Deactivates the inventory panel and unsubscribes from data events.</summary>
+        /// <summary>Deactivates the inventory panel, unsubscribes from data events, and resumes time.</summary>
         public void Close()
         {
-            if (_panel == null) return;
             if (!_isOpen) return;
             _isOpen = false;
 
+            // Restore time first, before touching _panel — a null _panel reference (however it
+            // got that way) must never leave Time.timeScale/AudioListener.pause permanently at
+            // the paused value just because the early-return below skips SetActive(false).
+            Time.timeScale      = 1f;
+            AudioListener.pause = false;
+
             UnsubscribeEvents();
+
+            if (_panel == null) return;
             _panel.SetActive(false);
         }
 
@@ -162,7 +213,11 @@ namespace Boxhead.UI
         {
             if (_panel == null) return;
 
-            if (_panel.activeSelf)
+            // Key off _isOpen, not _panel.activeSelf — Open()/Close() both key off _isOpen, and
+            // the two can desync (e.g. Open() no-ops while time is already frozen, leaving _panel
+            // inactive and _isOpen false — consistent; but external SetActive calls on _panel
+            // would otherwise fool this check without updating _isOpen).
+            if (_isOpen)
                 Close();
             else
                 Open();

@@ -17,6 +17,10 @@
 *.dylib filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 *.unitypackage filter=lfs diff=lfs merge=lfs -text
+# Loading screen — small enough to not need LFS; excluded from the *.png rule above
+# (owner decision 2026-09-08, after hitting the monthly Git LFS quota previously).
+BoxForged/BoxForged/Assets/_Project/Resources/loading_screen.png !filter !diff !merge -text
+
 # Unity text-based files — NOT tracked by LFS (they are YAML text)
 *.unity -text
 *.prefab -text
