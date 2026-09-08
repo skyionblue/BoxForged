@@ -1,3 +1,46 @@
+# Sprint 2 — Mobile Release Readiness
+
+**Status: AUTHORIZED, in progress.** Owner said "I would like to get this game deployed for Android, and iOS" (2026-09-08), immediately after closing out Sprint 1's crash-recovery cleanup commit (`ac1fa96e`) on `feature/sprint-0-foundation-rebuild`. New branch cut for this scope: `feature/mobile-release-readiness`. Sprint 1 (below) remains open in parallel — this is an additive scope, not a supersession; World 2's still-open validation/decision items there are unaffected.
+
+**Branch:** `feature/mobile-release-readiness` (off `feature/sprint-0-foundation-rebuild` at `ac1fa96e`)
+
+**Framing (from the `release-engineer` audit that opened this sprint):** the realistic near-term milestone is "installable on a real device via TestFlight / Play internal testing," not store submission. At the Unity-configuration level that milestone was already largely met before this sprint started — IL2CPP, ARM64, a real Android keystore, iOS post-build signing already wired to Apple Developer Team `V62D5FT8F5`. The open items are a handful of decisions and one measured performance shortfall, not missing infrastructure.
+
+## Decisions made 2026-09-08 (owner) — implemented same day
+
+Full record in `docs/TECHNICAL_DECISIONS.md` §Engine and pipeline.
+
+1. **Bundle ID → `com.boxforged`** (both platforms). Was `com.theunboxedheroes`; changed before any store upload since it's permanent afterward. Android keystore alias (`unboxedheroes`) unaffected.
+2. **Orientation → auto-rotate both landscape holds.** Was locked `LandscapeRight` with both autorotate flags inertly enabled; `defaultScreenOrientation` now `AutoRotation` so the existing flags take effect.
+3. **Frame rate → 60 FPS confirmed as the real target.** Removed an undocumented `Application.targetFrameRate = 30` cap in `GameManager.cs` (resolves `docs/BACKLOG.md` B112's open question). TDD §3.1's documented 60 FPS target was correct; the cap was stale, not the doc.
+4. **Fresh on-device profiling pass — owner opted in, not yet run.** The 2026-08-27 capture (`docs/PERFORMANCE_PROFILING.md`) predates both the 60 FPS change and World 2's content, and is World-1-only in scope. See §Still open below.
+5. **`docs/PERFORMANCE_PROFILING.md` extended to cover World 2** (`performance-engineer`, same day) — added scenarios S5-S9 for `Backyard_Dojo`'s three zones, the Grasscutter boss fight, a World-2 thermal run, and a both-worlds continuous session. All World 2 rows are blank; no on-device World 2 number has ever been captured. This pass also surfaced two new findings, addressed below (B131, fixed same day; B132, still open).
+
+## Found and fixed while extending the profiling checklist (2026-09-08)
+
+- **B131 — World 2 was unreachable in any real build.** `WorldMapScreen.OnTownSquareSelected()` hardcoded a scene name (`"TownSquare_Room1"`) that was removed from the build's scene list on 2026-08-27 and never existed as a real file; `GameManager.ZoneStartScene[1]` (`"Backyard_Dojo"`) already had the correct value but nothing read it. On a real device, the World Map's zone-1 node would unlock, become tappable, and then fail to load anything — stranding the player with no route into World 2 through normal play. This went undetected because all World 2 playtesting to date opened `Backyard_Dojo.unity` directly in the Editor, bypassing the actual menu flow. **Fixed same day** (`WorldMapScreen.cs:117` now reads `GameManager.ZoneStartScene[1]`, mirroring the already-correct zone-0 pattern) — this blocked the entire point of this sprint, so it was corrected immediately rather than only logged. Full detail: `docs/BACKLOG.md` B131. Not yet verified via an actual Play Mode World Map click-through or on device — add to the next QA pass.
+
+## Still open (from the release-readiness audit, ordered by blocking severity)
+
+**Before any device build/test:** nothing found blocking — Android and iOS both already build today.
+
+**Before store submission:**
+- Fresh on-device Pass A/B profiling, now covering both worlds per the extended `docs/PERFORMANCE_PROFILING.md` (scenarios S1-S9). Prior World 1 numbers (205 draw calls vs. <100 budget, ~357k triangles vs. ~300k, SRP Batcher measuring zero) are stale (pre-60-FPS) but were already over budget, so treat as a real risk, not a stale non-issue. World 2 has never been measured at all — see B132 below, the single biggest new risk found.
+- **B132 — World 2's ADR-0005 §3 SRP-Batcher condition has never been verified.** 47 identical `BD01_WallModule` instances are ~47% of the whole-scene draw-call budget if they don't batch; ADR-0005 §3 conditioned the entire single-scene architecture on verifying a non-zero SRP Batcher/Instanced count on device, and that's never been checked. World 1's own capture found the SRP Batcher contributing zero despite being enabled — if World 2 reads the same way, this ADR's core premise is false, not just unverified. Full detail: `docs/BACKLOG.md` B132.
+- **B133/B134 — two open questions about whether Sprint 1's B127/B128 NavMesh findings still apply.** B127 was diagnosed against the Editor legacy bake, but World 2's actual runtime bake is a `NavMeshSurface` — may not carry over, needs `technical-director`. B128's oversized bake (1,216 m² vs. ~318 m² playable) also turns out to be a runtime, every-scene-load re-bake, making it a scene-start-hitch budget input (ADR-0004 §8, ≤ 500 ms) that the next profiling pass should specifically check, not just a memory nit. Full detail: `docs/BACKLOG.md` B133, B134.
+- Android adaptive icon (Kind 2) and round icon (Kind 1) slots are empty — only the legacy square icon is populated.
+- `AndroidTargetSdkVersion: 0` (Automatic) — confirm at build time it resolves to an API level meeting Google Play's current target-API policy.
+- iOS 180×180 (@3x) icon slot references a different source file (`AppIcon_BoxForged.png`) than every other iOS icon slot (`AppIcon.png`) — verify this isn't an accidental mismatch.
+- Confirm the owner's Xcode/Apple ID session is actually a member of Team `V62D5FT8F5` with active Apple Developer Program membership (environment fact, not visible in the repo).
+- No privacy policy / App Store privacy label / Google Play Data Safety form prep exists yet — required even for a "collects nothing" app.
+- `WeaponGripTest.unity` dev/QA scene is still in the build scene list (intentional per B66/ADR-0005, inflates package size per `PERFORMANCE_PROFILING.md`) — decide before submission whether to strip it.
+- No automated EditMode/PlayMode test coverage exists anywhere in the project — not a hard blocker for an internal test build, but a real gap against the studio's own testing standard.
+- `docs/KNOWN_ISSUES.md`, `docs/CHANGELOG.md`, `docs/AI_CONTEXT.md` don't exist, though `.claude/rules/studio-core.md` lists them as required project memory.
+
+Full audit detail (what's already in place per platform, file/line citations) is in the `release-engineer` agent's 2026-09-08 report — not duplicated here; ask to have it re-run if the source detail is needed again.
+
+---
+
 # Sprint 1 — World 2 Completion & Polish
 
 **Status: AUTHORIZED.** Owner closed Sprint 0 and opened this sprint 2026-09-02, in the same decision that authorized committing Sprint 0's outstanding work and correcting `CLAUDE.md`'s stale lifecycle-state line (see `CLAUDE.md` §Current lifecycle state). Same branch, same production authorization (2026-08-19) — this is a bookkeeping/scope split, not a new authorization gate.

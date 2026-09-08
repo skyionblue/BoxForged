@@ -15,4 +15,6 @@ Structural facts about the `CulDeSac_*_v2` rooms — verified 2026-08-24 reviewi
 
 **Animator defaults to watch:** every animated enemy prefab in the project has `m_CullingMode: 0` (AlwaysAnimate) — project-wide, pre-existing. `m_ApplyRootMotion` is `0` on every animated enemy **except** `pfb_enemy_skeptic_grunt` (`1`), which is agent-driven and imports with `importAnimation: 0`. `GameObject.FindWithTag("Player")` in `Start()` is the established project-wide pattern in every enemy AI — not a per-enemy finding.
 
+**Scope warning added 2026-09-08:** everything above is World 1 / `CulDeSac_*` architecture. **World 2 (`Backyard_Dojo`) is built the opposite way** — scene-authored static geometry with real, non-inert batching flags — so the runtime-spawned/inert-flags reasoning does not transfer. See [[reference-world2-perf-shape]] before applying any of this to World 2.
+
 See [[reference-perf-budgets]] and [[feedback-evidence-standard]].

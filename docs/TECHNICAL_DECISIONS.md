@@ -171,7 +171,9 @@ Rejected: tuning the distance again (provably impossible); the boss at arena cen
 | SRP Batcher | Enabled (`m_UseSRPBatcher: 1`) | Per-instance `Material` copies still batch; **`MaterialPropertyBlock` breaks batching** |
 | MSAA | Disabled (`m_MSAA: 1`) | Revisit — aliasing is more visible at the closer camera |
 | Shadow atlas | 256×256 | Very tight; see `docs/BACKLOG.md` B17 |
-| Platforms | iOS + Android, landscape only | Owner performs all final builds |
+| Platforms | iOS + Android, landscape only (both holds — `AutoRotation`) | Owner performs all final builds. Was locked `LandscapeRight`-only with both autorotate flags inertly enabled; corrected 2026-09-08 (owner decision) so the existing flags actually take effect |
+| Bundle identifier | `com.boxforged` (Android + iOS) | Owner decision 2026-09-08. Was `com.theunboxedheroes` (podcast-brand ID, mismatched product/company name) — changed before any store upload, since this becomes permanent afterward. Android keystore alias (`unboxedheroes`) is unaffected; bundle ID and keystore alias do not need to match |
+| Target frame rate | 60 FPS (removed an undocumented `Application.targetFrameRate = 30` cap in `GameManager.cs`) | Owner decision 2026-09-08, resolving `docs/BACKLOG.md` **B112**'s open question. Confirms `docs/TECHNICAL_DESIGN.md` §3.1's documented 60 FPS target was correct and the cap was stale. On-device numbers already measured over budget (205 draw calls, ~357k triangles) predate this change and World 2 content — a fresh on-device profiling pass is required, not yet run |
 | Language | C#, `Boxhead.*` namespaces | Legacy root; do not rename opportunistically |
 | Assemblies | One (`Assembly-CSharp`) + trivial `StatSystem.asmdef` | No test assemblies exist |
 

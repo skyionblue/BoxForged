@@ -1,9 +1,17 @@
 # BoxForged — On-Device Performance Profiling Checklist (iOS)
 
 - **Status:** Operational checklist. Executable by the owner without further engineering support.
-- **Date:** 2026-08-27
-- **Scope:** `CulDeSac_WildWestCity` (World 1, all three zones) on a physical iPhone.
-- **Authority:** This document **invents no budgets and changes none**. Every budget referenced here is quoted from `docs/TECHNICAL_DESIGN.md` §3.2 / §3.3 / §3.1 or `docs/adr/0004-world1-single-continuous-scene.md` §8, and the source is named on every line. `docs/TECHNICAL_DESIGN.md` §3.7 remains the authoritative statement of *the protocol*; this document is the step-by-step *execution* of that protocol.
+- **Date:** 2026-08-27 · World 2 scenarios added 2026-09-08
+- **Scope:** **Both team-built worlds** on a physical iPhone — `CulDeSac_WildWestCity` (World 1, three zones, scenarios **S1–S4**) and `Backyard_Dojo` (World 2, three zones, Crane Duelist and the Grasscutter boss, scenarios **S5–S9**).
+
+**Stale as of 2026-09-08 — re-run before trusting any number below.** Two things changed since the 2026-08-27 session:
+
+1. **The undocumented 30 FPS cap is gone.** §7's "Deliberate 30 FPS cap" finding was acted on — `Application.targetFrameRate` is now `60` (`Core/GameManager.cs:105`, with `QualitySettings.vSyncCount = 0` at `:104`). **Every frame-time number captured under the old cap is not comparable to anything measured now**, and the ~33 ms figure in the 2026-08-27 table is the cap, not a budget failure. Treat that whole session as a World-1, 30-FPS-cap baseline, not a current result. See `docs/BACKLOG.md` B112 and `docs/TECHNICAL_DECISIONS.md` §Engine and pipeline.
+2. **World 2 is now covered, but has never been measured.** `Backyard_Dojo` (three zones, `CraneDuelistAI`, `GrasscutterAI`) shipped after this checklist was written. Scenarios **S5–S9** (§1.1) and results sections **H–O** (§7.1) were added 2026-09-08 to cover it. **They are all blank — no World 2 number of any kind has ever been captured on a device.** The World 1 rows above them are stale; the World 2 rows below them are empty. Neither is a current result.
+
+**Read §1.1 before scheduling a World 2 session.** There is currently no working in-game route from World 1 to World 2 in a device build, which changes how S5–S9 have to be reached and makes S9 unrunnable as written.
+
+- **Authority:** This document **invents no budgets and changes none**. Every budget referenced here is quoted from `docs/TECHNICAL_DESIGN.md` §3.2 / §3.3 / §3.1, `docs/adr/0004-world1-single-continuous-scene.md` §8, or — for World 2 — `docs/adr/0005-world2-single-continuous-scene.md` §3 and `docs/adr/0006-world2-zone-scale-and-arena-metric.md` §5.1, and the source is named on every line. `docs/TECHNICAL_DESIGN.md` §3.7 remains the authoritative statement of *the protocol*; this document is the step-by-step *execution* of that protocol.
 
 ---
 
@@ -43,6 +51,43 @@ S1 and S2 both happen inside one playthrough, so a single run can produce both. 
 
 ---
 
+## 1.1 World 2 scenarios (`Backyard_Dojo`) — read this whole subsection before building
+
+Zone structure is fixed by `docs/adr/0005-world2-single-continuous-scene.md` §1 and the dimensions by `docs/adr/0006-world2-zone-scale-and-arena-metric.md` §1/§3. Rosters below are read from the shipped `RoomDataSO` assets, **not** from either ADR — ADR-0006 §3.4's indicative roster is a worked example that predates the built data and does not match it (it lists 7 spawns including two Leaf Pile Lurkers; the Lurker was cut from World 2 on 2026-09-02, `docs/SPRINT.md` §Sprint 1 scope). Trust the assets.
+
+| ID | Scenario | What it exercises | Zone data asset |
+|---|---|---|---|
+| **S5** | Full clear of **Zone 0 "The Back Gate / Dojo Courtyard"** — 5 spawns, all Gnome Grunt, `maxConcurrentEnemies` **4** | First combat, first NavMesh use after the runtime bake, whole-yard residency at its cheapest character load | `RoomData_Backyard_Dojo_Zone0.asset` |
+| **S6** | Full clear of **Zone 1 "Garden Gauntlet"** — 6 spawns, `maxConcurrentEnemies` **4**, mixed roster: 4 Gnome Grunt + 1 Skeptic Grunt + 1 **Crane Duelist** | **The CPU/character peak of World 2.** Three distinct enemy types, four live at once, in the yard's most heavily dressed zone (shed, koi pond, engawa) | `RoomData_Backyard_Dojo_Zone1.asset` |
+| **S7** | **Boss fight — Zone 2 "The Garden End — Blossom Court"** vs the **Grasscutter**. `spawnPoints` is empty, `maxConcurrentEnemies` **1**, `bossOwnedWin: 1` — boss only, no regular enemies | Boss intro cinematic (authored vantage camera, ADR-0008), the ground-plane Spin-Dash lane telegraph (ADR-0007/B118), Cut-Grass Trail hazard pool, largest single character in the scene | `RoomData_Backyard_Dojo_Zone2.asset` |
+| **S8** | **One continuous 15-minute World 2 run**, app never backgrounded: Zone 0 → Zone 1 → Zone 2 → death or win, then keep playing/idling to 15 minutes | Thermal throttling in World 2. Same acceptance criterion as S4, different scene | — |
+| **S9** | **Both worlds in one continuous session** — World 1 start to finish, then World 2 start to finish, without relaunching the app | Cross-scene residency: whether unloading `CulDeSac_WildWestCity` actually returns its memory before `Backyard_Dojo` loads, and whether a second scene load's runtime NavMesh bake behaves like the first | — **currently unrunnable, see below** |
+
+**S6 is the scenario that matters most for CPU and draw calls in World 2**, and it is the direct analogue of World 1's S2. Note that **World 2's zone 0 also caps at 4** (unlike World 1's zone 0, which caps at 3), so S5 is not a "warm-up" scenario the way S1 is — it hits the same peak-live-enemy budget. S6 still wins on cost because it adds two enemy types and the yard's densest dressing. If you only have time for one World 2 combat capture, capture S6.
+
+S5, S6 and S7 all happen inside one playthrough, so a single run can produce all three. S8 is a separate, longer run with a different tool (Pass B).
+
+### S9 is blocked: there is no in-game route from World 1 to World 2 in a device build
+
+This was found while writing this section, on 2026-09-08, and it is **not** currently in `docs/BACKLOG.md` or `docs/SPRINT.md`. It is a functional defect, not a performance one, but it directly gates this checklist so it is recorded here.
+
+`GameManager.ZoneStartScene[1]` was corrected to `"Backyard_Dojo"` by ADR-0005 §7 (`Core/GameManager.cs:38`), and `docs/ARCHITECTURE.md` §5 divergence 11, `docs/BACKLOG.md` line 167 and `docs/TECHNICAL_DESIGN.md` §Divergences all record zone 1 as "reachable now" on the strength of that. **Nothing reads it.** The two paths that could:
+
+| Path | What it actually does |
+|---|---|
+| Beat the World 1 boss → run-end → **Continue** | `MetaScreen.OnContinue()` (`UI/MetaScreen.cs:78-87`) calls `GameManager.Restart()`, which loads `ZoneStartScene[0]` — deliberately, per its own comment. It never advances a zone |
+| Beat the World 1 boss → **World Map** → zone-1 node | `WorldMapScreen.OnTownSquareSelected()` (`UI/WorldMapScreen.cs:117`) is hardcoded to `OnZoneSelected("TownSquare_Room1")` — a scene that has never existed and was removed from `EditorBuildSettings.asset` on 2026-08-27. The adjacent comment at `:114-115` explicitly says "Do not hardcode a scene name here" |
+
+The node *does* unlock — `GameManager` sets `highestZoneReached = 1` on a zone-0 win (`:494-502`) and `WorldMapScreen:101` enables the button at `>= 1` — so on device the button becomes live and then throws `Scene 'TownSquare_Room1' couldn't be loaded` on tap, stranding the player. A one-line change to `ZoneStartScene[1]` would fix it, but **that is a code change and is out of scope for this document.** Route it to `unity-gameplay-engineer`.
+
+**Consequences for this checklist:**
+
+- **S9 cannot be run** until that is fixed. Leave §7 section **N** blank and record "blocked — no in-game route" rather than substituting a relaunch, which would measure a different thing (a relaunch resets the whole process; the question S9 asks is specifically whether a *scene* unload returns its memory).
+- **S5–S8 need `Backyard_Dojo` to launch directly.** The practical way to do that without touching code is to make it the first enabled entry in the build's scene list — it is currently index **2** of three (`ProjectSettings/EditorBuildSettings.asset:15`, enabled). Reordering it to index 0 changes what the app boots into, so **note it in the session record and put it back afterwards**; a release build must launch into `CulDeSac_WildWestCity`. Do not delete any entry.
+- Because the app then boots straight into World 2, every S5–S8 capture is a **cold-start-into-World-2** measurement. That is the right thing to measure for S5–S8 and it is *not* the same as arriving in World 2 after a World 1 run — which is the gap S9 exists to close, and which stays unmeasured.
+
+---
+
 ## 2. Step 0 — Prepare the build (5 minutes, in Unity)
 
 ### 2.1 Development Build and Autoconnect Profiler are already ON — but the change is not committed
@@ -66,14 +111,17 @@ Confirm visually before you build:
 
 ### 2.2 Note what is in the scene list
 
-The iOS profile uses the global scene list (`m_OverrideGlobalSceneList: 0`), which currently contains **two** enabled scenes:
+The iOS profile uses the global scene list (`m_OverrideGlobalSceneList: 0`), which as of 2026-09-08 contains **three** enabled scenes (`ProjectSettings/EditorBuildSettings.asset:8-16`):
 
-| Index | Scene | Enabled |
-|---|---|---|
-| 0 | `Assets/_Project/Scenes/CulDeSac_WildWestCity.unity` | ☑ |
-| 1 | `Assets/_Project/Scenes/WeaponGripTest.unity` | ☑ |
+| Index | Scene | Enabled | Note |
+|---|---|---|---|
+| 0 | `Assets/_Project/Scenes/CulDeSac_WildWestCity.unity` | ☑ | World 1. Launches by default |
+| 1 | `Assets/_Project/Scenes/WeaponGripTest.unity` | ☑ | dev-only validation scene |
+| 2 | `Assets/_Project/Scenes/Backyard_Dojo.unity` | ☑ | World 2 |
 
 `WeaponGripTest` is a validation scene, not shipped content. It does not affect frame time (it is never loaded), but **it and its referenced assets are included in the build**, so it inflates any download-size measurement. When you measure download size in §5.3, record whether it was still in the list. Do not remove it as part of this profiling pass — that is a separate decision.
+
+**`Backyard_Dojo` is at index 2, and nothing in the game loads it (§1.1).** For a World 2 session you will need to drag it to the top of this list so the app boots into it. That is a temporary profiling change: record it in the session record, and drag `CulDeSac_WildWestCity` back to index 0 when you are done. Note also that World 2's presence in the list is new since the 2026-08-27 download-size context — its assets are in the build now and were not then, so **the download-size number is expected to have grown independently of anything else**.
 
 ### 2.3 Raise the Profiler frame buffer
 
@@ -139,6 +187,22 @@ For each measurement below, take the value at the **worst frame in the scenario*
 
 **Interpretation note, already recorded in TDD §3.6:** this project's `Mobile_RPAsset` has `m_UseSRPBatcher: 1` and `m_SupportsDynamicBatching: 0`. The SRP Batcher makes each draw call *cheaper on the CPU* but does **not reduce the draw-call count**. So if Draw Calls is over 100, the fix is fewer renderers (or static batching), not "turn on batching" — it is already on.
 
+#### World 2 — the flagged headline draw-call risk: 47 identical stockade wall modules
+
+**Take the Draw Calls Breakdown sub-panel for S5, S6 and S7, not just the total.** The Rendering module's breakdown splits the count into `SRP Batcher / BRG / Standard Instanced / Standard`, and for World 2 that split is the whole question.
+
+`Backyard_Dojo.unity` contains **47 `BD01_WallModule` prefab instances** (counted in the scene file: 45 named `BD01_WallModule` plus `(1)` and `(2)`). They are the bamboo stockade, they are the same prefab drawn from the same shared atlas material, and they are present in every one of S5–S8 regardless of which zone you are standing in, because the yard is one continuous scene (ADR-0005 §1).
+
+Why this is the number to watch:
+
+- **Against a whole-scene budget of < 100 draw calls (TDD §3.2, restated ADR-0005 §3), 47 identical wall modules is ~47% of the budget spent on one prop** — before a single character, pickup, prop or HUD element is drawn.
+- **ADR-0006 §5.1 predicted exactly this and budgeted a fix that was not built.** Its table reads *"BD-01 module count = worst-case draw calls with no batching: 47 naive → 35 with §5.2"*, where §5.2 is a long `BD-01-Long` wall variant that refunds the module count. `docs/BACKLOG.md` B116's own completion note lists **"BD-01-Long as finished art"** under *Not built* — the walls are tiled with standard X-scaled BD-01 placeholders instead. So the built scene is at the 47 the ADR called the worst case, not the 35 it budgeted.
+- **This is simultaneously the best instancing candidate in the project.** ADR-0005 §3 granted World 2's single-scene architecture partly on the argument that the dojo kit is *"many instances of few materials, which is the case GPU instancing and the SRP Batcher exist to serve"*, and made *"verify a non-zero SRP Batcher or Instanced draw-call count on device"* an explicit condition. World 1 measured `SRP Batcher: 0, Standard: 204` (§7, 2026-08-27). **If World 2's breakdown also reads `SRP Batcher: 0, Standard Instanced: 0`, then the central performance premise of ADR-0005 §3 is false and the ADR's own condition has failed** — that is a much more important finding than the total, and it is only visible in the breakdown.
+
+Record the breakdown verbatim for each of S5/S6/S7, and record the number separately with the player standing where the fewest wall modules are on screen versus the most — frustum culling should move this number a lot, and if it does not, culling is the finding.
+
+**Also record `Batches Count` against `Draw Calls Count` for World 2 specifically.** ADR-0006 §5.1 budgets **≤ 20 distinct ENV materials** for the whole yard and estimates the built layout at 13. That budget exists to make batching possible; if SetPass Calls comes back near the draw-call count anyway, the material count is not the thing blocking it.
+
 ### 4.2 Enemy HUD draw calls → §3.3
 
 Budget (TDD §3.3): **≤ 2 draw calls per enemy, ≤ 20 total.**
@@ -150,6 +214,8 @@ This one needs a small bit of arithmetic rather than a single counter:
 3. The difference, divided by 4, is roughly the per-enemy HUD + character cost. Write down all three numbers, not just the result.
 
 Pass if the total attributable to enemy HUD stays ≤ 20 draw calls. `Enemy/EnemyHealthBar.cs:181,196` creates two `new Material` instances per enemy at runtime, which is exactly the cost this budget was written to bound.
+
+**World 2 (S6):** do the same subtraction in Zone 1 with 4 enemies alive. Zone 1's roster is **4 Gnome Grunt + 1 Skeptic Grunt + 1 Crane Duelist** (`RoomData_Backyard_Dojo_Zone1.asset`), and because `RoomManager` spawns a contiguous window of the array in order (ADR-0006 §2.1), the live set that includes the Crane Duelist is the window `{1,2,3,4}` — one Gnome, the Skeptic, one Gnome, the Crane. Take the 4-alive sample from that window if you can, because it is the most *distinct* four characters the zone can put on screen at once and therefore the worst case for per-enemy material instancing. Note in the record which four were alive; that is the "scenario" half of Rule 1 for this measurement.
 
 ### 4.3 CPU main thread and render thread → §3.1
 
@@ -201,6 +267,17 @@ Budget (TDD §3.3): **< 150 MB per room, steady state.** TDD §3.4 flags this as
 
 Take this sample **once per zone** (Zone 0, Zone 1, Zone 2) if you can. Because this is one continuous scene, the number should barely change between zones — if it does change a lot, that is itself an interesting finding worth writing down.
 
+#### World 2 — take the same samples, and expect the boss to be resident the whole time
+
+Same procedure, same < 150 MB budget (TDD §3.3, restated per-scene by ADR-0005 §3), sampled in each of Zone 0, Zone 1 and Zone 2.
+
+Two things to know before you read the number:
+
+- **The Grasscutter is loaded from the moment the scene loads, in all three zones.** `pfb_enemy_grasscutter` is a pre-placed scene instance (ADR-0006 §1.4 "Boss dormancy, pre-placed inactive"; the prefab is referenced in `Backyard_Dojo.unity`), and `ZoneDirector` only forces it *inactive* — an inactive `GameObject` still has its meshes and textures loaded. So the boss's texture cost is in the Zone 0 sample too, and the three per-zone numbers should be close. TDD §3.4 records `Grasscutter_BaseColor.png` at **30.9 MB** on disk, one of the three largest source textures in the project, so this is not a rounding error. If Zone 0's number is much *lower* than Zone 2's, something is streaming that the architecture does not think is streaming — write it down.
+- **Only one boss is resident, not two.** World 1 and World 2 are separate top-level scenes and are never loaded together (§1.1), so `pfb_enemy_spincycle` does not appear in `Backyard_Dojo.unity` — confirmed, zero references. Do not budget World 2 as "two bosses' worth of assets"; it is one, and `SpinCycle_BaseColor.png` (29.3 MB, TDD §3.4) is not part of World 2's residency. The cross-scene question — whether World 1's textures are actually *released* when `Backyard_Dojo` loads after it — is what S9 was written to answer, and S9 is blocked (§1.1).
+
+ADR-0006 §5.1 records texture memory as **unchanged** by World 2's layout work on the grounds that it adds no new texture, and World 1 measured 41.2 MB against the 150 MB budget. That is real headroom and the expectation is a pass — which is exactly why a **fail** here would be worth a great deal. It would mean the headroom ADR-0005 §3 spent World 2's whole-scene budget against was not there.
+
 ### 4.6 Scene-start hitch → ADR-0004 §8
 
 Budget (ADR-0004 §8): **≤ 500 ms scene-start hitch, including the runtime NavMesh bake.**
@@ -210,6 +287,18 @@ Budget (ADR-0004 §8): **≤ 500 ms scene-start hitch, including the runtime Nav
 3. Read its total frame time in ms.
 
 Pass if ≤ 500 ms. Look in the **Hierarchy** view of that frame for NavMesh-related rows to see how much of it is the bake.
+
+#### World 2 — this is where the hitch is most likely to fail, and the reason is already tracked
+
+Same budget, same procedure, run on the `Backyard_Dojo` cold start. Three facts make World 2's bake structurally more expensive than World 1's, and all three are inspected-certain from the code and the backlog rather than estimated:
+
+1. **The Editor-baked NavMesh is thrown away at runtime.** `Systems/LevelBuilder.cs:73-96` defers one frame, then calls `NavMesh.RemoveAllNavMeshData()` and re-bakes with a runtime `NavMeshSurface` using `collectObjects = All` and `useGeometry = PhysicsColliders`. So `docs/BACKLOG.md` B122's Editor bake (fixed 2026-09-01, 1 139 verts / 485 tris / 1 216.1 m²) is **not what runs on device** — it is discarded on the second frame of every run. The B122 figures are a good *prediction* of the runtime bake's size, not a measurement of it.
+2. **The bake surface has no bounds and is far larger than the playable area — `docs/BACKLOG.md` B128.** `Ground` is a single 66.6 × 66.6 m plane and the court walls are only 2.4 m tall obstacles standing on it, so the bake produces 1 216 m² of walkable surface against roughly 318 m² of playable Blossom Court, including a continuous walkable ring outside the arena wall. B128 files this as a pathing and minor-memory issue at P3. **It is also a scene-start-hitch input, and that is not currently recorded anywhere** — bake cost scales with the area being voxelised, and World 2 is voxelising an area several times its playable footprint. If the ≤ 500 ms hitch budget fails in World 2 and passes in World 1, B128 is the first place to look, and its priority is probably wrong.
+3. **ADR-0005 claimed this as a win.** §Consequences lists *"One runtime NavMesh bake per run instead of three-to-five"* as a positive of the single-scene decision. That is true of the *count*; it says nothing about the cost of the one bake that remains, which has never been measured in either world.
+
+**Record the NavMesh rows separately from the total frame time** for World 2, so the bake's share is attributable. In a Development Build the bake also logs its own result — `[LevelBuilder] Runtime NavMesh baked: N verts, M tris` (`LevelBuilder.cs:108`, `UNITY_EDITOR || DEVELOPMENT_BUILD` only). **Copy that line into the session record.** Comparing its vert/tri count against B122's Editor-bake figures is the cheapest available check on whether the runtime bake is covering the same geometry, and it costs you nothing but reading the device console.
+
+**One measurement-interpretation caveat, flagged not resolved.** B127 records that the scene's 8 `NavMeshModifier` components are inert *"because the scene uses the legacy bake"* and concludes six court props carve permanent navmesh holes. That analysis is about the **Editor** bake. The runtime bake described above is a `NavMeshSurface`, which is the workflow `NavMeshModifier` belongs to — so the two bakes may not agree about those six props, and the runtime one is the one that ships. This does not change any number you are asked to record and it is **not** a performance finding; it is a note that B127's conclusion may be scoped to a bake that never runs on device. Route it to `technical-director` alongside B127; do not act on it here.
 
 ### 4.7 Telegraph indicators → §3.3
 
@@ -221,6 +310,20 @@ This is checked structurally, not by a counter:
 2. Pass if telegraph wind-ups produce **no repeated instantiation allocations** — the pool should be created once.
 
 **Configuration note to record, not a budget change:** `AttackTelegraphService._poolSize` currently defaults to **8**, below the ≤ 12 budget ceiling. That is legal (the budget is a maximum, not a requirement) and the service recycles the oldest indicator when the pool is exhausted rather than allocating. But if you see telegraph indicators visibly *disappearing early* during a busy S2 fight, the pool size is why — note it and it can be raised toward 12 without breaking the budget.
+
+#### World 2 — two telegraph geometries now share the ADR-0003 channel, plus the Cut-Grass Trail
+
+Run the same check during **S6** (4 enemies, and the Crane Duelist is a telegraph-driven duellist with a counter window, so it is telegraph-heavy by design) and **S7** (boss).
+
+Three World-2-specific things to watch for, all against the same "pooled, no per-wind-up instantiation" criterion:
+
+| Watch for | Source | Note |
+|---|---|---|
+| **Ground-plane Spin-Dash lane** allocations during the boss's 0.9 s rev | `docs/adr/0007-ground-plane-lane-telegraph.md`; `docs/BACKLOG.md` B118 | ADR-0007 added a *second* telegraph geometry (a world-space ground lane) to ADR-0003's channel, alongside the existing overhead billboard. B118 reports it as zero-allocation **by construction** — `RaycastNonAlloc` into a preallocated buffer, no per-dash `new`/`Instantiate` — and explicitly labels that a code-review-level claim, not a measured one, because the live scene's Profiler reading was too noisy to attribute. **This capture is the measurement B118 says it does not have.** |
+| **Cut-Grass Trail hazard** allocations | ADR-0005 §4; ADR-0006 §1.2 | Both ADRs require these pooled with zero per-frame allocation. Never profiled |
+| Whether the boss's overhead billboard and the ground lane are both drawn | ADR-0007 | Two geometries, one channel — count them against the ≤ 12 concurrent ceiling together, not separately |
+
+**Do not treat a S7 pass here as discharging ADR-0006 §Validation 10.** That validation is about whether the lane telegraph is *readable* from the far rim of a 20 m arena by a human — the condition ADR-0006 §1.3 granted the arena size on, still open in `docs/SPRINT.md` §Sprint 1. This checklist measures whether the telegraph *allocates*. Those are different questions and passing one says nothing about the other. Note both verdicts separately in the record so nobody later reads a green allocation row as the arena being accepted.
 
 ### 4.8 Physics and animation (no numeric budget — record only)
 
@@ -240,8 +343,10 @@ The Unity-generated Xcode project's **Profile** action already builds in a relea
 
 1. In Xcode, with `Unity-iPhone.xcodeproj` open and the device selected as the run destination: **Product → Profile** (⌘I).
 2. Instruments opens with a template chooser. Choose **Game Performance**. (If your Xcode does not offer it, choose **Metal System Trace**.)
-3. Click the red **record** button. Play scenario **S2**, then **S3**.
+3. Click the red **record** button. Play scenario **S2**, then **S3**. For a World 2 build, play **S6**, then **S7**.
 4. Stop recording.
+
+> **The 60 FPS target is new since this section was written.** Under the old 30 FPS cap a GPU frame time of 20 ms still hit the cap; it no longer does. Everything below is now judged against 16.6 ms for real, in both worlds. This is the single biggest reason the 2026-08-27 numbers cannot be carried forward.
 
 | Read this track | Budget | Source | Pass if |
 |---|---|---|---|
@@ -290,7 +395,7 @@ If Pass A showed a CPU cost you cannot attribute to a function, rebuild once wit
 
 ---
 
-## 6. Step 4 — The thermal run (S4). This is the acceptance criterion.
+## 6. Step 4 — The thermal run (S4 for World 1, S8 for World 2). This is the acceptance criterion.
 
 TDD §3.1: *"Run length 10–15 minutes, which makes sustained thermal behaviour, not peak frame time, the real acceptance criterion."* TDD §3.7 item 3: record **frame time at minute 1 versus minute 12**.
 
@@ -317,11 +422,24 @@ The distinguishing feature is **gradual and non-recovering while under load**. W
 
 **If it fails:** TDD §3.4 names the most likely cause and it is already on the backlog — sampling 2048² textures for props that occupy 40 screen pixels destroys cache coherency and burns memory bandwidth continuously. Memory bandwidth is the primary driver of sustained throttling. Go to §8 before changing anything.
 
+### S8 — the same run in World 2
+
+Identical procedure, on a build whose scene list boots into `Backyard_Dojo` (§2.2). Zone 0 → Zone 1 → Zone 2, 15 minutes continuous foreground, same six timestamped marks, same fail patterns.
+
+**Run S8 as a separate session from S4 and record it separately.** Two reasons, both about not contaminating the one measurement that decides the release:
+
+- **Thermal state carries across scenes but not across a cool-down.** If you play World 1 for 15 minutes and then immediately start World 2, minute 1 of S8 begins on an already-hot phone and its whole curve is displaced. That would not measure World 2; it would measure a warm start. Let the device return to room temperature between S4 and S8, and note the gap.
+- **A relaunch between them is not S9.** Running S4, quitting, relaunching into World 2 and running S8 is two clean single-world runs, which is what you want. It is *not* the both-worlds-in-one-session test — that is S9, and S9 is blocked (§1.1). Do not record a S4-then-relaunch-then-S8 pair as if it answered S9.
+
+**What is different about World 2's thermal risk, and what is the same.** The same texture-bandwidth mechanism from TDD §3.4 applies unchanged. What is genuinely different is that ADR-0005 §3 accepted World 2's single-scene architecture on a *hypothesis* — that the dojo's shared-atlas kit would be cheaper on draw calls and triangles than World 1's ten unique buildings — and ADR-0005 §Negative states it plainly: *"'cheaper' is a hypothesis until profiled."* S8's minute-1-vs-minute-12 pair is the first evidence either way, and if World 2 throttles where World 1 does not, the §4.1 wall-module breakdown is where the explanation will be.
+
 ---
 
 ## 7. Results template — record here
 
 Copy this block for each profiling session and fill it in. Append new sessions below; do not overwrite old ones — the point is to be able to compare a later run against an earlier one.
+
+The **Session record** block below is used for either world. **Sections A–G are World 1 (`CulDeSac_WildWestCity`, S1–S4); sections H–O are World 2 (`Backyard_Dojo`, S5–S9) and live in §7.1.** Fill in the set that matches the world you actually played, and leave the other set alone — a half-filled table from the wrong world is worse than an empty one.
 
 ### Session record
 
@@ -332,7 +450,12 @@ Device model:            ____________________  (iOS version: __________)
 Device class vs budget:  ☐ 3–4-year-old (target class)  ☐ NEWER than target — results are a LOWER BOUND only (Rule 2)
 Build type:              ☐ Development Build (Pass A)   ☐ Release, non-development (Pass B)
 Orientation:             landscape          Screen brightness: ______   Charging: ☐ no ☐ yes (invalidates thermal)
-Scene:                   CulDeSac_WildWestCity
+World / scene:           ☐ World 1 — CulDeSac_WildWestCity (S1–S4)
+                         ☐ World 2 — Backyard_Dojo (S5–S8)
+                         ☐ Both in one session (S9 — blocked, see §1.1; do not tick unless the route was fixed)
+Target frame rate:       ☐ 60 (GameManager.cs:105, current)   ☐ 30 (pre-2026-09-08 cap — say so, numbers are not comparable)
+Scene list at build:     index 0 = ______________  · WeaponGripTest still enabled? ☐ yes ☐ no
+                         (World 2 sessions need Backyard_Dojo dragged to index 0 — §2.2. Put it back afterwards)
 Tool(s):                 ☐ Unity Profiler  ☐ Xcode Instruments (template: ____________)  ☐ Xcode debug gauges
 Notes / anything unusual:
 ```
@@ -452,6 +575,136 @@ Thermal verdict (TDD §3.3 — no sustained frame-time regression across a full 
 
 ---
 
+## 7.1 Results template — World 2 (`Backyard_Dojo`, S5–S9)
+
+**Nothing below has ever been measured.** Sections A–G above are World 1 and carry one stale 2026-08-27 capture; sections H–N are World 2 and are empty. Same rules apply — Rule 1 (scenario + device), Rule 2 (a newer phone gives a lower bound, not a pass), Rule 3 (Pass A for counts, Pass B for the frame-time and thermal verdict).
+
+Budget sources differ slightly from World 1's: TDD §3.1/§3.2/§3.3 still own the frame-time, draw-call, triangle, texture and download budgets, but the **whole-scene** restatement and World 2's two extra rows come from `docs/adr/0005-world2-single-continuous-scene.md` §3 and `docs/adr/0006-world2-zone-scale-and-arena-metric.md` §5.1. Each row names its own source, as always.
+
+### H. Frame time and threads — World 2
+
+| Measurement | Scenario | Budget | Source | Measured | Verdict |
+|---|---|---|---|---|---|
+| Frame time, worst (release build) | S5 Zone 0 | ≤ 16.6 ms (60 FPS) | TDD §3.1 | | ☐ pass ☐ fail |
+| Frame time, worst (release build) | S6 Zone 1 | ≤ 16.6 ms (60 FPS) | TDD §3.1 | | ☐ pass ☐ fail |
+| Frame time, worst (release build) | S7 boss | ≤ 16.6 ms (60 FPS) | TDD §3.1 | | ☐ pass ☐ fail |
+| CPU Main Thread, worst | S6 | — (dev-build inflated) | TDD §3.7 | | record |
+| CPU Render Thread, worst | S6 | — (dev-build inflated) | TDD §3.7 | | record |
+| GPU frame time, worst | S6 | must fit in 16.6 ms | TDD §3.1 | | ☐ pass ☐ fail |
+| GPU frame time, worst | S7 boss | must fit in 16.6 ms | TDD §3.1 | | ☐ pass ☐ fail |
+| Top CPU function, worst frame | S6 | — | — | | record name + ms |
+| Top CPU function, worst frame | S7 boss | — | — | | record name + ms |
+| `Physics` / `Animator` / `NavMesh` row cost, worst frame | S6 | — record only (§4.8) | — | | record |
+
+### I. Rendering — World 2
+
+| Measurement | Scenario | Budget | Source | Measured | Verdict |
+|---|---|---|---|---|---|
+| Draw Calls Count, worst | S5 Zone 0 (4 enemies) | < 100 whole scene | TDD §3.2 / ADR-0005 §3 | | ☐ pass ☐ fail |
+| Draw Calls Count, worst | S6 Zone 1 (4 enemies) | < 100 whole scene | TDD §3.2 / ADR-0005 §3 | | ☐ pass ☐ fail |
+| Draw Calls Count, worst | S7 boss | < 100 whole scene | TDD §3.2 / ADR-0005 §3 | | ☐ pass ☐ fail |
+| **Draw Calls Breakdown** — `SRP Batcher` | S6 | **must be non-zero** | ADR-0005 §3 (explicit condition) | | ☐ pass ☐ **fail** |
+| **Draw Calls Breakdown** — `Standard Instanced` | S6 | (non-zero here also satisfies the condition) | ADR-0005 §3 | | record |
+| **Draw Calls Breakdown** — `Standard` | S6 | — record | ADR-0005 §3 | | record |
+| Draw calls, most wall modules on screen | S5/S6 | — record (§4.1) | — | | (a) |
+| Draw calls, fewest wall modules on screen | S5/S6 | — record (§4.1) | — | | (b) |
+| Frustum-culling delta = (a−b) | — | — | — | | record — near-zero means culling is the finding |
+| SetPass Calls Count, worst | S6 | — record | TDD §3.7 | | record |
+| Batches Count, worst | S6 | — record | — | | record |
+| Distinct ENV materials in scene | any | **≤ 20** | ADR-0006 §5.1 (est. 13) | | ☐ pass ☐ fail |
+| Total Triangles, worst | S6 | < 300k whole scene | TDD §3.2 / ADR-0005 §3 | | ☐ pass ☐ fail |
+| Total Triangles, worst | S7 boss | < 300k whole scene | TDD §3.2 / ADR-0005 §3 | | ☐ pass ☐ fail |
+| Total Vertices, worst | S6 | — record | — | | record |
+| Draw calls, 4 enemies alive (window `{1,2,3,4}`) | S6 | — | — | | (c) |
+| Draw calls, 0 enemies alive | S6 | — | — | | (d) |
+| Enemy HUD draw calls = (c−d) | S6 | ≤ 2/enemy, ≤ 20 total | TDD §3.3 | | ☐ pass ☐ fail |
+| Which 4 enemies were alive for (c) | S6 | — | — | | record names |
+| Shadow-pass GPU cost | S6 | target shadow distance 25 m | TDD §3.3 | | record |
+
+> ADR-0006 §5.1's own estimate for the built layout is **~122,600 triangles**, 41% of the 300k budget, and it flags draw calls as *"not guaranteed by layout — gated on B112."* If the measured triangle count is far above ~122,600, the layout estimate and the built scene have diverged and that is worth a note of its own.
+
+### J. Memory — World 2
+
+| Measurement | Scenario | Budget | Source | Measured | Verdict |
+|---|---|---|---|---|---|
+| Texture2D total (detailed sample) | Zone 0 | < 150 MB whole scene | TDD §3.3 / ADR-0005 §3 | | ☐ pass ☐ fail |
+| Texture2D total (detailed sample) | Zone 1 | < 150 MB whole scene | TDD §3.3 / ADR-0005 §3 | | ☐ pass ☐ fail |
+| Texture2D total (detailed sample) | Zone 2 boss | < 150 MB whole scene | TDD §3.3 / ADR-0005 §3 | | ☐ pass ☐ fail |
+| Zone 2 minus Zone 0 delta | — | expected ≈ 0 (boss is resident from load, §4.5) | ADR-0006 §1.4 | | record — a large delta is a finding |
+| Graphics & Graphics Driver total | Zone 1 | — cross-check | TDD §3.7 | | record |
+| Top 10 textures by size | any | — feeds BACKLOG B1 | TDD §3.4 | | list separately |
+| Peak process memory (Xcode gauge) | S8 | — record | TDD §3.7 | | record |
+
+### K. Allocation — World 2
+
+| Measurement | Scenario | Budget | Source | Measured | Verdict |
+|---|---|---|---|---|---|
+| GC Alloc / frame, walking, nothing happening | S5/S6 idle | **zero** | TDD §3.2 | | ☐ pass ☐ fail |
+| GC Alloc / frame, worst combat frame | S6 | zero steady state | TDD §3.2 | | ☐ pass ☐ fail |
+| Highest-allocating function (if any) | S6 | — | — | | record name + bytes |
+| Telegraph wind-up allocations, Crane Duelist | S6 | pooled, no per-wind-up instantiation | TDD §3.3 / ADR-0003 | | ☐ pass ☐ fail |
+| **Spin-Dash ground-lane telegraph allocations** | S7 boss | zero per dash | ADR-0007; B118 (claimed, never measured) | | ☐ pass ☐ fail |
+| **Cut-Grass Trail hazard allocations** | S7 boss | pooled, zero per-frame | ADR-0005 §4; ADR-0006 §1.2 | | ☐ pass ☐ fail |
+| Concurrent telegraph indicators, both geometries | S6 + S7 | ≤ 12 | TDD §3.3 / ADR-0003 | | ☐ pass ☐ fail |
+
+### L. Loading and packaging — World 2
+
+| Measurement | Scenario | Budget | Source | Measured | Verdict |
+|---|---|---|---|---|---|
+| Scene-start hitch (incl. runtime NavMesh bake) | `Backyard_Dojo` cold load | ≤ 500 ms | ADR-0004 §8, restated ADR-0005 §3 | | ☐ pass ☐ fail |
+| — of which NavMesh rows | same frame | — record (§4.6) | — | | record ms |
+| `[LevelBuilder] Runtime NavMesh baked: N verts, M tris` console line | same load | — record | `LevelBuilder.cs:108` | | record verbatim |
+| Same, compared to B122's Editor bake (1 139 verts / 485 tris / 1 216.1 m²) | — | — | B122 | | ☐ similar ☐ **very different** |
+| Install / download size, **with World 2 in the build** | build | < 200 MB | TDD §3.3 | | ☐ pass ☐ fail |
+| `WeaponGripTest` still in scene list? | build | — context for size | §2.2 | ☐ yes ☐ no | note |
+
+### M. Thermal — World 2 (S8). This is the acceptance criterion.
+
+Run separately from S4, on a phone returned to room temperature. See §6's S8 subsection.
+
+| Mark | Frame time / FPS | CPU % | Thermal state | Notes |
+|---|---|---|---|---|
+| Minute 1 | | | | |
+| Minute 3 | | | | |
+| Minute 6 | | | | |
+| Minute 9 | | | | |
+| **Minute 12** | | | | |
+| Minute 15 | | | | |
+
+```
+Gap since the S4 run ended, and device temperature at start: ____________________
+
+Thermal verdict (TDD §3.3 — no sustained frame-time regression across a full 15-min run):
+  ☐ PASS — minute 12 within noise of minute 1
+  ☐ FAIL — gradual, non-recovering frame-time creep (state the numbers): ____________________
+  ☐ INCONCLUSIVE — run interrupted / device was charging / warm start / device is newer than target class
+```
+
+### N. Cross-scene residency (S9) — blocked
+
+```
+☐ BLOCKED — no in-game route from World 1 to World 2 (§1.1: WorldMapScreen.cs:117 hardcodes
+  "TownSquare_Room1"; MetaScreen.OnContinue() restarts zone 0). Not measured.
+☐ Route fixed — commit ____________ — S9 run and recorded below.
+
+Texture2D total, standing in World 1 zone 2 before the transition:   __________ MB
+Texture2D total, standing in World 2 zone 0 after the transition:    __________ MB
+Peak process memory across the transition (Xcode gauge):             __________ MB
+Scene-start hitch for Backyard_Dojo loaded AFTER a World 1 run:      __________ ms   (vs cold-start: ______ ms)
+```
+
+> **What this section exists to catch.** Both worlds are single continuous scenes holding their whole world resident (ADR-0004, ADR-0005). Nothing has ever verified that World 1's residency is actually released when World 2 loads over it. If it is not, the peak is the *sum* of two worlds, not the max — and every per-scene budget in both ADRs is measuring the wrong quantity. This is cheap to check and has never been checked; it is only blocked because the player cannot get there.
+
+### O. Live enemy count sanity check — World 2
+
+| Measurement | Scenario | Budget | Source | Measured | Verdict |
+|---|---|---|---|---|---|
+| Peak simultaneous live enemies observed | S5 Zone 0 | ≤ 4 | `RoomData_Backyard_Dojo_Zone0.asset` `maxConcurrentEnemies: 4`; ADR-0005 §3 | | ☐ pass ☐ fail |
+| Peak simultaneous live enemies observed | S6 Zone 1 | ≤ 4 | `RoomData_Backyard_Dojo_Zone1.asset` `maxConcurrentEnemies: 4`; ADR-0005 §3 | | ☐ pass ☐ fail |
+| Peak simultaneous live enemies observed | S7 Zone 2 | ≤ 1 (boss only) | `RoomData_Backyard_Dojo_Zone2.asset` `maxConcurrentEnemies: 1`, `spawnPoints: []`, `bossOwnedWin: 1` | | ☐ pass ☐ fail |
+
+---
+
 ## 8. If something fails — what to do, and what NOT to do
 
 **Do not change a setting before you have the measurement.** The whole point of §7 is that any later "this is faster now" claim can be checked against a recorded before-number. TDD §3.7 opens with the rule: *no optimization is accepted without a before/after measurement on device.*
@@ -468,15 +721,44 @@ Each of these is an **already-recorded** backlog item with an already-recorded r
 | **GC allocation per frame > 0** | Find the function name from §4.4 and treat it as a regression against TDD §3.2's recorded "currently honoured" state | new finding if it happens — file it | Fix at the source; do not add pooling speculatively |
 | **Any per-frame cost you cannot explain** | Re-read TDD §3.6 before reaching for `MaterialPropertyBlock`. Under this project's SRP Batcher, per-instance `renderer.material` copies **do** batch and **MPB breaks SRP batching** — the comment at `Enemy/SpinCycleAI.cs:1123` recommending MPB is a trap on this pipeline | TDD §3.6 | Do not follow generic Unity folklore here |
 
+### 8.1 World 2 — additional levers, and one World 1 assumption that does not carry over
+
+| If this fails | Most likely lever | Already tracked as | Nature of the fix |
+|---|---|---|---|
+| **Draw calls > 100 in `Backyard_Dojo`** | **`BD-01-Long`, the long wall variant.** ADR-0006 §5.2 already designed and budgeted it precisely to refund the module count: *"47 naive → 35 with §5.2"*, with the extra geometry costed at ~1,800 tris against 1,650 of remaining headroom in the < 8k new-ENV-geometry budget | **ADR-0006 §5.2**; `docs/BACKLOG.md` **B116** lists it under *Not built* | Art task, already specified. Cheapest structural lever in World 2 and it is a refund the ADR already accounted for, not new scope |
+| **`SRP Batcher: 0` in the World 2 breakdown too** | This makes B112's SRP-Batcher-at-zero **project-wide, not a World 1 quirk** — a shader or material variant incompatibility rather than anything about the city scene | **B112**; ADR-0005 §Negative flags exactly this risk | Investigate the cause before spending anything else. It is also the failure of ADR-0005 §3's explicit condition and should be reported to `technical-director` as such, not just logged |
+| **Scene-start hitch > 500 ms in World 2** | **Constrain the NavMesh bake area.** `Ground` is a 66.6 × 66.6 m plane baking 1 216 m² against ~318 m² of playable court | **B128** (currently P3) | If this is what fails, B128 is mis-prioritised — it is filed as a pathing/memory nicety and would in fact be a load-time budget breach. Say so when you file the result |
+| **Texture memory > 150 MB in World 2** | Same B1 import-policy lever as World 1. Check the top-10 list for `Grasscutter_*` first — TDD §3.4 records `Grasscutter_BaseColor.png` at 30.9 MB on disk, and the boss is resident in all three zones | **BACKLOG B1**; TDD §3.4 | Same scriptable, low-risk fix. The `AssetPostprocessor` landed 2026-08-31 and was applied retroactively 2026-09-01, so a failure here would mean the policy is not covering these assets |
+
+**The World 1 static-batching caveat does not apply to World 2 — check this before repeating it.** The §8 table above records that `BatchingStatic` flags on `pfb_env_*` prefabs are **inert in World 1**, because `LevelBuilder` instantiates those props at runtime and static batching is a build-time step for scene objects. That reasoning is sound and specific to World 1. World 2 is built the other way round:
+
+| | World 1 (`CulDeSac_WildWestCity`) | World 2 (`Backyard_Dojo`) |
+|---|---|---|
+| Env props | instantiated at runtime by `LevelBuilder` from `WeaponDropTableSO.envProps` | **hand-dressed as scene objects.** `WeaponDropTableSO_Backyard_Dojo.envProps` is **empty** (0 entries), per ADR-0005 §6.6 |
+| Scene objects carrying the `BatchingStatic` bit | 1 (`Ground`, flags `4294967295`) | **51** (flags `14`, `20`, `30` — all include bit 4 = Batching Static) |
+| Static batching enabled for the platform | `m_StaticBatching: 1` for iPhone and Android (`ProjectSettings.asset:565-571`) | same |
+
+So **World 2's stockade and dressing are genuinely eligible for build-time static batching and World 1's props are not.** That is a structural reason to expect World 2's draw-call number to come in better than World 1's 205 — and equally, if it does *not*, the batching is failing for a reason worth finding rather than a reason already understood. Record the Profiler's batching-savings figures alongside the raw count so this is answerable either way.
+
+**Two things this changes in how you read a World 2 result**, neither of which is a budget change:
+
+- A World 2 draw-call pass is **not** evidence that World 1's problem is solved or shrinking. The two scenes fail or pass for different structural reasons.
+- Static batching trades memory for draw calls — it duplicates mesh data into combined buffers. If draw calls pass but section **J**'s memory numbers are higher than expected, those two results are related, not independent.
+
 ---
 
 ## 9. Honesty checklist before reporting a result
 
 Per the standard TDD §3.4 sets on itself (*"This has not been verified on device and should not be treated as measured"*):
 
-- ☐ Every number has its scenario (S1–S4) and device model attached.
+- ☐ Every number has its scenario (S1–S9) **and its world** and device model attached. A bare "draw calls: 140" is ambiguous now that two scenes are in scope.
 - ☐ Millisecond figures are labelled with which build they came from (development vs release).
+- ☐ Millisecond figures are labelled **60 FPS target or the old 30 FPS cap**. Numbers from either side of 2026-09-08 are not comparable.
 - ☐ Any "pass" on a device newer than the 3–4-year-old target class is labelled a **lower bound**, not a pass.
 - ☐ Derived numbers (like the enemy-HUD subtraction in §4.2) are shown with their inputs, not just the result.
 - ☐ Anything not actually measured is left blank, not estimated.
 - ☐ Discrepancies found between a document and a live asset are recorded as discrepancies, not silently fixed.
+- ☐ A World 2 result is not reported as covering World 1, or vice versa. They are separate scenes with separate residency and separate structural failure modes (§8.1).
+- ☐ If the scene list was reordered to launch World 2 (§2.2), the session record says so **and the list was put back**.
+- ☐ S9 is recorded as **blocked**, not as passed or skipped, until the routing defect in §1.1 is fixed.
+- ☐ An allocation pass on the Spin-Dash telegraph is not reported as discharging ADR-0006 §Validation 10, which is a human readability check (§4.7).

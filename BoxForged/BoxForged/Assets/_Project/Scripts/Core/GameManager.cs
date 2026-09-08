@@ -102,7 +102,7 @@ namespace Boxhead.Core
             }
             Instance = this;
             QualitySettings.vSyncCount  = 0;  // must be 0 for targetFrameRate to work on iOS
-            Application.targetFrameRate = 30;
+            Application.targetFrameRate = 60;
             _waitRoomClearShow = new WaitForSecondsRealtime(_roomClearShowDelay);
         }
 

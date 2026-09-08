@@ -8,7 +8,7 @@ PlayerSettings:
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
-  defaultScreenOrientation: 3
+  defaultScreenOrientation: 4
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 0
@@ -172,9 +172,9 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Android: com.theunboxedheroes
+    Android: com.boxforged
     Standalone: com.Unity-Technologies.com.unity.template.urp-blank
-    iPhone: com.theunboxedheroes
+    iPhone: com.boxforged
   buildNumber:
     Standalone: 0
     VisionOS: 0

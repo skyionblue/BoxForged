@@ -111,10 +111,11 @@ namespace Boxhead.UI
 
         // -----------------------------------------------------------------------
 
-        // Zone 0's start scene — GameManager.ZoneStartScene[0] is the single source of truth
-        // (currently CulDeSac_WildWestCity, ADR-0004). Do not hardcode a scene name here.
+        // Zone start scenes — GameManager.ZoneStartScene is the single source of truth
+        // (zone 0: CulDeSac_WildWestCity, ADR-0004; zone 1: Backyard_Dojo, ADR-0005 §7).
+        // Do not hardcode a scene name here.
         private void OnCulDeSacSelected()  => OnZoneSelected(GameManager.ZoneStartScene[0]);
-        private void OnTownSquareSelected() => OnZoneSelected("TownSquare_Room1");
+        private void OnTownSquareSelected() => OnZoneSelected(GameManager.ZoneStartScene[1]);
 
         private void OnZoneSelected(string sceneName)
         {
