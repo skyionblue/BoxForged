@@ -5,7 +5,7 @@
 **Decisions locked 2026-09-08 (owner), scope for this listing:**
 - **No ads, no IAP in this release.** Ship monetization-free, matching what's actually built (`docs/CREATIVE_STATE.md`'s ads+IAP plan is future scope — see `docs/ROADMAP.md`). Revisit this whole document's Data Safety / privacy answers when that changes.
 - **General-audience, all-ages rating** — not opted into Google Play Families or Apple's Kids Category. BoxForged is an all-ages game with a child protagonist, not a children's-program-classified app; this is the common classification for games like it.
-- **Privacy policy will be hosted at `https://boxforged.com/privacy/`.** All references below assume that URL. If the final URL differs, update every reference in this doc and in `docs/media/social-launch-playbook.md`'s checklist.
+- **Privacy policy is already live at `https://boxforged.com/privacy/`.** Confirmed 2026-09-08 (`WebFetch`): accurate to the app's current state — no data collection, no ads/analytics, no third-party SDKs, explicit children's-privacy/COPPA language, local-only save storage. §4's draft text below was written before this was known to exist and is now superseded — kept only as historical record, not something to publish over the real page.
 
 Source material for all copy below: `docs/CREATIVE_STATE.md` (CANON), `docs/STORY_BIBLE.md` (emotional core, protagonist, themes) — not `docs/media/media-kit.md`, which is written for sponsors/press about the *show*, not players about the *game*, and shouldn't be reused as store copy.
 
@@ -90,7 +90,9 @@ Action, Adventure, Family, Casual-friendly session length
 
 ---
 
-## 4. Privacy policy (draft — publish at `https://boxforged.com/privacy/`)
+## 4. Privacy policy — SUPERSEDED, a real page already exists at `https://boxforged.com/privacy/`
+
+**This section is historical only.** It was drafted before it was known that a real, accurate privacy policy page already existed. Confirmed 2026-09-08 by fetching the live page — do not publish the text below over it.
 
 ```
 # BoxForged Privacy Policy
@@ -178,11 +180,13 @@ We're a two-person team building this game live — we read every message.
 
 These need either an asset/art pass, a device, or a decision that isn't copy:
 
-- **App icon gaps** (from the 2026-09-08 release audit, `docs/SPRINT.md` Sprint 2): Android adaptive (Kind 2) and round (Kind 1) icon slots are empty; iOS 180×180 slot references a different source file than every other iOS icon slot. Route to `art-director`/`asset-engineer`.
-- **Screenshots** — both stores require real in-game screenshots (Play Mode or on-device captures), not mockups. Needs World 2 actually reachable first (fixed 2026-09-08, B131) and ideally the fresh on-device profiling pass done so captures reflect a game that's performing correctly, not an in-progress state.
+- ~~App icon gaps (Android adaptive/round empty, iOS 180×180 mismatch)~~ **FIXED 2026-09-08** — all icon slots (iOS + Android) now consistently use `AppIcon_BoxForged.png`. See `docs/SPRINT.md` Sprint 2.
+- ~~Privacy policy not live~~ **RESOLVED — was already live**, confirmed 2026-09-08. See §4.
+- **Support page** — is `https://boxforged.com/support/` also already live (same as privacy turned out to be), or does it still need publishing? Not yet confirmed either way.
+- **Screenshots** — both stores require real in-game screenshots (Play Mode or on-device captures), not mockups. World 2 is now actually reachable (B131) and the win/World-Map flow is confirmed working end-to-end (B106/B140/B141) — safe to capture now.
 - **App preview video** (15–30s, per the existing `docs/media/social-launch-playbook.md` checklist) — needs real gameplay footage.
-- **Domain/hosting** — `boxforged.com` needs the `/privacy/` and `/support/` pages actually published before either store will accept the submission; App Store Connect and Play Console both validate that the URLs resolve.
-- **Support email decision** (§6).
+- **Support email decision** (§6) — only still relevant if the support page isn't already live with its own contact method.
 - **Final owner read-through of §2's copy and §3's rating table** before either goes into a store console — this document is a draft, not a submission.
+- **Performance is over its own internal budget** (draw calls, triangles — `docs/BACKLOG.md` B132) — not a store-compliance blocker, safe to ship to TestFlight for real-device feedback, but worth knowing before a public release.
 
-Once the privacy/support pages are live and the icon gaps are fixed, cross these off in `docs/media/social-launch-playbook.md`'s existing "App Store and Google Play" checklist rather than duplicating tracking here.
+Once these are resolved, cross them off in `docs/media/social-launch-playbook.md`'s existing "App Store and Google Play" checklist rather than duplicating tracking here.

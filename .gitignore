@@ -1,5 +1,13 @@
 # Unity generated
+# com.unity.test-framework's Performance Testing package regenerates these on every build
+# (Assets/Resources so they load at runtime, but content is meaningless build scaffolding)
+BoxForged/BoxForged/Assets/Resources/PerformanceTestRunInfo.json
+BoxForged/BoxForged/Assets/Resources/PerformanceTestRunInfo.json.meta
+BoxForged/BoxForged/Assets/Resources/PerformanceTestRunSettings.json
+BoxForged/BoxForged/Assets/Resources/PerformanceTestRunSettings.json.meta
+BoxForged/BoxForged/Assets/Resources.meta
 BoxForged/BoxForged/Library/
+BoxForged/BoxForged/.utmp/
 BoxForged/BoxForged/Temp/
 BoxForged/BoxForged/Logs/
 BoxForged/BoxForged/UserSettings/

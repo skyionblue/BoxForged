@@ -1,51 +1,36 @@
 # Sprint 2 — Mobile Release Readiness
 
-**Status: AUTHORIZED, in progress.** Owner said "I would like to get this game deployed for Android, and iOS" (2026-09-08), immediately after closing out Sprint 1's crash-recovery cleanup commit (`ac1fa96e`) on `feature/sprint-0-foundation-rebuild`. New branch cut for this scope: `feature/mobile-release-readiness`. Sprint 1 (below) remains open in parallel — this is an additive scope, not a supersession; World 2's still-open validation/decision items there are unaffected.
+**Status: AUTHORIZED, in progress — aiming for TestFlight (internal + external), not full store submission yet.** Owner said "I would like to get this game deployed for Android, and iOS" (2026-09-08), immediately after closing out Sprint 1's crash-recovery cleanup commit (`ac1fa96e`) on `feature/sprint-0-foundation-rebuild`. New branch: `feature/mobile-release-readiness`. Sprint 1 (below) remains open in parallel — additive scope, not a supersession.
 
-**Branch:** `feature/mobile-release-readiness` (off `feature/sprint-0-foundation-rebuild` at `ac1fa96e`)
+**Branch:** `feature/mobile-release-readiness`, HEAD `f23abab8` (pushed).
 
-**Framing (from the `release-engineer` audit that opened this sprint):** the realistic near-term milestone is "installable on a real device via TestFlight / Play internal testing," not store submission. At the Unity-configuration level that milestone was already largely met before this sprint started — IL2CPP, ARM64, a real Android keystore, iOS post-build signing already wired to Apple Developer Team `V62D5FT8F5`. The open items are a handful of decisions and one measured performance shortfall, not missing infrastructure.
+**WHERE WE LEFT OFF (2026-09-08, end of session):** the whole World 1 → World 2 player loop is now confirmed working end-to-end on a physical iPhone — beat SpinCycle, win screen shows with correct stats, Continue advances to `Backyard_Dojo`, beat Grasscutter, World Map opens correctly and shows both zones with a corrected "Dojo" label. Store-listing prep is essentially done except two small items. **Next session should start at "Ready for TestFlight" below.**
 
-## Decisions made 2026-09-08 (owner) — implemented same day
+## Ready for TestFlight — what to actually do next
 
-Full record in `docs/TECHNICAL_DECISIONS.md` §Engine and pipeline.
+1. **Confirm an App Store Connect app record exists for `com.boxforged`.** Bundle ID changed this session (from `com.theunboxedheroes`) — if no app record has been created under the new ID yet, that's the first blocking step; Xcode's archive upload needs somewhere to land.
+2. **Decide the feedback email** for TestFlight's "Test Information" (not a full support page — TestFlight itself just needs an email, per this session's understanding; only double-check if App Store Connect's UI asks for more). Known existing address: `unboxedheroes.imagination@gmail.com`; open question is whether to use a dedicated `boxforged.com` address instead.
+3. **Privacy policy is already live and confirmed accurate** at `https://boxforged.com/privacy/` (verified 2026-09-08 by fetching it directly — matches the app's real behavior: no data collection, no ads/analytics, no SDKs, explicit children's-privacy language). Nothing to do here.
+4. **Support page (`https://boxforged.com/support/`) is NOT live** — confirmed by owner 2026-09-08. Not believed to block TestFlight itself (see #2), but will be needed before a full public store listing.
+5. Do the archive/upload in Xcode yourself (per project rule — this isn't something an agent does). Once a build is in TestFlight, this sprint's remaining items (screenshots, video, the performance question) can happen in parallel with real tester feedback.
 
-1. **Bundle ID → `com.boxforged`** (both platforms). Was `com.theunboxedheroes`; changed before any store upload since it's permanent afterward. Android keystore alias (`unboxedheroes`) unaffected.
-2. **Orientation → auto-rotate both landscape holds.** Was locked `LandscapeRight` with both autorotate flags inertly enabled; `defaultScreenOrientation` now `AutoRotation` so the existing flags take effect.
-3. **Frame rate → 60 FPS confirmed as the real target.** Removed an undocumented `Application.targetFrameRate = 30` cap in `GameManager.cs` (resolves `docs/BACKLOG.md` B112's open question). TDD §3.1's documented 60 FPS target was correct; the cap was stale, not the doc.
-4. **Fresh on-device profiling pass — owner opted in, not yet run.** The 2026-08-27 capture (`docs/PERFORMANCE_PROFILING.md`) predates both the 60 FPS change and World 2's content, and is World-1-only in scope. See §Still open below.
-5. **`docs/PERFORMANCE_PROFILING.md` extended to cover World 2** (`performance-engineer`, same day) — added scenarios S5-S9 for `Backyard_Dojo`'s three zones, the Grasscutter boss fight, a World-2 thermal run, and a both-worlds continuous session. All World 2 rows are blank; no on-device World 2 number has ever been captured. This pass also surfaced two new findings, addressed below (B131, fixed same day; B132, still open).
+## Confirmed fixed and tested this session (2026-09-08), full detail in `docs/BACKLOG.md`
 
-## Found and fixed while extending the profiling checklist (2026-09-08)
+- **B112/B131/B137/B138/B140/B141 — the whole win/progression loop.** In order of discovery: 60 FPS cap removed; `WorldMapScreen` hardcoded a dead scene name (fixed, but the screen turned out to have zero live instances anywhere — see B141); `ShopScreen`/`UpgradeScreen` were fully built but never instantiated (fixed); `UpgradeScreen.OnDestroy()` was missing a guard its siblings had, causing a silent un-pause (fixed); `MetaScreen`'s Continue button always restarted zone 0 by design until the owner asked for it to advance to the next zone instead (changed, `GameManager.ContinueToNextZone()`); `WorldMapScreen`/`pfb_world_map` had zero live instances at all — same class of bug as `ShopScreen`/`UpgradeScreen`, plus two more bugs only visible once it was finally instantiated (auto-showed at game start; zone-1 label read "Town Square" instead of "Dojo") — all fixed and verified via a real on-device console trace, twice (the win-screen chain proved intermittent once between two "confirmed working" tests — see B106's addendum — diagnostic logging was made **permanent**, not stripped, because of this).
+- **B131's earlier fix was real but was unreachable** until B141 landed — worth remembering if a future session sees WorldMap-related code that looks already-fixed but isn't observably working; check whether the screen has a live instance at all before assuming the bug is elsewhere.
+- App icon consistency (iOS + Android, all slots now `AppIcon_BoxForged.png`), splash screen logo (was showing the podcast's "Unboxed Heroes" wordmark, now the correct BoxForged art), loading screen art swap — all done and device-verified.
+- `WeaponGripTest.unity` stripped from the build's scene list (owner decision).
 
-- **B131 — World 2 was unreachable in any real build.** `WorldMapScreen.OnTownSquareSelected()` hardcoded a scene name (`"TownSquare_Room1"`) that was removed from the build's scene list on 2026-08-27 and never existed as a real file; `GameManager.ZoneStartScene[1]` (`"Backyard_Dojo"`) already had the correct value but nothing read it. On a real device, the World Map's zone-1 node would unlock, become tappable, and then fail to load anything — stranding the player with no route into World 2 through normal play. This went undetected because all World 2 playtesting to date opened `Backyard_Dojo.unity` directly in the Editor, bypassing the actual menu flow. **Fixed same day** (`WorldMapScreen.cs:117` now reads `GameManager.ZoneStartScene[1]`, mirroring the already-correct zone-0 pattern) — this blocked the entire point of this sprint, so it was corrected immediately rather than only logged. Full detail: `docs/BACKLOG.md` B131. Not yet verified via an actual Play Mode World Map click-through or on device — add to the next QA pass.
+## Still open — real, but none block TestFlight
 
-## Decisions made 2026-09-08 (owner) — store-listing scope
-
-1. **No ads, no IAP in this release.** Ship monetization-free, matching what's actually built. `docs/CREATIVE_STATE.md`'s ads+IAP plan stays future scope (`docs/ROADMAP.md`).
-2. **General-audience, all-ages rating** — not opting into Google Play Families / Apple Kids Category.
-3. **Privacy policy hosted at `https://boxforged.com/privacy/`.** Full draft text, a support-page draft, store description copy, and draft age-rating-questionnaire answers with rationale are all in the new `docs/STORE_LISTING.md` (`release-engineer`-adjacent work, done directly this session, 2026-09-08). Cross-referenced into `docs/media/social-launch-playbook.md`'s pre-existing pre-launch checklist rather than duplicating tracking there.
-
-## Still open (from the release-readiness audit, ordered by blocking severity)
-
-**Before any device build/test:** nothing found blocking — Android and iOS both already build today.
-
-**Before store submission:**
-- Fresh on-device Pass A/B profiling, now covering both worlds per the extended `docs/PERFORMANCE_PROFILING.md` (scenarios S1-S9). Prior World 1 numbers (205 draw calls vs. <100 budget, ~357k triangles vs. ~300k, SRP Batcher measuring zero) are stale (pre-60-FPS) but were already over budget, so treat as a real risk, not a stale non-issue. World 2 has never been measured at all — see B132 below, the single biggest new risk found.
-- **B132 — World 2's ADR-0005 §3 SRP-Batcher condition has never been verified.** 47 identical `BD01_WallModule` instances are ~47% of the whole-scene draw-call budget if they don't batch; ADR-0005 §3 conditioned the entire single-scene architecture on verifying a non-zero SRP Batcher/Instanced count on device, and that's never been checked. World 1's own capture found the SRP Batcher contributing zero despite being enabled — if World 2 reads the same way, this ADR's core premise is false, not just unverified. Full detail: `docs/BACKLOG.md` B132.
-- **B133/B134 — two open questions about whether Sprint 1's B127/B128 NavMesh findings still apply.** B127 was diagnosed against the Editor legacy bake, but World 2's actual runtime bake is a `NavMeshSurface` — may not carry over, needs `technical-director`. B128's oversized bake (1,216 m² vs. ~318 m² playable) also turns out to be a runtime, every-scene-load re-bake, making it a scene-start-hitch budget input (ADR-0004 §8, ≤ 500 ms) that the next profiling pass should specifically check, not just a memory nit. Full detail: `docs/BACKLOG.md` B133, B134.
-- Android adaptive icon (Kind 2) and round icon (Kind 1) slots are empty — only the legacy square icon is populated. Route to `art-director`/`asset-engineer` (`docs/STORE_LISTING.md` §7).
-- `AndroidTargetSdkVersion: 0` (Automatic) — confirm at build time it resolves to an API level meeting Google Play's current target-API policy.
-- iOS 180×180 (@3x) icon slot references a different source file (`AppIcon_BoxForged.png`) than every other iOS icon slot (`AppIcon.png`) — verify this isn't an accidental mismatch.
-- Confirm the owner's Xcode/Apple ID session is actually a member of Team `V62D5FT8F5` with active Apple Developer Program membership (environment fact, not visible in the repo).
-- Privacy policy / support page text is drafted (`docs/STORE_LISTING.md` §4, §6) but **not yet published** — needs `boxforged.com/privacy/` and `/support/` to actually go live, and a support-email decision, before either store will accept submission.
-- Store description copy and draft age-rating answers are written (`docs/STORE_LISTING.md` §2-3) but need an owner read-through before use.
-- Screenshots and an app preview video still need real gameplay capture — blocked on World 2 actually being reachable (fixed, B131) and ideally the profiling pass, so captures reflect correct performance.
-- ~~`WeaponGripTest.unity` dev/QA scene is still in the build scene list...~~ **RESOLVED 2026-09-08 (owner): stripped from `ProjectSettings/EditorBuildSettings.asset`.** No longer shipped in device builds.
-- No automated EditMode/PlayMode test coverage exists anywhere in the project — not a hard blocker for an internal test build, but a real gap against the studio's own testing standard.
+- **B132 — CONFIRMED (not just suspected): World 2's SRP Batcher contributes zero on-device**, a third independent confirmation this session. Draw calls (236) and triangles (465k) both measured well over budget in a session spanning both worlds — worse than World 1 alone. Texture memory remains healthy. Not a store-compliance issue (neither store gates on this), but a real internal quality bar the project set for itself, and worth a `technical-director` scoping pass before a *public* release — fine to ship to TestFlight as-is for real-device feedback first.
+- **B133/B134** — whether Sprint 1's NavMesh findings (B127/B128) carry over to World 2's actual runtime `NavMeshSurface` bake — needs `technical-director`.
+- **B139** — a recurring `NullReferenceException` in `EnemyHealthBar.BuildBar()`, found via the on-device dev console, not yet root-caused or confirmed connected to anything else.
+- **B105** — a known, narrow race between `TriggerWin()`/`HandlePlayerDeath()` sharing one state guard — deliberately deferred, not urgent.
+- No automated EditMode/PlayMode test coverage exists anywhere in the project.
 - `docs/KNOWN_ISSUES.md`, `docs/CHANGELOG.md`, `docs/AI_CONTEXT.md` don't exist, though `.claude/rules/studio-core.md` lists them as required project memory.
-
-Full audit detail (what's already in place per platform, file/line citations) is in the `release-engineer` agent's 2026-09-08 report — not duplicated here; ask to have it re-run if the source detail is needed again.
+- Screenshots and an app preview video for the store listing — safe to capture now that the full loop works, per `docs/STORE_LISTING.md` §7.
+- A real Xcode Instruments "Pass B" (frame-time/thermal) capture has still never been done — everything measured so far is draw-call/triangle counts (Pass A equivalent via the profiler buffer), not actual FPS.
 
 ---
 
