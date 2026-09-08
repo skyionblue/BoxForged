@@ -1077,6 +1077,8 @@ namespace Boxhead.Enemy
             if (_playerInput == null) return;
             _playerInputWasEnabled = _playerInput.enabled;
             _playerInput.enabled = false;
+            // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
+            Debug.Log($"[SpinCycleAI] DisablePlayerInput() — was enabled={_playerInputWasEnabled}, now disabled.");
         }
 
         // Restores PlayerInput only if DisablePlayerInput found it already enabled. Safe to call
@@ -1085,6 +1087,8 @@ namespace Boxhead.Enemy
         private void RestorePlayerInput()
         {
             if (_playerInput == null) return;
+            // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
+            Debug.Log($"[SpinCycleAI] RestorePlayerInput() called. _playerInputWasEnabled={_playerInputWasEnabled}, PlayerInput.enabled before={_playerInput.enabled}");
             if (_playerInputWasEnabled) _playerInput.enabled = true;
             // Reset the cached flag so a stray extra call (this helper is called from multiple
             // sites: BossIntro's finally, HandleDeath, OnDestroy) can never re-apply a stale
@@ -1092,6 +1096,7 @@ namespace Boxhead.Enemy
             // RestorePlayerInput(), _playerInput itself is NOT nulled here — this is an
             // enemy-owned persistent reference (resolved once in Start), not re-resolved per call.
             _playerInputWasEnabled = false;
+            Debug.Log($"[SpinCycleAI] RestorePlayerInput() done. PlayerInput.enabled after={_playerInput.enabled}");
         }
 
         // ── Phase transition ──────────────────────────────────────────────────
@@ -1141,6 +1146,8 @@ namespace Boxhead.Enemy
 
         private void HandleDeath()
         {
+            // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
+            Debug.Log("[SpinCycleAI] HandleDeath() entered.");
             _state = BossState.Dead;
 
             if (_agent != null) { _agent.isStopped = true; _agent.enabled = false; }
@@ -1226,6 +1233,9 @@ namespace Boxhead.Enemy
                 _imaginationVolume = GameObject.Find("ImaginationRestore_Volume")
                     ?.GetComponent<UnityEngine.Rendering.Volume>();
 
+            // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
+            Debug.Log($"[SpinCycleAI] DefeatSequence Step 5 reached. _imaginationVolume null? {_imaginationVolume == null}. GameManager.Instance null? {GameManager.Instance == null}");
+
             // Lerp the imagination-restore volume in, then TriggerWin (called inside LerpImagination).
             // If the volume is still null, fall back to TriggerWin directly.
             if (_imaginationVolume != null)
@@ -1233,6 +1243,7 @@ namespace Boxhead.Enemy
             else
                 GameManager.Instance?.TriggerWin();
 
+            Debug.Log("[SpinCycleAI] DefeatSequence about to Destroy(gameObject).");
             Destroy(gameObject);
         }
 
@@ -1297,13 +1308,20 @@ namespace Boxhead.Enemy
             float elapsed = 0f;
             while (elapsed < duration)
             {
-                if (_imaginationVolume == null) yield break;
+                // Do NOT yield break here even if the volume disappears mid-lerp (e.g. destroyed
+                // by an unrelated system) — this coroutine's only real job is to guarantee
+                // TriggerWin() fires. An early yield break used to skip the call below entirely,
+                // silently soft-locking the run exactly like the pre-B103 scaled-time stall this
+                // whole routine was rewritten to prevent (see DefeatSequence's class comment).
+                if (_imaginationVolume == null) break;
                 elapsed += Time.unscaledDeltaTime;
                 _imaginationVolume.weight = Mathf.Clamp01(elapsed / duration);
                 yield return null;
             }
             if (_imaginationVolume != null)
                 _imaginationVolume.weight = 1f;
+            // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
+            Debug.Log($"[SpinCycleAI] LerpImagination() loop ended, calling TriggerWin(). GameManager.Instance null? {GameManager.Instance == null}");
             GameManager.Instance?.TriggerWin();
         }
 

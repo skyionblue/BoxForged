@@ -167,8 +167,19 @@ namespace Boxhead.UI
         private void OnDestroy()
         {
             if (Instance == this) Instance = null;
-            Time.timeScale      = 1f;
-            AudioListener.pause = false;
+
+            // Only restore time if this screen was the one that paused it — same guard as
+            // ShopScreen/RunEndScreen.OnDestroy(). Without this, ANY destroy of an UpgradeScreen
+            // GameObject (e.g. a duplicate instance losing the singleton race in Awake() during
+            // scene load, or scene teardown while some other screen owns the pause) unconditionally
+            // stomped Time.timeScale back to 1 — silently un-pausing the game (enemies/spawners
+            // resume) while an unrelated screen (e.g. RunStartUI's character picker) is still
+            // visibly on-screen and still expects timeScale to be 0.
+            if (_panel != null && _panel.activeSelf)
+            {
+                Time.timeScale      = 1f;
+                AudioListener.pause = false;
+            }
 
             if (_cardButtons == null) return;
             for (int i = 0; i < _cardButtons.Length; i++)

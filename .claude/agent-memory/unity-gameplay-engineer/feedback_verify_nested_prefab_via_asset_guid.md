@@ -1,0 +1,12 @@
+---
+name: verify-nested-prefab-via-asset-guid
+description: To confirm whether a nested prefab instance (e.g. a screen prefab inside a shared HUD prefab) is actually present in a referencing prefab/scene file, grep for the child prefab asset's own GUID (from its .meta), never the C# script's GUID.
+metadata:
+  type: feedback
+---
+
+A nested `PrefabInstance` block only ever references its **source prefab asset's own GUID** (from `<PrefabName>.prefab.meta`) plus internal fileIDs, in the file that instantiates it. The nested object's own component script GUIDs live inside the *source prefab's own file* and never appear in the referencing file at all. Grepping a referencing file (e.g. `pfb_hud_v4.prefab`, or a scene) for a script's GUID to answer "is `RunEndScreen` instantiated here" will return **zero hits regardless of whether the object is actually present** — a guaranteed false negative, not evidence of absence.
+
+**Why:** A 2026-09-08 task briefing (investigating an owner-reported World 1 boss-win soft-lock) opened with "confirmed via GUID search" that four UI screens (`RunEndScreen`, `MetaScreen`, `ShopScreen`, `UpgradeScreen`) were all completely missing from `pfb_hud_v4.prefab`, based on grepping the prefab file for each screen's *script* GUID. Re-checking by grepping for each screen's *prefab asset* GUID instead (`grep -c "<guid from PrefabName.prefab.meta>" pfb_hud_v4.prefab`) showed `RunEndScreen`/`MetaScreen` were actually present all along (23 modification-block references each, fully wired, present since commit `b7d82447`, long before that session) — only `ShopScreen`/`UpgradeScreen` were genuinely absent (0 references either way). Acting on the flawed premise without re-verifying would have added two duplicate, conflicting nested instances of screens that already worked correctly, corrupting the singleton (`Instance`) pattern both scripts rely on.
+
+**How to apply:** Before adding a "missing" nested prefab instance anywhere, verify absence by grepping the target file for the **child prefab's own `.meta` GUID**, not the script's `.meta` GUID. If that also comes back zero, corroborate with `manage_prefabs get_hierarchy` (path-based names) and, where the stakes are high (a soft-lock bug report), a live Play Mode reflection test of the actual runtime behavior before trusting a static grep either way. See also [[feedback_modify_contents_stray_duplicate]] and [[project_wildwestcity_build]].

@@ -60,6 +60,16 @@ For accepted implementation work, follow the significant-work workflow below. Ke
 9. Update project documentation, sprint state, backlog, ADRs, known issues, and changelog when affected.
 10. Prepare coherent completed work for commit. Commit only if the project's approval policy allows it; otherwise report the proposed commit and wait for owner approval. Stop before merge.
 
+## Unity MCP concurrency
+
+Only one agent may hold live Unity Editor / Unity MCP access at a time — scene edits, prefab edits, Play Mode control, and `execute_code` all touch shared, global Editor state (open scenes, in-memory prefab-stage edits, Play Mode), not something isolated per caller. Never launch two or more subagents concurrently if more than one needs to touch the Unity Editor, even when they appear to target different files.
+
+This is not theoretical: concurrent Unity MCP use has caused a real, confirmed bug in this project. One agent editing a prefab while a scene referencing it was open left a transient, in-memory-only duplicate GameObject hierarchy live in that scene; a second agent, running at the same time on an unrelated-looking task, hit that duplicate mid-investigation and reasonably (but wrongly) diagnosed it as a persistent, on-disk bug — producing a plausible but incorrect root-cause report before the confusion was caught by re-checking the saved files directly (`docs/BACKLOG.md` B137/B138).
+
+- Before launching an agent that will use Unity MCP tools (`manage_scene`, `manage_prefabs`, `execute_code`, Play Mode control, etc.), confirm no other agent with Unity MCP access is still running.
+- If multiple Unity-touching tasks are queued, run them **sequentially**, not in parallel — even when their target files don't obviously overlap. Unity's shared live state can leak between them regardless of file overlap.
+- Agents that don't touch Unity (pure file edits via Read/Edit/Write, doc updates, research, code review of already-written diffs) may still run in parallel with each other and alongside a Unity-touching agent — they don't share live Editor state.
+
 ## Creative decision discipline
 
 - **CANON** means the owner explicitly accepted it. Do not retcon it casually.

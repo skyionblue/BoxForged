@@ -46,6 +46,9 @@ namespace Boxhead.UI
 
         public void Show()
         {
+            // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
+            Debug.Log("[RunEndScreen] Show() entered.");
+
             // Guard _panel before ConvertIPToSpark — conversion writes to disk and cannot be undone.
             if (_panel == null)
             {
@@ -54,12 +57,14 @@ namespace Boxhead.UI
             }
 
             var prog = ProgressionSystem.Instance;
+            Debug.Log($"[RunEndScreen] ProgressionSystem.Instance null? {prog == null}");
 
             // Read IP and kills BEFORE ConvertIPToSpark() — that method zeroes _currentIP.
             // Reordering these lines would display 0 IP earned.
             int ip    = prog != null ? prog.CurrentIP    : 0;
             int kills = prog != null ? prog.KillsThisRun : 0;
             int spark = prog != null ? prog.ConvertIPToSpark() : 0;
+            Debug.Log($"[RunEndScreen] Stats read: ip={ip} kills={kills} spark={spark}");
 
             if (_ipEarnedText    != null) _ipEarnedText.SetText("IP Earned: {0}",    ip);
             if (_killsText       != null) _killsText.SetText("Kills: {0}",           kills);
@@ -68,6 +73,7 @@ namespace Boxhead.UI
             _panel.SetActive(true);
             Time.timeScale      = 0f;
             AudioListener.pause = true;
+            Debug.Log($"[RunEndScreen] _panel.SetActive(true) done. _panel.activeSelf={_panel.activeSelf} Time.timeScale={Time.timeScale}");
         }
 
         public void Hide()

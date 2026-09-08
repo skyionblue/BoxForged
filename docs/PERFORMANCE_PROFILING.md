@@ -493,6 +493,54 @@ Notes / anything unusual: Captured via screenshots of the Profiler window rather
 
 **Deliberate 30 FPS cap found, not a performance failure:** `Application.targetFrameRate = 30` is set explicitly at `GameManager.cs:102` (with `QualitySettings.vSyncCount = 0` at line 101 so it takes effect on iOS). The CPU frame in this capture used only ~4–6 ms of a 33 ms budget in an earlier, quieter sample — there is substantial headroom below even the 60 FPS (16.6 ms) budget. This directly contradicts TDD §3.1's stated "stable 60 FPS" target and needs an owner decision: raise the cap to 60 and re-test, or correct the documented target to 30. Not changed here — flagged only.
 
+### Session 2026-09-08 — second on-device Pass A capture, first fully-automated data pull
+
+```
+Session date:            2026-09-08
+Build:                   feature/mobile-release-readiness, exact commit not confirmed — owner built via
+                         Unity's Build & Run before this session's d3e4195f commit; whether it includes the
+                         60 FPS change / WorldMap fix / boss-intro fix at the binary level is not independently
+                         verified, only inferred from when in the conversation the build was made. Flagged as
+                         a discrepancy, not resolved here.
+Device model:            iPhone 15 Pro Max (same device as 2026-08-27 session, per Profiler console tag)
+Device class vs budget:  ☐ 3–4-year-old (target class)  ☑ NEWER than target (Rule 2 applies again)
+Build type:              ☑ Development Build (Pass A) — confirmed by the fact a profiler connection was
+                         possible at all. Pass B not done.
+Orientation:             landscape (assumed, not explicitly confirmed this session)
+Scene:                   CulDeSac_WildWestCity (World 1) — owner-confirmed "playing the first level."
+                         Exact zone/enemy-count during the captured frames not confirmed — see note below.
+Tool(s):                 ☑ Unity Profiler, data pulled via `UnityEditorInternal.ProfilerDriver
+                         .GetFormattedCounterValue(frameIndex, category, name)` through Unity MCP's
+                         `execute_code`, scanning the entire captured frame buffer (2000 frames,
+                         indices 13147–15146) for the worst (highest) value per counter — not read off
+                         screenshots, and not a single spot-check frame.
+Notes / anything unusual: The live "current frame" MCP profiler tools (`get_frame_timing`, `get_counters`)
+  reproduced the exact same idle/stale-data limitation the 2026-08-27 session found — confirmed again,
+  not a fluke. But `ProfilerDriver.GetFormattedCounterValue` against a specific historical frame index
+  DOES return real device data, even after the live connection had already dropped — this is a real
+  workaround for that limitation, worth reusing for future sessions instead of screenshot-reading.
+  The device disconnected mid-session at least once; data below comes from whatever was in the buffer
+  after reconnection, spanning an uncertain mix of gameplay moments within World 1 (not a single
+  clean "start of Zone 1 to end of Zone 1" bracket the way the checklist's S1/S2 ask for).
+```
+
+| Measurement | Scenario | Budget | Source | Measured | Verdict |
+|---|---|---|---|---|---|
+| Draw Calls Count (Standard), worst in buffer | World 1, zone/moment unconfirmed | < 100 | TDD §3.2 | **166** @ frame 14898 | ☐ **FAIL** |
+| SRP Batcher Draw Calls Count, same frame | — | — cross-check | TDD §3.6 | **0** | Same finding as 2026-08-27 — still contributing nothing |
+| Static Batched Draw Calls Count, same frame | — | — record | — | **51** | recorded |
+| SetPass Calls Count, same frame | — | — record | TDD §3.7 | **53** | recorded |
+| Static Batches Count, same frame | — | — record | — | **6** | recorded |
+| Total Triangles, worst in buffer | World 1, zone/moment unconfirmed | < 300k | TDD §3.2 | **329.65k** @ frame 15001 (311.27k at the draw-call-worst frame above) | ☐ **FAIL** (~10% over) |
+| Total Vertices, worst-triangle frame | — | — record | — | **419.60k** | recorded |
+| Total Used Memory, worst-triangle frame | — | — record | TDD §3.7 | **301.9 MB** | recorded |
+| Texture Memory, worst-triangle frame | — | < 150 MB | TDD §3.3 | **111.5 MB** | ☑ **pass** |
+| GC Used Memory, worst-triangle frame | — | — this is cumulative heap, not per-frame GC Alloc — TDD §3.2's zero-alloc budget needs the "GC Alloc" CPU-Usage counter instead, not queried this session | — | **6.0 MB** | not a budget check, record only |
+
+**Consistent with 2026-08-27, not an improvement or regression either way (different frame, same failure shape):** draw calls and triangles are both over budget again, and the SRP Batcher is again contributing exactly zero despite being enabled — this is now confirmed across two independent sessions, on two different days, so it is not a one-off capture artifact. Texture memory again comes in comfortably under budget.
+
+**CPU/thread timing not captured this session** — `ProfilerDriver.GetFormattedCounterValue` does not expose Main/Render Thread ms under any counter name tried (`Main Thread`, `Render Thread`, `CPU Main Thread`, `CPU Render Thread`, `Frame Time`, all under a `CPU Usage` category — all returned empty). That data likely requires the richer `HierarchyFrameDataView`/`ProfilerFrameDataIterator` API, not the simple named-counter API used here. Left blank in §A below rather than estimated.
+
 ### A. Frame time and threads
 
 | Measurement | Scenario | Budget | Source | Measured | Verdict |

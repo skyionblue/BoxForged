@@ -41,7 +41,7 @@ Full record in `docs/TECHNICAL_DECISIONS.md` §Engine and pipeline.
 - Privacy policy / support page text is drafted (`docs/STORE_LISTING.md` §4, §6) but **not yet published** — needs `boxforged.com/privacy/` and `/support/` to actually go live, and a support-email decision, before either store will accept submission.
 - Store description copy and draft age-rating answers are written (`docs/STORE_LISTING.md` §2-3) but need an owner read-through before use.
 - Screenshots and an app preview video still need real gameplay capture — blocked on World 2 actually being reachable (fixed, B131) and ideally the profiling pass, so captures reflect correct performance.
-- `WeaponGripTest.unity` dev/QA scene is still in the build scene list (intentional per B66/ADR-0005, inflates package size per `PERFORMANCE_PROFILING.md`) — decide before submission whether to strip it.
+- ~~`WeaponGripTest.unity` dev/QA scene is still in the build scene list...~~ **RESOLVED 2026-09-08 (owner): stripped from `ProjectSettings/EditorBuildSettings.asset`.** No longer shipped in device builds.
 - No automated EditMode/PlayMode test coverage exists anywhere in the project — not a hard blocker for an internal test build, but a real gap against the studio's own testing standard.
 - `docs/KNOWN_ISSUES.md`, `docs/CHANGELOG.md`, `docs/AI_CONTEXT.md` don't exist, though `.claude/rules/studio-core.md` lists them as required project memory.
 

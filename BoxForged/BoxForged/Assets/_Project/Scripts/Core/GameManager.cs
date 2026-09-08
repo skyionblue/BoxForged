@@ -397,7 +397,11 @@ namespace Boxhead.Core
                 return;
             }
 
+            // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce) —
+            // this only fires once per boss win/room-clear/death, so the cost is negligible.
+            Debug.Log($"[GameManager] ShowScreenOrLogMissing: {screenName} resolved non-null, calling show().");
             show(screen);
+            Debug.Log($"[GameManager] ShowScreenOrLogMissing: {screenName} show() returned.");
         }
 
         private void OnTrackedEnemyDeath()
@@ -484,7 +488,13 @@ namespace Boxhead.Core
         // Called by RoomManager when the final room is cleared, or directly when all tracked enemies die.
         public void TriggerWin()
         {
-            if (State != GameState.Playing) return;
+            // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
+            Debug.Log($"[GameManager] TriggerWin() called. Current State={State}.");
+            if (State != GameState.Playing)
+            {
+                Debug.Log($"[GameManager] TriggerWin() early-returned — State was {State}, not Playing.");
+                return;
+            }
             State = GameState.Won;
 
             if (_saveSystem != null)
@@ -639,6 +649,34 @@ namespace Boxhead.Core
             ProgressionSystem.Instance?.ClearRunSelection();
             ProgressionSystem.Instance?.ClearRunLoadout();
             SceneManager.LoadScene(ZoneStartScene[0]);
+        }
+
+        /// <summary>
+        /// Called by MetaScreen's Continue button after a boss win. Advances to the next
+        /// zone's start scene (via ZoneIndexByScene/ZoneStartScene, the same lookup TriggerWin()
+        /// uses to compute the just-unlocked zone) if one exists; falls back to Restart() — a
+        /// fresh zone-0 run — if the current zone has no successor yet (e.g. beating the last
+        /// currently-shipped world). Owner decision 2026-09-08: MetaScreen.OnContinue() previously
+        /// always restarted zone 0 because auto-advancing used to load "TownSquare_Room1", which
+        /// was unfinished at the time (see that method's superseded comment) — Backyard_Dojo is now
+        /// finished and reachable via ZoneStartScene[1] (B131), so that reason no longer applies.
+        /// </summary>
+        public void ContinueToNextZone()
+        {
+            string currentScene = SceneManager.GetActiveScene().name;
+            if (ZoneIndexByScene.TryGetValue(currentScene, out int zoneIndex)
+                && ZoneStartScene.TryGetValue(zoneIndex + 1, out string nextScene))
+            {
+                s_roomQueue.Clear();
+                s_roomQueueIndex = 0;
+                ProgressionSystem.Instance?.ClearRunSelection();
+                ProgressionSystem.Instance?.ClearRunLoadout();
+                SceneManager.LoadScene(nextScene);
+                return;
+            }
+
+            // No next zone defined yet — fall back to the existing zone-0 restart behavior.
+            Restart();
         }
 
         private void OnDestroy()

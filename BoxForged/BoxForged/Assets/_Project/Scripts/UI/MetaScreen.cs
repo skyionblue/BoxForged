@@ -79,11 +79,14 @@ namespace Boxhead.UI
         {
             Hide();
 
-            // Always restart from zone 0. highestZoneReached is saved for world-map unlock
-            // purposes only — auto-advancing to the next zone from this screen caused the game
-            // to load TownSquare (unfinished) after every CulDeSac boss defeat, leaving the
-            // player in a broken state. Zone selection happens via the world map, not here.
-            Boxhead.Core.GameManager.Instance?.Restart();
+            // Owner decision 2026-09-08: Continue now advances to the next zone (e.g. CulDeSac
+            // -> Backyard_Dojo) instead of always restarting zone 0. The old behavior existed
+            // because auto-advancing used to load "TownSquare_Room1", which was unfinished at the
+            // time — Backyard_Dojo is now finished and correctly reachable (B131), so
+            // GameManager.ContinueToNextZone() falls back to a zone-0 restart only when the
+            // current zone has no successor yet. World Map remains available for picking a
+            // specific already-unlocked zone instead of just "the next one."
+            Boxhead.Core.GameManager.Instance?.ContinueToNextZone();
         }
 
         private void OnWorldMap()
