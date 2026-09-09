@@ -54,6 +54,10 @@ Full click-by-click steps are in `docs/SPRINT.md` under "Ready for TestFlight."
   worth a look before a *public* release, fine for tester feedback now.
 - A couple of minor open bugs (an occasional null-reference error in an enemy
   health bar; a narrow win/death race condition) are tracked but not urgent.
+- Pressing Special on a few specific Epic/Legendary weapons (Bo Staff, Pressure
+  Cannon, Magic Wand, Shuriken) either freezes combat briefly or double-fires
+  the special — a known, pre-existing issue (owner decision 2026-09-09:
+  ship TestFlight with it, fix later rather than delay for it).
 - No automated tests exist yet.
 
 ## Where this comes from

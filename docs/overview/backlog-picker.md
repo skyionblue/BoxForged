@@ -11,23 +11,20 @@ dropped from this list.*
 Check items off as they get done, or just tell me the B-number(s) you want to
 tackle next.
 
+## Held for TestFlight (owner decision 2026-09-09 — known issues, not blockers)
+
+- **B4 / B44 / B45** — Certain Epic/Legendary weapons (Bo Staff, Pressure Cannon, Magic Wand, Shuriken) either freeze combat on Special or double-fire it. Root cause is two overlapping ability systems needing consolidation (~2-3 days of real design + implementation work). Owner chose to ship TestFlight with this as a known issue rather than delay or patch around it — revisit after initial tester feedback.
+
 ## Real bugs, not yet fixed
 
 Actual defects players could hit. Some are small, a couple need real investigation time.
 
-- [ ] **B44 / B45** — Certain Epic/Legendary weapons (Bo Staff, Pressure Cannon, Magic Wand, Shuriken) either freeze combat on Special or double-fire it. *Root cause needs a design decision (see B4 below) — a temporary defensive guard is possible now, full fix isn't.*
 - [ ] **B91** — Building colliders are wider than their meshes; you can walk into porches/facades in the Cul-de-Sac.
 - [ ] **B92 / B93** — Boss and enemy NavMesh sizes exceed the project's baked settings; some boss attacks have no landing-point safety clamp.
 - [ ] **B106** — Occasionally the win screen doesn't show after beating a boss. Intermittent, logging is now in place to help catch it next time it happens.
 - [ ] **B139** — A recurring error in the enemy health bar code, seen on a real device. Not yet root-caused.
 - [ ] **B117** — A boss dash move validates where it lands but not the path it takes to get there.
 - [ ] **B124** — One planned enemy behavior (grass/petals kicking up when the boss is dormant) was never implemented.
-
-## Needs your creative/design call first
-
-I shouldn't just pick an answer for these — they're judgment calls.
-
-- [ ] **B4** — The real fix behind B44/B45: two overlapping ability systems need to be consolidated. This isn't really a decision (already decided: keep V4) so much as ~2-3 days of real design + implementation work, best scheduled as its own task through `technical-director`. Still waiting on a go/no-go to schedule it.
 
 ## Needs a `technical-director` scoping pass (architecture-level)
 
