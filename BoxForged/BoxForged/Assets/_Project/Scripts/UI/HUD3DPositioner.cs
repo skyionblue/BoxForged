@@ -32,10 +32,26 @@ namespace Boxhead.UI
                 _hudCamera = GameObject.Find("HUD_Camera")?.GetComponent<Camera>();
         }
 
-        private void Start() => Reposition();
+        // Runtime only — see Update()'s comment. In the Editor, the saved/serialized
+        // position (from hand-placement or OnValidate's live preview) is what should
+        // show; Start() re-firing on every domain reload (e.g. after a script
+        // recompile) previously reset it to whatever the Game View's arbitrary
+        // current size happened to produce.
+        private void Start()
+        {
+            if (Application.isPlaying) Reposition();
+        }
 
         private void Update()
         {
+            // Runtime only: in the Editor (this component is [ExecuteAlways] so
+            // OnValidate's live preview works), Screen.width/height reflects the
+            // Game View panel's arbitrary current size, not a real device — this
+            // guard previously missing here meant merely resizing the Game View
+            // silently dragged HUD elements to a new position, which then got
+            // baked into the scene on the next save.
+            if (!Application.isPlaying) return;
+
             // Only recalculate when screen dimensions change — foldables can
             // switch between inner and outer display at runtime.
             if (Screen.width != _lastWidth || Screen.height != _lastHeight)
