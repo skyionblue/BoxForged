@@ -22,7 +22,7 @@ Actual defects players could hit. Some are small, a couple need real investigati
 - [ ] **B91** — Building colliders are wider than their meshes; you can walk into porches/facades in the Cul-de-Sac.
 - [ ] **B92 / B93** — Boss and enemy NavMesh sizes exceed the project's baked settings; some boss attacks have no landing-point safety clamp.
 - [ ] **B106** — Occasionally the win screen doesn't show after beating a boss. Intermittent, logging is now in place to help catch it next time it happens.
-- [ ] **B139** — A recurring error in the enemy health bar code, seen on a real device. Not yet root-caused.
+- [ ] **B139** — A recurring error in the enemy health bar code, seen on a real device. The console-spam half is fixed (2026-09-09); a separate, still-unconfirmed crash in the same area is not.
 - [ ] **B117** — A boss dash move validates where it lands but not the path it takes to get there.
 - [ ] **B124** — One planned enemy behavior (grass/petals kicking up when the boss is dormant) was never implemented.
 

@@ -162,7 +162,7 @@ namespace Boxhead.Enemy
             {
                 var child = transform.GetChild(i);
                 if (child.name == "HealthBar")
-                    DestroyImmediate(child.gameObject);
+                    Destroy(child.gameObject);
             }
             if (_bgMat   != null) { Destroy(_bgMat);   _bgMat   = null; }
             if (_fillMat != null) { Destroy(_fillMat); _fillMat = null; }
@@ -204,7 +204,7 @@ namespace Boxhead.Enemy
 
             var bgGO = GameObject.CreatePrimitive(PrimitiveType.Quad);
             bgGO.name = "BG";
-            DestroyImmediate(bgGO.GetComponent<MeshCollider>());
+            Destroy(bgGO.GetComponent<MeshCollider>());
             bgGO.transform.SetParent(_barRoot, false);
             bgGO.transform.localPosition = Vector3.zero;
             bgGO.transform.localScale    = new Vector3(_barWidth, _barHeight, 1f);
@@ -219,7 +219,7 @@ namespace Boxhead.Enemy
 
             var fillGO = GameObject.CreatePrimitive(PrimitiveType.Quad);
             fillGO.name = "Fill";
-            DestroyImmediate(fillGO.GetComponent<MeshCollider>());
+            Destroy(fillGO.GetComponent<MeshCollider>());
             _fillTransform = fillGO.transform;
             _fillTransform.SetParent(_barRoot, false);
             _fillRenderer = fillGO.GetComponent<MeshRenderer>();
