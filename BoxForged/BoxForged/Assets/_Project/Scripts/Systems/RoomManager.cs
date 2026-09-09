@@ -252,6 +252,21 @@ namespace Boxhead.Systems
                 };
                 _rooms.Add(room);
             }
+
+            // HasZoneAfterCurrent below assumes the last room in this list is always the one
+            // that ends the run (bossOwnedWin = true, never fires OnRoomCleared) — true for
+            // every scene today, but nothing enforces it. A future single-scene world whose
+            // final zone fires OnRoomCleared instead would hit HasZoneAfterCurrent reporting
+            // false one zone too early there (see docs/BACKLOG.md B94). Warn instead of
+            // silently assuming, so that world's author sees this before shipping it.
+            if (_rooms.Count > 0 && !_rooms[_rooms.Count - 1].bossOwnedWin)
+            {
+                Debug.LogWarning(
+                    $"[RoomManager] Last room '{_rooms[_rooms.Count - 1].roomName}' has " +
+                    "bossOwnedWin = false. HasZoneAfterCurrent assumes the last room always " +
+                    "ends the run — review that assumption for this scene (docs/BACKLOG.md B94).",
+                    this);
+            }
         }
 
         private void ActivateRoom(int index)

@@ -1222,9 +1222,8 @@ namespace Boxhead.Enemy
                 Destroy(burst.gameObject, burst.main.duration + burst.main.startLifetime.constantMax + 0.5f);
             }
 
-            // ── Step 4: Shrink to zero AND fade alpha simultaneously over defeatHoldDuration ──
-            // MaterialPropertyBlock drives the alpha without touching shader keywords — the
-            // material asset stays opaque, so no URP surface-type switch can reset _BaseColor.
+            // ── Step 4: Shrink to zero over defeatHoldDuration (no alpha fade — see ShrinkAndFade's
+            // own doc comment for why, and for the MaterialPropertyBlock/SRP Batcher caution) ──
             yield return StartCoroutine(ShrinkAndFade(defeatHoldDuration));
 
             // ── Step 5: ImaginationRestore effect, then TriggerWin ──
@@ -1278,6 +1277,10 @@ namespace Boxhead.Enemy
         /// uses URP Surface Type = Opaque, which ignores _BaseColor.a entirely — the geometry
         /// stayed fully opaque regardless of the alpha value written. The shrink alone (wobble
         /// + particle burst + scale-to-zero) provides sufficient visual payoff.
+        /// Do not reintroduce alpha fade via MaterialPropertyBlock even on a non-Opaque material:
+        /// this project's Mobile_RPAsset has SRP Batcher enabled, under which MaterialPropertyBlock
+        /// breaks SRP batching per-instance (unlike per-instance Material copies, which still batch
+        /// fine with the same shader variant) — see docs/BACKLOG.md B16.
         /// Unscaled time — see DefeatSequence's class-level comment on why every step of the
         /// defeat animation must be immune to Time.timeScale.
         /// </summary>
