@@ -7,7 +7,7 @@
 - **Phase 3 (World 2)** — **substantially delivered 2026-08-31 → 2026-09-02**, four new ADRs (0005–0008), open validation and design items tracked in `docs/SPRINT.md` §Still open for World 2. See Phase 3 below.
 - **Sprint bookkeeping:** Sprint 0 was never formally closed and no successor sprint document was opened, so Phases 2 and 3 both ran under a document titled "Sprint 0". Flagged for the owner in `docs/SPRINT.md` §Open for owner decision, along with `CLAUDE.md`'s stale "back in Discovery" lifecycle line.
 
-This roadmap reflects the podcast production model: BoxForged is being built live to demonstrate AI-assisted game development by two non-professional-developer creators. Scope is deliberately small for the team-built portion — the audience builds everything beyond it.
+This roadmap reflects the podcast production model: BoxForged is being built live to demonstrate AI-assisted game development by two non-professional-developer creators. Scope is deliberately small for the pre-built portion — beyond that, the audience supplies change requests (new levels, features, ideas), and the co-hosts (with the AI studio) triage and build them live on the show. **The audience does not build or contribute content directly — no external-contributor tooling or framework is needed** (corrected 2026-09-09; this section previously implied the audience builds World 3+ itself).
 
 ---
 
@@ -18,9 +18,9 @@ This roadmap reflects the podcast production model: BoxForged is being built liv
 | **Core systems** | Team (owner + AI studio) | Combat, camera, forge, progression, save, UI, audio — the reusable foundation everything else depends on |
 | **World 1 — The Cul-de-Sac (Western)** | Team | **One continuous scene** (`CulDeSac_WildWestCity.unity`) played start to finish, zoned by `RoomManager` — not separate room scenes. Replanned 2026-08-25, see [ADR-0004](adr/0004-world1-single-continuous-scene.md). |
 | **World 2 — The Backyard (Dojo)** | Team | New build. Grasscutter boss. |
-| **World 3+** | Audience (podcast contribution) | Framework and tools must exist so non-experts can extend the game; team does not pre-build these worlds |
+| **World 3+** | Team (co-hosts + AI studio), from audience-supplied requests | Audience submits ideas/requests to the co-hosts; the team (not the audience) triages and builds them live on the show. Team does not pre-build these worlds ahead of time. |
 
-The team's job in pre-production and production is to make Worlds 1 and 2 excellent, and to make sure the systems underneath them (LevelBuilder, forge, combat, camera) are solid enough that an audience-built World 3 doesn't require re-architecting anything.
+The team's job in pre-production and production is to make Worlds 1 and 2 excellent, and to make sure the systems underneath them (LevelBuilder, forge, combat, camera) are solid enough that building World 3 live, from audience requests, doesn't require re-architecting anything.
 
 ---
 
@@ -124,10 +124,10 @@ Still open — full detail and the "decide, don't just fix" items are in `docs/S
 ### Phase 4 — Podcast Launch Readiness
 - Both worlds playable end-to-end
 - Release-readiness checklist run
-- Audience contribution framework documented (how someone extends a World 3 without professional Unity experience)
+- A lightweight process for collecting audience requests/ideas and having the co-hosts triage them into on-air work (not a contributor tooling/framework — the audience does not touch the game directly)
 
-### Phase 5+ — Audience-Driven Expansion (Post-launch)
-- World 3+ per podcast/audience direction
+### Phase 5+ — Live Build-Out From Audience Requests (Post-launch)
+- World 3+ built live by the co-hosts + AI studio, from requests the audience supplies
 - Co-op (Cowgirl, Female Ninja) — requires the reunion-zone story beat to be resolved first
 - Meta-progression (Spark), monetization integration
 - HKW real-world skill unlock system (Phase 3 per GDD Section 10.1)
