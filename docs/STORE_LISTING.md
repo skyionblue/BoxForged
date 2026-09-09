@@ -25,6 +25,7 @@ Source material for all copy below: `docs/CREATIVE_STATE.md` (CANON), `docs/STOR
 | In-app purchases | No |
 | Privacy policy URL | `https://boxforged.com/privacy/` |
 | Support URL / contact | `https://boxforged.com/support/` (or a contact-form page there) — see §6 for placeholder copy if that page doesn't exist yet |
+| Support / feedback email | `boxforged@gmail.com` (owner decision, 2026-09-09) |
 
 ---
 
@@ -56,7 +57,7 @@ Source material for all copy below: `docs/CREATIVE_STATE.md` (CANON), `docs/STOR
 >
 > No ads. No pressure to buy anything. Just a kid, a box, and a world worth seeing clearly.
 >
-> *BoxForged is being built live, in public, by two engineers with no prior game-dev experience — follow the build at theunboxedheroes.com.*
+> *BoxForged is being built live, in public, by two engineers with no prior game-dev experience — follow the build at boxforged.com.*
 
 **Notes on this draft:**
 - Deliberately doesn't promise co-op (designed in architecturally, not shippable in Phase 1 — `docs/CREATIVE_STATE.md` §Game Structure) or name specific weapons/enemies that might change before launch.
@@ -172,7 +173,7 @@ Please include:
 We're a two-person team building this game live — we read every message.
 ```
 
-**Open decision:** what email address should this point to? The known existing contact is `unboxedheroes.imagination@gmail.com` (from `docs/media/media-kit.md`), but given the `boxforged.com` domain and the `com.boxforged` bundle ID both signal a distinct game-brand identity from the podcast, you may want a dedicated address (e.g. `support@boxforged.com` or `hello@boxforged.com`) instead. Not set here — placeholder left as `[SUPPORT EMAIL]` in both this section and §4 until you decide.
+**Decided (owner, 2026-09-09):** `boxforged@gmail.com` — replace `[SUPPORT EMAIL]` above and in §4 with this address before publishing either page, and use it as TestFlight's Feedback Email (`docs/SPRINT.md` "Ready for TestFlight" step 3).
 
 ---
 
@@ -182,10 +183,9 @@ These need either an asset/art pass, a device, or a decision that isn't copy:
 
 - ~~App icon gaps (Android adaptive/round empty, iOS 180×180 mismatch)~~ **FIXED 2026-09-08** — all icon slots (iOS + Android) now consistently use `AppIcon_BoxForged.png`. See `docs/SPRINT.md` Sprint 2.
 - ~~Privacy policy not live~~ **RESOLVED — was already live**, confirmed 2026-09-08. See §4.
-- **Support page** — is `https://boxforged.com/support/` also already live (same as privacy turned out to be), or does it still need publishing? Not yet confirmed either way.
+- **Support page** — built at `website/support/index.html` (2026-09-09), matching the privacy page's template, with `boxforged@gmail.com` as the contact address. Not yet deployed — needs the same tarball/nginx deploy steps as the rest of `website/` (see `website/README.md`) before `https://boxforged.com/support/` goes live.
 - **Screenshots** — both stores require real in-game screenshots (Play Mode or on-device captures), not mockups. World 2 is now actually reachable (B131) and the win/World-Map flow is confirmed working end-to-end (B106/B140/B141) — safe to capture now.
 - **App preview video** (15–30s, per the existing `docs/media/social-launch-playbook.md` checklist) — needs real gameplay footage.
-- **Support email decision** (§6) — only still relevant if the support page isn't already live with its own contact method.
 - **Final owner read-through of §2's copy and §3's rating table** before either goes into a store console — this document is a draft, not a submission.
 - **Performance is over its own internal budget** (draw calls, triangles — `docs/BACKLOG.md` B132) — not a store-compliance blocker, safe to ship to TestFlight for real-device feedback, but worth knowing before a public release.
 

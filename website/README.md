@@ -10,7 +10,7 @@
 ### 1. Create the tarball (run from the repo root)
 
 ```bash
-tar -czf website-deploy.tar.gz -C website index.html assets/ privacy/
+tar -czf website-deploy.tar.gz -C website index.html assets/ privacy/ support/
 ```
 
 ### 2. Upload to the server
