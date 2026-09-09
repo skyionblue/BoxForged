@@ -71,7 +71,6 @@ namespace Boxhead.Player
 
         private BoxSystem        _boxSystem;
         private CombatController _combatController;
-        private WeaponEquipController _weaponEquipController;
         // Source of truth for the forged tier of whatever is currently equipped (see B41). May
         // be null on prefabs that never carry a WeaponInventory (e.g. non-player humanoids using
         // WeaponHolder for a purely cosmetic held weapon).
@@ -106,7 +105,6 @@ namespace Boxhead.Player
         {
             _boxSystem        = GetComponent<BoxSystem>();
             _combatController = GetComponent<CombatController>();
-            _weaponEquipController = GetComponent<WeaponEquipController>();
             TryGetComponent(out _weaponInventory);
             _animator = GetComponentInChildren<Animator>();
 
@@ -381,7 +379,6 @@ namespace Boxhead.Player
 
             _animator?.SetInteger("WeaponType", 1);
             _combatController?.OnWeaponEquipped(data?.ability);
-            _weaponEquipController?.EquipWeapon();
         }
 
         /// <summary>
@@ -398,7 +395,6 @@ namespace Boxhead.Player
 
             _animator?.SetInteger("WeaponType", 0);
             _combatController?.OnWeaponEquipped(null);
-            _weaponEquipController?.UnequipWeapon();
         }
     }
 }

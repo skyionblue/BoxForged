@@ -354,8 +354,10 @@ e.g. `TheFirstStrikeBehaviour._firstHitReady`, `_cachedCombat`. A single-player-
 ### B18. Weapon attach pooling
 `Player/WeaponHolder.cs:164-167` does `Destroy` + `Instantiate` on every equip, with a standing `// TODO: replace Destroy/Instantiate with an object pool`. Pool only if profiling shows it matters.
 
-### B19. Unreferenced components that were written and never attached — **`WeaponForgeAnimation.cs` half FIXED 2026-09-09, `WeaponEquipController.cs` half still open**
-**Partially resolved 2026-08-19.** `Systems/WeaponForgeAnimation.cs` — GUID was in zero prefabs and zero scenes; `OnWeaponForged` / `OnWeaponUpgraded` now have a live subscriber (`Systems/ForgePresenter.cs`, added in Sprint 0), which supersedes what `WeaponForgeAnimation` attempted. `WeaponForgeAnimation.cs` is now confirmed fully redundant — candidate for deletion, not attachment. `Player/WeaponEquipController.cs` is still not on the player prefab, so `WeaponHolder.cs:251` still calls it through a null-conditional and its two events still never fire — that half is still open. Attach or remove. **Fix (`860b35df`): `WeaponForgeAnimation.cs` deleted (confirmed via owner in-session — the cardboard-cloud/weapon-name reveal the owner was checking against is `ForgePresenter`, unrelated to this file). `WeaponEquipController.cs` attach-or-remove decision remains open.**
+### B19. Unreferenced components that were written and never attached — **FIXED 2026-09-09 (both halves)**
+**Partially resolved 2026-08-19.** `Systems/WeaponForgeAnimation.cs` — GUID was in zero prefabs and zero scenes; `OnWeaponForged` / `OnWeaponUpgraded` now have a live subscriber (`Systems/ForgePresenter.cs`, added in Sprint 0), which supersedes what `WeaponForgeAnimation` attempted. `WeaponForgeAnimation.cs` is now confirmed fully redundant — candidate for deletion, not attachment. `Player/WeaponEquipController.cs` is still not on the player prefab, so `WeaponHolder.cs:251` still calls it through a null-conditional and its two events still never fire — that half is still open. Attach or remove. **Fix (`860b35df`): `WeaponForgeAnimation.cs` deleted (confirmed via owner in-session — the cardboard-cloud/weapon-name reveal the owner was checking against is `ForgePresenter`, unrelated to this file).**
+
+**`WeaponEquipController.cs` half — resolved 2026-09-09, owner decision: delete, don't attach.** Traced the actual production path: `WeaponHolder.cs` already sets the Animator's `WeaponType` parameter directly (the real, shipping behavior). `WeaponEquipController`'s own independent toggle was never attached, so its calls were no-ops, and its `OnWeaponEquipped`/`OnWeaponUnequipped` events and `IsWeaponEquipped` property had zero subscribers anywhere in the codebase — attaching it would only add a redundant, unused animator toggle. Deleted `WeaponEquipController.cs` and removed the dead `_weaponEquipController` field/calls from `WeaponHolder.cs`. Validated clean via Unity MCP.
 
 ### B20. `SaveTester` must not ship — **FIXED 2026-09-09**
 `Core/SaveTester.cs` is a 149-line IMGUI `OnGUI` debug panel. Strip from release builds. **Fix (`191ac9ea`): the panel body is now wrapped in `#if UNITY_EDITOR || DEVELOPMENT_BUILD`, so it's still usable in Editor/dev builds but fully compiled out of a real release build. Not attached to any current scene, so nothing else changes.**
@@ -1653,7 +1655,7 @@ Both matter more once ADR-0008's I3 lands (`_buriedYOffset` −3.60): with the b
 
 **Suggested scope:** a tall-grass card/instanced band across the boss's dormancy area, plus a one-shot particle burst parented to the boss and triggered at the `_introTickOverRange` crossing (the moment `tickingStarted` flips in `BossIntro`), which is already a distinct beat in the coroutine with no presentation attached to it.
 
-### B125. Zone 2 no longer has a central obstruction — the "orbital" movement grammar needs a decision
+### B125. Zone 2 no longer has a central obstruction — the "orbital" movement grammar needs a decision — **DEFERRED 2026-09-09, owner decision**
 **Impact:** design. **Priority: P2.** Surfaced 2026-09-01 as a consequence of the owner's cherry-tree placement.
 
 `zone-layout-spec.md` §1.3 and [ADR-0006](adr/0006-world2-zone-scale-and-arena-metric.md) §1.1 ground 3 both build zone 2's combat read around a **central** obstruction the player orbits. With the tree at the north rim by owner decision, the arena's centre is empty and the only interior obstacle sits 7.53 m off-axis, hard against the north wall — so the fight floor is now an open 20 m disc with an asymmetric occluder at one end.
@@ -1662,7 +1664,9 @@ This is not a bug and it is not a reason to move the tree. It is a design conseq
 
 Route to `game-designer` with `technical-director`, and update `zone-layout-spec.md` §1.3 and ADR-0006 §1.1's ground 3 with whatever is decided — ADR-0006's reasoning stays on the record either way.
 
-### B126. The built cherry tree does not match ADR-0006 §1.1's canopy envelope, and its canopy has no collider
+**Owner decision, 2026-09-09: explicitly deferred, not resolved.** "I don't want to change anything really in World1 or World2 as they are ready to ship." No design pass, no layout change, no doc amendment — World 1 and World 2 are being left exactly as shipped. Revisit only if the owner raises it again; do not route to `game-designer`/`technical-director` or treat this as a live task in the meantime.
+
+### B126. The built cherry tree does not match ADR-0006 §1.1's canopy envelope, and its canopy has no collider — **DECIDED 2026-09-09, owner decision**
 **Impact:** art pipeline + a live measurement trap. **Priority: P3.** Found 2026-09-01 by `technical-director`.
 
 ADR-0006 §1.1 specifies *"trunk r ≤ 0.35, canopy underside ≥ 4.0, canopy r ≤ 3.5, total height ≤ 8.0."* Measured from `CherryTree_BlossomCourt`'s mesh in ENV-local space:
@@ -1677,6 +1681,10 @@ ADR-0006 §1.1 specifies *"trunk r ≤ 0.35, canopy underside ≥ 4.0, canopy r 
 **The measurement trap is the more useful half of this item:** only the 0.35 m trunk capsule is on the `Building` layer. **The canopy has no collider.** Any clearance check done with `Physics.Raycast`/`Linecast` — which is what ADR-0006 §Validation and B116's M2 both prescribe — passes straight through 8.8 m of foliage and reports clear. ADR-0008's canopy figures were computed against a 0.2 m voxelisation of the tree's actual triangles for this reason, and ADR-0008 §Validation 4 makes that mandatory for any re-check.
 
 **Decide, don't just fix:** the envelope may simply be wrong for the asset the owner wants (and the tree's position is now CANON, so the envelope is downstream of a decision that has already been made). Either amend ADR-0006 §1.1's envelope to the built values, or re-author the asset. Whichever way it goes, add a `NavMeshObstacle` or a canopy collider only if a system actually needs one — the intro camera does not (4.097 m of clearance), but M2 and the occlusion fader both do their measuring with physics.
+
+**Owner decision, 2026-09-09 — no changes to shipping World 1/World 2 content:**
+1. **Amend the spec, don't re-author the asset.** ADR-0006 §1.1's envelope is now superseded by the built values (canopy ellipse 4.4 × 2.5 m, underside ≈ 1.9 m) — see the amendment banner added directly to ADR-0006 §1.1. The tree itself is untouched.
+2. **No canopy collider.** The false-clear gap in physics-based clearance checks (this ADR's §Validation, M2, `BuildingOcclusionFader`) is accepted as a known limitation, not fixed. Any future clearance check against this tree needs the manual 0.2 m voxelisation approach ADR-0008 §Validation 4 already uses, not a raw `Physics.Raycast`.
 
 ### B127. `NavMeshModifier` components in `Backyard_Dojo.unity` are inert — the scene uses the legacy bake, and 6 props carve holes their author asked them not to
 **Impact:** runtime pathing. **Priority: P2.** Found 2026-09-01 by `technical-director` while fixing B122.

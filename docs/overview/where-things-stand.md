@@ -21,14 +21,19 @@ TestFlight.
   branding (not leftover podcast/placeholder art).
 - Store-listing prep (screenshots plan, copy, privacy policy) is essentially
   done.
-- Eight small backlog cleanups landed 2026-09-09: the save-system debug panel
+- Nine small backlog cleanups landed 2026-09-09: the save-system debug panel
   no longer ships in release builds, shadow rendering is tuned to the
   camera's actual range (a real mobile performance win), the "enemies
-  remaining" HUD counter can no longer read wrong, a chunk of confirmed-dead
-  code and 3 stale duplicate environment prefabs were removed, a stale/
-  misleading code comment was corrected, a defensive warning was added to
-  catch a future zone-progression edge case, and a cosmetic Inspector data
-  quirk on 4 scene objects was fixed.
+  remaining" HUD counter can no longer read wrong, two confirmed-dead scripts
+  and 3 stale duplicate environment prefabs were removed, a stale/misleading
+  code comment was corrected, a defensive warning was added to catch a future
+  zone-progression edge case, and a cosmetic Inspector data quirk on 4 scene
+  objects was fixed.
+- Two open design questions about World 2's cherry tree/zone-2 layout were
+  resolved by owner decision, both without touching shipping World 1/World 2
+  content: the tree's canopy spec is amended to match the built asset (no
+  collider added), and the zone-2 combat-layout question is deliberately
+  deferred — "ready to ship" content isn't being reopened for it.
 
 ## What's next — and it's not a coding task
 

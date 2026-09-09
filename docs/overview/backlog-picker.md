@@ -3,18 +3,13 @@
 *Last updated: 2026-09-09. A curated, plain-language view of what's still open
 in `docs/BACKLOG.md` (1800+ lines), grouped by what kind of work it actually
 is. Full technical detail for any item lives at its `B##` entry there — search
-for the number. Eight items (B17, B20, B95, B81, B16, B94, B97, and the
-`WeaponForgeAnimation.cs` half of B19) were fixed 2026-09-09 and are not
-listed below.*
+for the number. Nine items (B17, B20, B95, B81, B16, B94, B97, B19) are fully
+fixed as of 2026-09-09 and are not listed below. B125 and B126 were decided
+(not fixed, but resolved — see their `BACKLOG.md` entries) and are also
+dropped from this list.*
 
 Check items off as they get done, or just tell me the B-number(s) you want to
 tackle next.
-
-## Quick wins — small, low-risk, no decision needed
-
-These are safe to hand me directly, same as the last batch.
-
-- [ ] **B19 (remainder)** — `Player/WeaponEquipController.cs` is still not attached to the player prefab, so its events never fire. Needs an attach-or-remove decision, not a delete.
 
 ## Real bugs, not yet fixed
 
@@ -32,9 +27,7 @@ Actual defects players could hit. Some are small, a couple need real investigati
 
 I shouldn't just pick an answer for these — they're judgment calls.
 
-- [ ] **B125** — World 2's second zone lost its "thing to fight around" when the cherry tree moved off-center. Needs a decision on the combat layout.
-- [ ] **B126** — The cherry tree's canopy is bigger than originally specified and has no collision. Decide: change the spec, or resize/fix the tree.
-- [ ] **B4** — The real fix behind B44/B45: two overlapping ability systems need to be consolidated. This is the actual root cause, not a patch.
+- [ ] **B4** — The real fix behind B44/B45: two overlapping ability systems need to be consolidated. This isn't really a decision (already decided: keep V4) so much as ~2-3 days of real design + implementation work, best scheduled as its own task through `technical-director`. Still waiting on a go/no-go to schedule it.
 
 ## Needs a `technical-director` scoping pass (architecture-level)
 
