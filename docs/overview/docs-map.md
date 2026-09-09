@@ -85,3 +85,10 @@ wasn't moved without checking first.
 `art/style-guide.md` (cardboard-and-marker art direction) is referenced by
 exact path from level-design docs. Current, not legacy, despite living
 outside the ALL-CAPS root set.
+
+## Not in `docs/` at all: `grasscutter-model-replacement-plan.md`
+
+Lives at the repo root, not under `docs/`. A held (not started) plan for
+replacing the Grasscutter boss's model with a newer source file — see
+`docs/SPRINT.md`'s 2026-09-09 entry for why it's on hold. Not gitignored,
+just not yet moved into the docs tree.
