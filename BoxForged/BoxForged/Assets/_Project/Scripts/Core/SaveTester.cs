@@ -11,6 +11,7 @@ namespace Boxhead.Core
     /// </summary>
     public class SaveTester : MonoBehaviour
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         // Panel dimensions — fixed so the layout never reflows unexpectedly.
         private const int PanelX      = 10;
         private const int PanelY      = 10;
@@ -145,5 +146,6 @@ namespace Boxhead.Core
             SaveSystem.Instance.DeleteAll();
             _statusMessage = "Deleted. Data reset to defaults.";
         }
+#endif // UNITY_EDITOR || DEVELOPMENT_BUILD
     }
 }

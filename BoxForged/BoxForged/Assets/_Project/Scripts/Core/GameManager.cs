@@ -205,7 +205,12 @@ namespace Boxhead.Core
                         if (roomSO.spawnPoints != null)
                         {
                             foreach (var sp in roomSO.spawnPoints)
+                            {
+                                // Mirror LevelBuilder.BuildSpawnPoints()'s null-prefab skip so this
+                                // total and the enemies actually spawned never drift apart (B95).
+                                if (sp.enemyPrefab == null) continue;
                                 maxSpawns += sp.spawnCount;
+                            }
                         }
 
                         // A bossOwnedWin zone with no spawn points represents one pre-placed
