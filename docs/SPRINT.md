@@ -8,10 +8,32 @@
 
 ## Ready for TestFlight — what to actually do next
 
-1. **Confirm an App Store Connect app record exists for `com.boxforged`.** Bundle ID changed this session (from `com.theunboxedheroes`) — if no app record has been created under the new ID yet, that's the first blocking step; Xcode's archive upload needs somewhere to land.
-2. **Decide the feedback email** for TestFlight's "Test Information" (not a full support page — TestFlight itself just needs an email, per this session's understanding; only double-check if App Store Connect's UI asks for more). Known existing address: `unboxedheroes.imagination@gmail.com`; open question is whether to use a dedicated `boxforged.com` address instead.
-3. **Privacy policy is already live and confirmed accurate** at `https://boxforged.com/privacy/` (verified 2026-09-08 by fetching it directly — matches the app's real behavior: no data collection, no ads/analytics, no SDKs, explicit children's-privacy language). Nothing to do here.
-4. **Support page (`https://boxforged.com/support/`) is NOT live** — confirmed by owner 2026-09-08. Not believed to block TestFlight itself (see #2), but will be needed before a full public store listing.
+**Status 2026-09-08: owner confirmed this has not been started yet.** This is genuinely the next action, not already in progress. All of it is owner-performed (App Store Connect / Apple Developer portal / Xcode) — not something an agent does, per this project's own rule that final builds and deployments are the owner's.
+
+### Step-by-step walkthrough
+
+**1. Create the App Store Connect app record** (only needs doing once, since the bundle ID changed this session).
+- Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com) → **My Apps** → **+** → **New App**.
+- Platform: iOS. Name: BoxForged. Primary language: English. **Bundle ID**: select `com.boxforged` from the dropdown.
+  - If `com.boxforged` isn't in that dropdown yet, register it first at [developer.apple.com/account](https://developer.apple.com/account) → **Certificates, IDs & Profiles** → **Identifiers** → **+** → **App IDs** → register `com.boxforged`. Then it'll show up back in App Store Connect.
+- SKU: any unique internal label (e.g. `boxforged001`, never shown to users). Click **Create**.
+
+**2. Archive and upload the build from Xcode.**
+- Open the Xcode project Unity generated from the iOS build.
+- Device/scheme selector at the top must say **"Any iOS Device"**, not a simulator.
+- **Product → Archive** (takes a few minutes).
+- In the **Organizer** window that opens: select the archive → **Distribute App** → **App Store Connect** → **Upload** → accept the defaults (automatic signing is already configured via the post-build script, Team `V62D5FT8F5`).
+
+**3. Fill in TestFlight info** (back in App Store Connect, once the build finishes processing — usually 10–60 min, appears under the app's **TestFlight** tab).
+- **Test Information**: Beta App Description, **Feedback Email** (decide: existing `unboxedheroes.imagination@gmail.com`, or a dedicated `boxforged.com` address — still an open decision), **Privacy Policy URL** → `https://boxforged.com/privacy/` (already live and confirmed accurate, 2026-09-08).
+
+**4. Add testers.**
+- **Internal Testing** — your own App Store Connect team, no Apple review, available almost immediately.
+- **External Testing** — a group + public link, goes through Apple's Beta App Review (lighter than full App Store review, typically under 48 hours).
+
+### Still-open decisions blocking full completion (not TestFlight itself)
+- Feedback email choice (step 3 above).
+- Support page (`https://boxforged.com/support/`) is **not live** (confirmed by owner 2026-09-08) — not believed to block TestFlight, but needed before a full public store listing.
 5. Do the archive/upload in Xcode yourself (per project rule — this isn't something an agent does). Once a build is in TestFlight, this sprint's remaining items (screenshots, video, the performance question) can happen in parallel with real tester feedback.
 
 ## Confirmed fixed and tested this session (2026-09-08), full detail in `docs/BACKLOG.md`
