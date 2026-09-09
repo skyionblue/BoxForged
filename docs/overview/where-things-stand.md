@@ -21,6 +21,10 @@ TestFlight.
   branding (not leftover podcast/placeholder art).
 - Store-listing prep (screenshots plan, copy, privacy policy) is essentially
   done.
+- Three small release-hygiene fixes landed 2026-09-09: the save-system debug
+  panel no longer ships in release builds, shadow rendering is tuned to the
+  camera's actual range (a real mobile performance win), and the "enemies
+  remaining" HUD counter can no longer read wrong.
 
 ## What's next — and it's not a coding task
 
