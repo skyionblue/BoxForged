@@ -494,7 +494,9 @@ namespace Boxhead.Core
         public void TriggerWin()
         {
             // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
-            Debug.Log($"[GameManager] TriggerWin() called. Current State={State}.");
+            // B142: Time.timeScale added — a stuck non-1 value here is a leading candidate for
+            // the reported "no win screen + character frozen" recurrence.
+            Debug.Log($"[GameManager] TriggerWin() called. Current State={State}. Time.timeScale={Time.timeScale}.");
             if (State != GameState.Playing)
             {
                 Debug.Log($"[GameManager] TriggerWin() early-returned — State was {State}, not Playing.");

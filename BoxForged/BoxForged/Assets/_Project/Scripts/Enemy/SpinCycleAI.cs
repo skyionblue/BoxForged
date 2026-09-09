@@ -1147,7 +1147,13 @@ namespace Boxhead.Enemy
         private void HandleDeath()
         {
             // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
-            Debug.Log("[SpinCycleAI] HandleDeath() entered.");
+            // B142: also log Time.timeScale and the player's CombatController.State — a stuck
+            // non-1 timeScale or a stuck non-Idle combat state at this exact moment are the two
+            // leading candidates for "character stopped moving, no win screen" and neither was
+            // previously captured anywhere on this path.
+            Debug.Log($"[SpinCycleAI] HandleDeath() entered. Time.timeScale={Time.timeScale}, " +
+                $"playerCombatState={(_playerCombat != null ? _playerCombat.State.ToString() : "null")}, " +
+                $"playerInputEnabled={(_playerInput != null ? _playerInput.enabled.ToString() : "null")}");
             _state = BossState.Dead;
 
             if (_agent != null) { _agent.isStopped = true; _agent.enabled = false; }
@@ -1233,7 +1239,10 @@ namespace Boxhead.Enemy
                     ?.GetComponent<UnityEngine.Rendering.Volume>();
 
             // Diagnostic logging kept permanently (B106 proved intermittent/hard to reproduce).
-            Debug.Log($"[SpinCycleAI] DefeatSequence Step 5 reached. _imaginationVolume null? {_imaginationVolume == null}. GameManager.Instance null? {GameManager.Instance == null}");
+            // B142: Time.timeScale/combat-state added — see HandleDeath()'s matching log comment.
+            Debug.Log($"[SpinCycleAI] DefeatSequence Step 5 reached. _imaginationVolume null? {_imaginationVolume == null}. " +
+                $"GameManager.Instance null? {GameManager.Instance == null}. Time.timeScale={Time.timeScale}, " +
+                $"playerCombatState={(_playerCombat != null ? _playerCombat.State.ToString() : "null")}");
 
             // Lerp the imagination-restore volume in, then TriggerWin (called inside LerpImagination).
             // If the volume is still null, fall back to TriggerWin directly.
