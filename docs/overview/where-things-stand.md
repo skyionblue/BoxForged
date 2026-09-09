@@ -21,10 +21,14 @@ TestFlight.
   branding (not leftover podcast/placeholder art).
 - Store-listing prep (screenshots plan, copy, privacy policy) is essentially
   done.
-- Three small release-hygiene fixes landed 2026-09-09: the save-system debug
-  panel no longer ships in release builds, shadow rendering is tuned to the
-  camera's actual range (a real mobile performance win), and the "enemies
-  remaining" HUD counter can no longer read wrong.
+- Eight small backlog cleanups landed 2026-09-09: the save-system debug panel
+  no longer ships in release builds, shadow rendering is tuned to the
+  camera's actual range (a real mobile performance win), the "enemies
+  remaining" HUD counter can no longer read wrong, a chunk of confirmed-dead
+  code and 3 stale duplicate environment prefabs were removed, a stale/
+  misleading code comment was corrected, a defensive warning was added to
+  catch a future zone-progression edge case, and a cosmetic Inspector data
+  quirk on 4 scene objects was fixed.
 
 ## What's next — and it's not a coding task
 

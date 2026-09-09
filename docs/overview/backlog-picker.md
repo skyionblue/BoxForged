@@ -3,8 +3,9 @@
 *Last updated: 2026-09-09. A curated, plain-language view of what's still open
 in `docs/BACKLOG.md` (1800+ lines), grouped by what kind of work it actually
 is. Full technical detail for any item lives at its `B##` entry there — search
-for the number. Three items (B17, B20, B95) were already fixed this session
-and are not listed below.*
+for the number. Eight items (B17, B20, B95, B81, B16, B94, B97, and the
+`WeaponForgeAnimation.cs` half of B19) were fixed 2026-09-09 and are not
+listed below.*
 
 Check items off as they get done, or just tell me the B-number(s) you want to
 tackle next.
@@ -13,11 +14,7 @@ tackle next.
 
 These are safe to hand me directly, same as the last batch.
 
-- [ ] **B81** — 3 confirmed-stale duplicate environment prefabs (`pfb_env_bank`, `_general_store`, `_blacksmith_forge`). Needs one quick reference-check pass, then delete.
-- [ ] **B16** — A code comment recommends a rendering technique that actually hurts performance on this project's pipeline. Comment fix only.
-- [ ] **B19** — `WeaponForgeAnimation.cs` is confirmed fully dead code. Safe to delete.
-- [ ] **B94** — A hand-set boundary check that should be derived instead. Low risk, not urgent.
-- [ ] **B97** — Cosmetic Unity Inspector data quirk on 4 objects (zero gameplay effect).
+- [ ] **B19 (remainder)** — `Player/WeaponEquipController.cs` is still not attached to the player prefab, so its events never fire. Needs an attach-or-remove decision, not a delete.
 
 ## Real bugs, not yet fixed
 
