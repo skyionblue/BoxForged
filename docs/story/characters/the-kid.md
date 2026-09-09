@@ -12,7 +12,7 @@ This distinction matters. Every other character in the world who picks up a box 
 
 The lens is literal in the game: she cuts a hole in the box and looks through it, and the backyard is different. Not magically transformed. Just: seen as what it is underneath. Seen correctly.
 
-The box on her head is not a costume. It is not a character gimmick. It is a kid who found a way to show people what she can see, and never took it off because the world has not been reclaimed yet.
+The box on her head is not a costume. It is not a character gimmick. It is a kid who found a way to show people what she can see — and who put the thing on her head instead of holding it, which is how everyone who looks at her knows she has chosen something. She does not take it off. She is never finished looking, and she does not lend it: when she recruits, she gives another kid cardboard and shows them where to cut.
 
 ---
 
@@ -25,6 +25,12 @@ The day The Great Hush happened, she was in the backyard trying to build a trebu
 She didn't fully understand what had happened. She went back to the trebuchet.
 
 Two days later, she found the box. It was in the recycling bin — oversized, brown, the kind that held a small appliance. She picked it up because it was the right size to be a shield. She turned it over. Cut the flap corners with a pocketknife. She looked through the hole, and the backyard looked different through it. Not literally — the same grass, the same fence, the same dead apple tree. But she saw it as something, the way you see a cloud as a rabbit. And then the rabbit started moving.
+
+Here is the part she has never explained to anyone, because nobody has asked her the right way: she had it in her hands. She could have carried it. It was a good shield — light, stiff, wide enough to get behind. But a shield is a thing you're holding, and she had already noticed, in the two days since the noise, that the adults on her street were all holding things and setting them down again. Her mom's phone. The mower. The guy in the driveway.
+
+So she didn't carry it. She turned it over and put it on.
+
+She had seen Mr. Wen's after-school kids walk up the block on Tuesdays with their gi tops already on over their clothes, before they'd learned anything, before they'd been given a single belt. She'd asked him about it once from her side of the fence — why do they wear it before they can do it — and he'd said something she didn't understand until the box was over her head: *because that's the part they can do today.*
 
 She ran inside for markers. She's been running somewhere ever since.
 

@@ -12,6 +12,9 @@ Owner-approved creative facts and constraints that should not be casually change
 - Mr. Wen was a **martial arts instructor** — had a small dojo nearby, taught kids after school. On Sunday mornings he sat in the roots of the World Tree. He knew where it was before Kid did. He knew what it was for. The Lens cannot reach him — he is not somewhere imagination can simply fix.
 - The **Unimaginative escalate through management failures, not ideology** — they notice Kid's reclamation when grey zones go vivid, when their systems report anomalies. They are bureaucrats responding to broken metrics, not crusaders opposing imagination.
 - The box is a lens, not a creator. It reveals imagination that was always there. Kid does not pretend. She sees correctly.
+- **The box is worn, not held — and that is the point.** She took the box for its size; it was the right size to be a shield. But a shield is something you hold, and you can put a shield down. She cut the flap corners and put it over her head instead, the way you put on a gi before you are allowed to train: not because it protects you yet, but because wearing it is the decision. Everyone who sees a kid in a box knows she has chosen something. This is why the Skeptic's box is grey and undecorated — it was put on, but it never chose anything. This is why Elder BoxHead still wears one, years later, at world scale.
+- **Corollary — the box is not lent.** Kid does not take her box off and hand it over so another kid can look through it. Recruitment is: she gives them cardboard and shows them where to cut. Each kid makes and wears their own. Then they look, and they see it or they don't. The sight is theirs, never borrowed — which is exactly what makes every kid who sees count as proof.
+- **Lore status: backstory only.** The origin moment (recycling bin, pocketknife, the decision to wear it) is documentation-only. It is not to be dramatized in a cutscene, cold open, flashback, collectible, or environmental detail. Future sessions: do not schedule it as content.
 
 ### Kid's Arc — CANON
 **Certainty → Courage.**
@@ -27,6 +30,14 @@ She is afraid she will **lose the sight** — not the fight. That one day she'll
 Kid actively recruits other kids. The invitation is the box — she shows them something through it. She does not make speeches. The more kids who see, the stronger the World Tree grows — visible in how the world looks: more vivid, more reclaimed, more alive.
 
 **Hard Knocks Workshop:** Real-world kids completing HKW skills feed this same coalition. Future feature: real HKW kids named in the World Tree (Phase 3+, confirmed as planned).
+
+### The Roster Is the Coalition — CANON
+- **Every playable character besides Kid joined, and there is only one way in.** The join is the recruitment mechanic already CANON above: Kid gives them cardboard, shows them where to cut, they make and wear their own box, and they see it or they don't. No character enters the roster by purchase-fiction, rescue, conscription, or defection.
+- **All future roster additions are kids with boxes. No exceptions.** No adults, no animals, no reformed Skeptics, no Unimaginative defectors. This is a scope wall, not a preference: one universal join-story means a character added live on the podcast is already explained the moment she appears, with no new narrative door to build.
+- **Character select is not a menu; it is a place.** The roster is diegetically the coalition — every recruited kid's box sitting in a shared World Tree space, decorated the way that kid decorated it. Choosing a character is walking up to her box.
+- **The space grows over the show's run.** A character added on-air appears there as a new box. The roster's growth *is* the recruitment theme executing in public: what Kid is doing inside the fiction is what the show is doing outside it. This is the roster-side half of "recruitment = World Tree health" — it does not replace the visual world-change already CANON under Kid's Mission.
+- **Playability owes no arc.** A character is playable because she was recruited and her box is in the space. Bespoke narrative weight — a reunion, a zone appearance, a boss intro — is optional authored material *on top of* an already-playable character, never a prerequisite for playability, co-op availability, or roster presence. No design doc, roadmap line, or sprint item may gate a character's playability on an unwritten story beat.
+- **Out of narrative scope:** the coalition space's UI, screen flow, save-state, and build architecture are not narrative canon and are deliberately unspecified here. That is a game-designer / ui-ux-designer / technical-director decision.
 
 ### Transmedia
 - A companion anime show is in development (owner's partner).
@@ -53,7 +64,8 @@ Kid actively recruits other kids. The invitation is the box — she shows them s
 - The Cowgirl arrives at the same place at the same moment, still searching.
 - Recognition is **simultaneous** — neither initiates it. Neither says "I was looking for you" first.
 - The reunion happens **separately from Kid's story**. Kid is not present. When Kid meets them they are already together — an existing fact she walks into.
-- Phase 2+ story beat. Zone TBD.
+- **This beat is background, and it gates nothing.** By its own canon shape it happens off-screen with Kid absent — so there is nothing in it for the player to do. It was never intended as a playable level, a cutscene, or an unlock condition, and it **does not gate co-op, the Cowgirl's playability, or the Female Ninja's playability.** Both are playable the moment they are recruited (see *The Roster Is the Coalition*). The reunion is optional authored weight: it can land later, surface as a fact Kid discovers in a zone, or never be shown at all.
+- Phase 2+ background beat. Zone TBD, and may stay TBD indefinitely without blocking anything. (`docs/ROADMAP.md` previously treated it as a co-op dependency; corrected 2026-09-09.)
 - **The Friend concept is not in the game.** The only friendship in the story belongs to The Elders — two people who knew each other since junior high and made a world-changing decision together. Kid does not have a named childhood best friend in the game. The Cowgirl joins Kid's cause because she notices what Kid is doing and wants to be part of it. This is covered in the companion anime, not the game.
 - **The Skeptic** is a nameless metaphysical presence — what happens to the space where imagination used to be, given a shape. It is never given a wound or a backstory.
 - **Skeptic Grunts** are a recurring enemy type — kids who never learned to see imaginatively, now working for the Unimaginative. They appear across all zones.
@@ -100,7 +112,7 @@ Important unresolved creative questions.
 - Grasscutter: **LOCKED** — World 2 boss (moved to CANON)
 - Crane Duelist: **LOCKED** — World 2 enemy (moved to CANON)
 - World 2 room structure: where does the Crane Duelist appear — Room 1, Room 2, or both?
-- The Cowgirl/Female Ninja reunion: zone TBD. Trigger: **recruitment** — the Female Ninja has seen what Kid is doing and comes to join. She seeks out the Cowgirl to be part of the effort. The Cowgirl arrives at the same place still searching. Recognition is simultaneous. Neither one gets to say "I found you."
+- The Cowgirl/Female Ninja reunion: zone TBD. Trigger: **recruitment** — the Female Ninja has seen what Kid is doing and comes to join. She seeks out the Cowgirl to be part of the effort. The Cowgirl arrives at the same place still searching. Recognition is simultaneous. Neither one gets to say "I found you." **Open but non-blocking — it gates no character, feature, or phase.**
 - The Friend: when does The Friend appear? Which zone? What is the story beat?
 - Elder BoxHead / The Two Elders: what do they want from Kid when she reaches the World Tree? Are they allies, obstacles, or both?
 - The Cardboard Mill boss: undefined.

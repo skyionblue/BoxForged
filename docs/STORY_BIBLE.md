@@ -44,7 +44,15 @@ Core emotions: **nostalgia** ("I remember doing exactly this"), **urgency with w
 The Elders acted on uncertain math. They did the work without being sure it was right. When Kid arrives at the World Tree and meets The Two Elders, she and they recognize something in each other — two things that kept going past the point where certainty ran out. The question of whether they were right, and whether she was, is the same question. The game still does not answer it. But now the silence means something different than it did.
 
 ### The box
-The box is a lens, not a creator. She cuts a hole, looks through it, and sees the world correctly — the imagined layer that was always there. The box does not make her imaginative. It reveals that she always was. She has not taken it off because the world has not been fully reclaimed yet.
+The box is a lens, not a creator. She cuts a hole, looks through it, and sees the world correctly — the imagined layer that was always there. The box does not make her imaginative. It reveals that she always was.
+
+But the lens is only half of it. She found the box because it was the right size to be a shield — and then she put it on her head instead of carrying it. That was the first real decision she ever made. A shield is something you hold, which means it is something you can set down. Mr. Wen's kids didn't hold the gi. They put it on, before they had earned anything, because putting it on was how you said *I'm doing this now*. Kid did the same thing with a box from the recycling bin, and she did it two days after the world went quiet, before she had any idea what she was volunteering for.
+
+So the box carries two meanings at once, and they do not depend on each other. Through the eye-hole: sight. On her head: allegiance. A box that has been decorated is a kid who declared something. The Skeptic's box is grey — not painted over, just never marked — because it was worn without anything being chosen. Elder BoxHead still wears one, decades on, at world scale: whatever those two decided, they are still standing in it.
+
+She does not take it off. Not because it would blind her — the imagination is hers, not the cardboard's — but because she is never finished looking, and because a declaration you take off between fights was never a declaration. This is also why she never lends it.
+
+**Recruitment, concretely.** When Kid recruits, she does not hand her box to another kid to peer through. She gives them cardboard — sometimes a flap off her own, sometimes a box she has been carrying for exactly this — and she shows them where to cut. She does not explain what they will see, because she can't, and because telling them would make it hers instead of theirs. They cut the hole. They put it on. Then they look, and either the fence is a palisade or the fence is a fence. She makes no speech either way. This is what "the invitation is the box" means: the invitation is a box of their own and a cut line, not a turn at looking through hers.
 
 ## Key relationships
 
@@ -80,8 +88,9 @@ The box is a lens, not a creator. She cuts a hole, looks through it, and sees th
 - Each zone reclaimed = color returns = someone specific somewhere gets something back
 - Boss defeats are moments of restoration, not conquest — the defeat moment and the Imagination Restore are one event
 - Upgrades are expressed imaginatively: "your broomstick is now a *legendary* staff" — never stat numbers
-- The Cowgirl and Female Ninja appear as co-op characters when co-op unlocks; their search-and-reunion is the co-op narrative engine
+- The Cowgirl and Female Ninja are playable because they were recruited, like everyone else. Co-op's narrative engine is the coalition itself — more than one kid who sees, fighting the same fence — not their reunion, which happens off-screen and gates nothing.
 - **Recruitment = World Tree health = world visually changing**: Kid shows kids something through the box; those who see join the coalition; the World Tree grows visibly stronger — more vivid color, more life bleeding into the world. This is visible, not a stat.
+- **The roster is the coalition.** Kid's mission was never to win; it was to not be the only one who sees. So the list of characters you can play is not a menu of options — it is the count of kids who cut their own cardboard and looked and saw it. Every box in that space is one more piece of proof against the only thing she is actually afraid of. The space is not finished, and is not meant to be: it is built with room left in it. New boxes keep appearing for as long as the show runs — kids added on-air, kids from Hard Knocks Workshop, kids the audience asked for. Whether The Elders were right is still not answered. Whether Kid was alone in it is answered continuously, by a room that keeps getting more crowded.
 - **HKW bridge**: Real kids completing real skills at Hard Knocks Workshop feed into the same coalition. Future Phase 3+ feature: real HKW participants named in the World Tree.
 
 ## Journey / major beats

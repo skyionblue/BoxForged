@@ -449,7 +449,7 @@ A kid in an apartment building in a city two thousand miles away puts a box on h
 
 She doesn't know why. She stands in front of the bathroom mirror. She looks at herself.
 
-Then he looks around his room and decides it's a castle.
+Then she looks around her room and decides it's a castle.
 
 ---
 

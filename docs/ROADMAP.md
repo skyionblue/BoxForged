@@ -125,10 +125,11 @@ Still open — full detail and the "decide, don't just fix" items are in `docs/S
 - Both worlds playable end-to-end
 - Release-readiness checklist run
 - A lightweight process for collecting audience requests/ideas and having the co-hosts triage them into on-air work (not a contributor tooling/framework — the audience does not touch the game directly)
+- Coalition space ("character select is a place") — the diegetic roster room that grows as characters are added on-air; design + architecture task (game-designer, ui-ux-designer, technical-director). Prerequisite for co-op and for any on-air character addition — moved up from Phase 5+ since characters start getting added at podcast launch, not after.
 
 ### Phase 5+ — Live Build-Out From Audience Requests (Post-launch)
 - World 3+ built live by the co-hosts + AI studio, from requests the audience supplies
-- Co-op (Cowgirl, Female Ninja) — requires the reunion-zone story beat to be resolved first
+- Co-op (Cowgirl, Female Ninja) — gated on the coalition/recruitment systems work (shared roster state, coalition-space presence, co-op session flow), **not** on any story beat. Both characters are narratively playable as soon as they are recruited; the Cowgirl/Female Ninja reunion is background flavour and explicitly not a dependency (`docs/CREATIVE_STATE.md` §The Roster Is the Coalition).
 - Meta-progression (Spark), monetization integration
 - HKW real-world skill unlock system (Phase 3 per GDD Section 10.1)
 
