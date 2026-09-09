@@ -9,6 +9,7 @@ where and, importantly, what's current vs. just kept for the record.*
 
 - `where-things-stand.md` — current status, plain language.
 - `the-game.md` — the settled story/world, plain language.
+- `backlog-picker.md` — every open backlog item, grouped by what kind of work it is, so you can pick what to tackle next.
 
 ## The "operating" docs (root of `docs/`, ALL CAPS names)
 

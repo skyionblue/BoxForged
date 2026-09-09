@@ -1,0 +1,71 @@
+# Backlog — Pick Your Next Task
+
+*Last updated: 2026-09-09. A curated, plain-language view of what's still open
+in `docs/BACKLOG.md` (1800+ lines), grouped by what kind of work it actually
+is. Full technical detail for any item lives at its `B##` entry there — search
+for the number. Three items (B17, B20, B95) were already fixed this session
+and are not listed below.*
+
+Check items off as they get done, or just tell me the B-number(s) you want to
+tackle next.
+
+## Quick wins — small, low-risk, no decision needed
+
+These are safe to hand me directly, same as the last batch.
+
+- [ ] **B81** — 3 confirmed-stale duplicate environment prefabs (`pfb_env_bank`, `_general_store`, `_blacksmith_forge`). Needs one quick reference-check pass, then delete.
+- [ ] **B16** — A code comment recommends a rendering technique that actually hurts performance on this project's pipeline. Comment fix only.
+- [ ] **B19** — `WeaponForgeAnimation.cs` is confirmed fully dead code. Safe to delete.
+- [ ] **B94** — A hand-set boundary check that should be derived instead. Low risk, not urgent.
+- [ ] **B97** — Cosmetic Unity Inspector data quirk on 4 objects (zero gameplay effect).
+
+## Real bugs, not yet fixed
+
+Actual defects players could hit. Some are small, a couple need real investigation time.
+
+- [ ] **B44 / B45** — Certain Epic/Legendary weapons (Bo Staff, Pressure Cannon, Magic Wand, Shuriken) either freeze combat on Special or double-fire it. *Root cause needs a design decision (see B4 below) — a temporary defensive guard is possible now, full fix isn't.*
+- [ ] **B91** — Building colliders are wider than their meshes; you can walk into porches/facades in the Cul-de-Sac.
+- [ ] **B92 / B93** — Boss and enemy NavMesh sizes exceed the project's baked settings; some boss attacks have no landing-point safety clamp.
+- [ ] **B106** — Occasionally the win screen doesn't show after beating a boss. Intermittent, logging is now in place to help catch it next time it happens.
+- [ ] **B139** — A recurring error in the enemy health bar code, seen on a real device. Not yet root-caused.
+- [ ] **B117** — A boss dash move validates where it lands but not the path it takes to get there.
+- [ ] **B124** — One planned enemy behavior (grass/petals kicking up when the boss is dormant) was never implemented.
+
+## Needs your creative/design call first
+
+I shouldn't just pick an answer for these — they're judgment calls.
+
+- [ ] **B125** — World 2's second zone lost its "thing to fight around" when the cherry tree moved off-center. Needs a decision on the combat layout.
+- [ ] **B126** — The cherry tree's canopy is bigger than originally specified and has no collision. Decide: change the spec, or resize/fix the tree.
+- [ ] **B4** — The real fix behind B44/B45: two overlapping ability systems need to be consolidated. This is the actual root cause, not a patch.
+
+## Needs a `technical-director` scoping pass (architecture-level)
+
+Bigger picture items — not something to fix in isolation.
+
+- [ ] **B127 / B128 / B133 / B134** — World 2's NavMesh setup has a cluster of related issues (inert modifiers, no bounds, runtime-bake questions).
+- [ ] **B132** — World 2's rendering performance (SRP Batcher) has never been verified on a real device; one repeated wall piece is the single biggest draw-call cost in the scene.
+- [ ] **B136** — Ten-plus places in the code independently pause/unpause the game with no shared system managing it — works today, fragile long-term.
+
+## Worth doing before a public (non-TestFlight) release
+
+- [ ] **B14** — No save-file version migration path yet. Flagged in the backlog itself as "do before first release."
+- [ ] **B15** — Some shared data assets have state that won't work correctly once co-op is added (co-op is designed-in, just not built yet).
+- [ ] **B18 / B36** — Two small performance patterns (destroy+recreate instead of reuse) — worth pooling if profiling ever shows it matters, not urgent otherwise.
+
+## Asset / content gaps
+
+- [ ] **B51** — One weapon (Six-Shooter) is missing its pickup-item art; only has the equipped version.
+- [ ] **B79 / B80 / B84** — A few environment props are undersized, too small to see, or missing their model file entirely.
+- [ ] **B29** — No sound effects exist yet for the attack-warning system.
+
+## Testing
+
+- [ ] **B7** — No automated tests exist anywhere in the project yet (also called out as a release-readiness gap in `docs/SPRINT.md`).
+
+## Old items worth double-checking before acting on
+
+These were written early on, before the camera and attack-warning systems were
+actually built and shipped. They might already be resolved by later work —
+worth a quick "is this still true?" check before treating them as real tasks:
+**B1, B2, B10, B11, B12, B13, B27**.
