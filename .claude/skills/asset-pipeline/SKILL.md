@@ -5,6 +5,12 @@ description: Meshy-to-Blender-to-Unity 3D asset pipeline and technical-art stand
 
 # Meshy -> Blender -> Unity Asset Pipeline
 
+## Blender MCP session state
+
+The Blender MCP connection is not tied to one persistent project `.blend` file — a freshly (re)connected session may report `filepath: "(unsaved)"` with no prior work loaded. Before any asset operation, call `get_blend_file_summary` (or `list_scenes`) to see what's actually there rather than assuming either an empty file or a specific already-loaded asset.
+
+This project's session is commonly left at the `setup_unity_scene` template baseline: metric units at 1:1 scale, 60 fps, `Geometry`/`Armatures`/`Lights`/`Cameras`/`Empties` collections, a 3-point AREA light rig (Key/Fill/Rim), and a `Unity Camera` aimed at the origin — Blender's own startup defaults (default Cube/Camera/Light) removed. Treat this as the expected starting scaffold, not existing project geometry — it holds no actual game asset until one is imported into it. Raw assets are staged per the project's own convention (`boxhead/models/` before processing into `Assets/_Project/...`, per `docs/PROJECT_CONTEXT.md`), not accumulated into one long-lived saved `.blend`.
+
 Treat generated/source asset coordinate systems as untrusted input. Never assume every Meshy export uses the same up axis, forward axis, unit scale, object rotation, or armature transform.
 
 Before generation or import, define the asset spec: gameplay role/readability, real-world dimensions, polygon budget, material slots, texture sets/resolution, rig/animation requirement, pivot/origin, collision, LODs, and naming.
