@@ -35,10 +35,14 @@ This overrides generic studio commit behavior. Branch creation is allowed. Never
 
 ## Owner interaction
 
-The owner is still learning Unity. When manual Editor steps are required:
+The owner is a DevOps Engineer by trade (not a game developer) and is still learning Unity and game-dev/creative-process concepts specifically. When explaining new concepts:
 - use plain language;
+- lean on infrastructure/software-engineering analogies where they genuinely help (e.g. an ADR is like an RFC/design doc; `BACKLOG.md` is an issue tracker; `CREATIVE_STATE.md`'s CANON/WORKING/OPEN/REJECTED states are like merged/in-review/undecided/won't-fix; a Unity scene is roughly a deployed environment; a prefab is roughly a reusable module/template) — don't over-explain general software-engineering ideas the owner already knows;
+- do not assume familiarity with Unity-specific or narrative-design-specific concepts;
+- see `docs/overview/` for the plain-language status/story summaries this produced.
+
+When manual Editor steps are required:
 - give concrete click/drag/menu steps;
-- do not assume familiarity with Unity-specific concepts;
 - prefer MCP automation when it is safe and available, but explain what was changed.
 
 ## Asset authority
