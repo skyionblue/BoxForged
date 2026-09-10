@@ -6,12 +6,13 @@ summarizes it in plain language.*
 
 ## The short version
 
-The game is in testers' hands. TestFlight is live on iOS (app record created,
-build uploaded, invites sent), and an Android build is being tested informally
-by a second tester. The support page and privacy policy are both live on the
-real website. A two-week-old performance finding turned out to be a false
-alarm and got corrected. One intermittent bug (occasional missing win screen)
-is still being chased.
+**The iOS app has been submitted to Apple for App Store review** (2026-09-10) —
+this went further than the original TestFlight-only plan. An Android build is
+still being tested informally by a second tester, with no formal Play Store
+submission yet. The support page and privacy policy are both live on the real
+website. A two-week-old performance finding turned out to be a false alarm and
+got corrected. One intermittent bug (occasional missing win screen) is still
+being chased.
 
 ## What's working
 
@@ -19,8 +20,12 @@ is still being chased.
   Cul-de-Sac, see the win screen with correct stats, hit Continue, land in
   the Backyard/Dojo, beat the Grasscutter boss, see the World Map with both
   zones showing correctly.
-- **TestFlight is live.** App Store Connect app record created, build
-  archived and uploaded via Xcode, tester invites sent.
+- **The app has been submitted to Apple for review.** App Store Connect app
+  record created, build archived and uploaded via Xcode, TestFlight testers
+  already had it, and now it's gone further — into the actual App Store
+  review queue. Store listing screenshots (both iPhone and 13" iPad sizes,
+  since Apple flagged the app as iPad-capable) were captured directly in the
+  Unity Editor at the exact required pixel sizes — no physical iPad needed.
 - **The marketing website is current**: hero and enemy character art
   updated to the latest concept art, a new support page is live at
   `boxforged.com/support`, and the privacy policy remains live and accurate.
@@ -39,33 +44,34 @@ is still being chased.
   placeholder objects — was removed from the Backyard/Dojo level entirely.
   Measured result: World 2's triangle count dropped 45% and its draw calls
   dropped 40%, comfortably inside budget now.
-- **Real gameplay screenshots captured** (both worlds, full HUD visible,
-  high resolution) — see "What's next" below, one item is now done.
 - World 2's pathfinding setup (which enemies use to navigate) was checked
   live and confirmed working correctly — an earlier concern about it turned
   out to be a non-issue.
 - App icon, splash screen, and loading art all show the real BoxForged
   branding (not leftover podcast/placeholder art).
-- Store-listing prep (screenshots plan, copy, privacy policy) is essentially
-  done except real screenshots/video, which can be captured any time now.
+- Store-listing prep (screenshots, copy, privacy policy) is done for iOS —
+  it's what got submitted. A preview video is the one still-missing piece,
+  and Apple didn't block submission on it.
 
 ## What's next
 
-1. **Catch the intermittent missing-win-screen bug.** Sometimes after
+1. **Wait on Apple's review decision.** Typically takes anywhere from under
+   24 hours to a few days. Nothing to do here but check App Store Connect.
+2. **Catch the intermittent missing-win-screen bug.** Sometimes after
    beating SpinCycle the win screen doesn't show and the character freezes,
    even though the rest of the HUD keeps working. It only happens
    occasionally and has never been caught in the act — logging is in place
    waiting for the next time it happens on a real device, and a device
    console capture at that exact moment is what's needed to pin it down.
-2. **One more performance check-off.** A single reading from the phone's
+3. **One more performance check-off.** A single reading from the phone's
    performance profiler (something you'd already have open) would confirm
    the corrected performance finding above holds true on a real device, not
    just in the Editor.
-3. **Set up a real Android release track.** Right now Android testing is
+4. **Set up a real Android release track.** Right now Android testing is
    informal (a build handed directly to a tester) — there's no Google Play
    Console app record or proper internal-testing track yet.
-4. **Capture a preview video** for the eventual store listing — screenshots
-   are done (see above), video is the remaining piece.
+5. **Capture a preview video** for a future store-listing update — not
+   required, would round things out.
 
 ## Known rough edges (none of these block TestFlight)
 
