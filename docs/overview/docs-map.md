@@ -29,6 +29,16 @@ something that goes stale on its own:
 - `ROADMAP.md` — phase/world sequencing.
 - `PERFORMANCE_PROFILING.md` — mobile performance measurements.
 - `STORE_LISTING.md` — app store copy and checklist.
+- `KNOWN_ISSUES.md` — *added 2026-09-10.* Short, current list of what's
+  actually broken right now, for anyone who doesn't want `BACKLOG.md`'s full
+  history. Kept current — an entry here is deleted (not struck through) the
+  moment it's fixed.
+- `CHANGELOG.md` — *added 2026-09-10.* A real changelog of completed work,
+  organized by sprint, newest first. Curated summary, not a raw commit log.
+- `AI_CONTEXT.md` — *added 2026-09-10.* Fast-orientation doc for a fresh AI
+  session — what to read first, current lifecycle state, owner working
+  style, and project-specific gotchas that have caused real mistakes before.
+  Not really written for a human, though a human can read it too.
 
 **Don't move or rename these** — they're referenced by exact file path from
 inside the AI agents' own persistent memory. Moving them would make an agent

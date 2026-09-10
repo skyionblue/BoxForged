@@ -1,12 +1,12 @@
 # Backlog — Pick Your Next Task
 
-*Last updated: 2026-09-09. A curated, plain-language view of what's still open
-in `docs/BACKLOG.md` (1800+ lines), grouped by what kind of work it actually
+*Last updated: 2026-09-10. A curated, plain-language view of what's still open
+in `docs/BACKLOG.md` (2000+ lines), grouped by what kind of work it actually
 is. Full technical detail for any item lives at its `B##` entry there — search
-for the number. Nine items (B17, B20, B95, B81, B16, B94, B97, B19) are fully
-fixed as of 2026-09-09 and are not listed below. B125 and B126 were decided
-(not fixed, but resolved — see their `BACKLOG.md` entries) and are also
-dropped from this list.*
+for the number. Items fixed/resolved/decided as of 2026-09-10 are dropped from
+this list: B105, B127, B132, B133, B134, B139. (Sept 9's nine items — B17,
+B20, B95, B81, B16, B94, B97, B19 — and B125/B126 were already dropped as of
+the last update.)*
 
 Check items off as they get done, or just tell me the B-number(s) you want to
 tackle next.
@@ -19,20 +19,27 @@ tackle next.
 
 Actual defects players could hit. Some are small, a couple need real investigation time.
 
+- [ ] **B106 / B142** — Occasionally the win screen doesn't show after beating SpinCycle, and the character freezes (HUD/joystick stay responsive). The most active bug right now — genuinely intermittent, never reproduced on demand. Logging is in place; needs a real device console capture at the moment it happens next.
 - [ ] **B91** — Building colliders are wider than their meshes; you can walk into porches/facades in the Cul-de-Sac.
 - [ ] **B92 / B93** — Boss and enemy NavMesh sizes exceed the project's baked settings; some boss attacks have no landing-point safety clamp.
-- [ ] **B106** — Occasionally the win screen doesn't show after beating a boss. Intermittent, logging is now in place to help catch it next time it happens.
-- [ ] **B139** — A recurring error in the enemy health bar code, seen on a real device. The console-spam half is fixed (2026-09-09); a separate, still-unconfirmed crash in the same area is not.
 - [ ] **B117** — A boss dash move validates where it lands but not the path it takes to get there.
 - [ ] **B124** — One planned enemy behavior (grass/petals kicking up when the boss is dormant) was never implemented.
+- [ ] **B145** — *New, found 2026-09-10.* A navmesh collider (the koi pond) isn't set up correctly, so how an enemy paths around it can silently differ between the Unity Editor and a real device build.
+
+## Needs a decision, not just a fix
+
+- [ ] **ADR-0009** — *New, decided 2026-09-10, one step left.* A two-week-old performance worry ("the rendering batching system isn't helping") turned out to be a broken measurement, not a real problem — see `where-things-stand.md`. Owner already chose how to re-measure it going forward; just needs one on-device reading to confirm and fully close out.
 
 ## Needs a `technical-director` scoping pass (architecture-level)
 
 Bigger picture items — not something to fix in isolation.
 
-- [ ] **B127 / B128 / B133 / B134** — World 2's NavMesh setup has a cluster of related issues (inert modifiers, no bounds, runtime-bake questions).
-- [ ] **B132** — World 2's rendering performance (SRP Batcher) has never been verified on a real device; one repeated wall piece is the single biggest draw-call cost in the scene.
 - [ ] **B136** — Ten-plus places in the code independently pause/unpause the game with no shared system managing it — works today, fragile long-term.
+- [ ] **B143** — *New, found 2026-09-10.* Some older navmesh-related project settings turned out to be leftover/unused now that the actual game bakes its pathfinding a different way at runtime — cleanup, not urgent.
+
+## Real, but low priority
+
+- [ ] **B144** — *New, found 2026-09-10.* One decorative environment prop (a stepping stone) is far more detailed than it needs to be, and it's repeated 32 times — accounts for roughly a third of World 2's triangle budget by itself. The actual performance fix worth doing (not the batching system, which turned out to be fine).
 
 ## Worth doing before a public (non-TestFlight) release
 

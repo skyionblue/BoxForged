@@ -1,15 +1,17 @@
 # Where Things Stand
 
-*Last updated: 2026-09-09. This is the one file to read to answer "where are we."
+*Last updated: 2026-09-10. This is the one file to read to answer "where are we."
 Full detail always lives in `docs/SPRINT.md` and `docs/BACKLOG.md` — this just
 summarizes it in plain language.*
 
 ## The short version
 
-Both levels play start to finish, on a real phone, right now. World 1 (the
-Cul-de-Sac) leads into World 2 (the Backyard/Dojo), the win screen and World
-Map both work, and the game is one step away from being in testers' hands via
-TestFlight.
+The game is in testers' hands. TestFlight is live on iOS (app record created,
+build uploaded, invites sent), and an Android build is being tested informally
+by a second tester. The support page and privacy policy are both live on the
+real website. A two-week-old performance finding turned out to be a false
+alarm and got corrected. One intermittent bug (occasional missing win screen)
+is still being chased.
 
 ## What's working
 
@@ -17,70 +19,68 @@ TestFlight.
   Cul-de-Sac, see the win screen with correct stats, hit Continue, land in
   the Backyard/Dojo, beat the Grasscutter boss, see the World Map with both
   zones showing correctly.
+- **TestFlight is live.** App Store Connect app record created, build
+  archived and uploaded via Xcode, tester invites sent.
+- **The marketing website is current**: hero and enemy character art
+  updated to the latest concept art, a new support page is live at
+  `boxforged.com/support`, and the privacy policy remains live and accurate.
+- If a player also dies right as they land the killing blow on a boss (in
+  the few seconds before the win screen appears), the win now correctly
+  counts — this used to silently turn into a loss instead.
+- **A two-week-old performance concern turned out to be wrong, and got
+  corrected rather than left on the books.** World 2 looked like it was
+  getting no benefit from Unity's rendering-batching system (three separate
+  measurements said so). It turned out the *measurement itself* was broken,
+  not the game — the batching system is on and working fine. The real
+  performance cost was found instead: one small decorative prop (a stepping
+  stone) is far more detailed than it needs to be and is repeated 32 times,
+  eating about a third of the triangle budget by itself.
+- World 2's pathfinding setup (which enemies use to navigate) was checked
+  live and confirmed working correctly — an earlier concern about it turned
+  out to be a non-issue.
 - App icon, splash screen, and loading art all show the real BoxForged
   branding (not leftover podcast/placeholder art).
 - Store-listing prep (screenshots plan, copy, privacy policy) is essentially
-  done.
-- Nine small backlog cleanups landed 2026-09-09: the save-system debug panel
-  no longer ships in release builds, shadow rendering is tuned to the
-  camera's actual range (a real mobile performance win), the "enemies
-  remaining" HUD counter can no longer read wrong, two confirmed-dead scripts
-  and 3 stale duplicate environment prefabs were removed, a stale/misleading
-  code comment was corrected, a defensive warning was added to catch a future
-  zone-progression edge case, and a cosmetic Inspector data quirk on 4 scene
-  objects was fixed.
-- Two open design questions about World 2's cherry tree/zone-2 layout were
-  resolved by owner decision, both without touching shipping World 1/World 2
-  content: the tree's canopy spec is amended to match the built asset (no
-  collider added), and the zone-2 combat-layout question is deliberately
-  deferred — "ready to ship" content isn't being reopened for it.
-- The Grasscutter boss's reel got a real fix: its rotation pivot was
-  centered on the hips instead of the blade cluster (fixed directly in the
-  enemy prefab), and the torso/waist-belt housing was incorrectly spinning
-  with the blades instead of staying rigid with the body (fixed via weight
-  painting). Both verified with actual measurements, not just a screenshot.
-- Root-caused a recurring "HUD elements silently move" bug: a script meant
-  to adapt HUD position to different phone screens was also running inside
-  the Unity Editor itself, where resizing an editor window could
-  accidentally drag HUD elements to a new spot that then got saved by
-  accident. Now restricted to only run on a real device/in a real build.
-- A full replacement of the Grasscutter model (using a newer, separately
-  generated source file) was scoped out but deliberately put on hold — it
-  would be a multi-session task (the new file has no rig or weights at all,
-  and is far too high-detail for mobile as-is). Written up in
-  `grasscutter-model-replacement-plan.md` at the repo root for whenever
-  it's picked back up.
+  done except real screenshots/video, which can be captured any time now.
 
-## What's next — and it's not a coding task
+## What's next
 
-The very next step is **App Store Connect setup**, which only the owner can
-do (Apple requires it, and it's also this project's own rule — agents don't
-touch final builds or store submissions):
-
-1. Create the app record on App Store Connect.
-2. Archive and upload the build from Xcode.
-3. Fill in TestFlight info (one open decision: which feedback email to use).
-4. Add testers and get real people playing it.
-
-Full click-by-click steps are in `docs/SPRINT.md` under "Ready for TestFlight."
+1. **Catch the intermittent missing-win-screen bug.** Sometimes after
+   beating SpinCycle the win screen doesn't show and the character freezes,
+   even though the rest of the HUD keeps working. It only happens
+   occasionally and has never been caught in the act — logging is in place
+   waiting for the next time it happens on a real device, and a device
+   console capture at that exact moment is what's needed to pin it down.
+2. **One more performance check-off.** A single reading from the phone's
+   performance profiler (something you'd already have open) would confirm
+   the corrected performance finding above holds true on a real device, not
+   just in the Editor.
+3. **Fix the real performance cost** found above (the over-detailed
+   stepping stone prop) — an art/asset task, not urgent, not blocking
+   anything.
+4. **Set up a real Android release track.** Right now Android testing is
+   informal (a build handed directly to a tester) — there's no Google Play
+   Console app record or proper internal-testing track yet.
+5. **Capture real screenshots and a preview video** for the eventual store
+   listing, now that the full game loop works end-to-end on a real device.
 
 ## Known rough edges (none of these block TestFlight)
 
-- World 2 is heavier on draw calls/triangles than the project's own budget —
-  worth a look before a *public* release, fine for tester feedback now.
-- A couple of minor open bugs (an occasional null-reference error in an enemy
-  health bar — the console-spam half of this was fixed 2026-09-09, the
-  crash itself is still not root-caused; a narrow win/death race condition)
-  are tracked but not urgent.
-- Pressing Special on a few specific Epic/Legendary weapons (Bo Staff, Pressure
-  Cannon, Magic Wand, Shuriken) either freezes combat briefly or double-fires
-  the special — a known, pre-existing issue (owner decision 2026-09-09:
+- The intermittent missing-win-screen bug above — the main thing still
+  being chased.
+- Pressing Special on a few specific Epic/Legendary weapons (Bo Staff,
+  Pressure Cannon, Magic Wand, Shuriken) either freezes combat briefly or
+  double-fires the special — a known, pre-existing issue (owner decision:
   ship TestFlight with it, fix later rather than delay for it).
 - No automated tests exist yet.
+- A navmesh detail (an enemy's ability to path around a pond) can silently
+  behave slightly differently between the Unity Editor and a real device
+  build — found this session, not yet fixed, low priority.
 
 ## Where this comes from
 
-This summary is drawn from `docs/SPRINT.md` (current sprint detail) and
-`docs/BACKLOG.md` (full bug/issue history). Update this file when sprint
-status changes materially — it should never say something SPRINT.md
-contradicts.
+This summary is drawn from `docs/SPRINT.md` (current sprint detail),
+`docs/BACKLOG.md` (full bug/issue history), and `docs/KNOWN_ISSUES.md`
+(the short technical list this file is the plain-language version of).
+Update this file when sprint status changes materially — it should never
+say something SPRINT.md contradicts.
