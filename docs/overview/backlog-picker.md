@@ -4,9 +4,9 @@
 in `docs/BACKLOG.md` (2000+ lines), grouped by what kind of work it actually
 is. Full technical detail for any item lives at its `B##` entry there — search
 for the number. Items fixed/resolved/decided as of 2026-09-10 are dropped from
-this list: B105, B127, B132, B133, B134, B139. (Sept 9's nine items — B17,
-B20, B95, B81, B16, B94, B97, B19 — and B125/B126 were already dropped as of
-the last update.)*
+this list: B105, B127, B132, B133, B134, B139, B143, B144, B145. (Sept 9's
+nine items — B17, B20, B95, B81, B16, B94, B97, B19 — and B125/B126 were
+already dropped as of the last update.)*
 
 Check items off as they get done, or just tell me the B-number(s) you want to
 tackle next.
@@ -24,7 +24,6 @@ Actual defects players could hit. Some are small, a couple need real investigati
 - [ ] **B92 / B93** — Boss and enemy NavMesh sizes exceed the project's baked settings; some boss attacks have no landing-point safety clamp.
 - [ ] **B117** — A boss dash move validates where it lands but not the path it takes to get there.
 - [ ] **B124** — One planned enemy behavior (grass/petals kicking up when the boss is dormant) was never implemented.
-- [ ] **B145** — *New, found 2026-09-10.* A navmesh collider (the koi pond) isn't set up correctly, so how an enemy paths around it can silently differ between the Unity Editor and a real device build.
 
 ## Needs a decision, not just a fix
 
@@ -35,11 +34,6 @@ Actual defects players could hit. Some are small, a couple need real investigati
 Bigger picture items — not something to fix in isolation.
 
 - [ ] **B136** — Ten-plus places in the code independently pause/unpause the game with no shared system managing it — works today, fragile long-term.
-- [ ] **B143** — *New, found 2026-09-10.* Some older navmesh-related project settings turned out to be leftover/unused now that the actual game bakes its pathfinding a different way at runtime — cleanup, not urgent.
-
-## Real, but low priority
-
-- [ ] **B144** — *New, found 2026-09-10.* One decorative environment prop (a stepping stone) is far more detailed than it needs to be, and it's repeated 32 times — accounts for roughly a third of World 2's triangle budget by itself. The actual performance fix worth doing (not the batching system, which turned out to be fine).
 
 ## Worth doing before a public (non-TestFlight) release
 

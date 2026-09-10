@@ -31,10 +31,16 @@ is still being chased.
   corrected rather than left on the books.** World 2 looked like it was
   getting no benefit from Unity's rendering-batching system (three separate
   measurements said so). It turned out the *measurement itself* was broken,
-  not the game — the batching system is on and working fine. The real
-  performance cost was found instead: one small decorative prop (a stepping
-  stone) is far more detailed than it needs to be and is repeated 32 times,
-  eating about a third of the triangle budget by itself.
+  not the game — the batching system is on and working fine.
+- **The real performance cost that was found instead is now fixed.** One
+  small decorative prop (a stepping stone, repeated 32 times) was far more
+  detailed than it needed to be. Reducing its detail turned out not to be
+  possible without it visually breaking, so it — along with a few unrelated
+  placeholder objects — was removed from the Backyard/Dojo level entirely.
+  Measured result: World 2's triangle count dropped 45% and its draw calls
+  dropped 40%, comfortably inside budget now.
+- **Real gameplay screenshots captured** (both worlds, full HUD visible,
+  high resolution) — see "What's next" below, one item is now done.
 - World 2's pathfinding setup (which enemies use to navigate) was checked
   live and confirmed working correctly — an earlier concern about it turned
   out to be a non-issue.
@@ -55,14 +61,11 @@ is still being chased.
    performance profiler (something you'd already have open) would confirm
    the corrected performance finding above holds true on a real device, not
    just in the Editor.
-3. **Fix the real performance cost** found above (the over-detailed
-   stepping stone prop) — an art/asset task, not urgent, not blocking
-   anything.
-4. **Set up a real Android release track.** Right now Android testing is
+3. **Set up a real Android release track.** Right now Android testing is
    informal (a build handed directly to a tester) — there's no Google Play
    Console app record or proper internal-testing track yet.
-5. **Capture real screenshots and a preview video** for the eventual store
-   listing, now that the full game loop works end-to-end on a real device.
+4. **Capture a preview video** for the eventual store listing — screenshots
+   are done (see above), video is the remaining piece.
 
 ## Known rough edges (none of these block TestFlight)
 
@@ -73,9 +76,6 @@ is still being chased.
   double-fires the special — a known, pre-existing issue (owner decision:
   ship TestFlight with it, fix later rather than delay for it).
 - No automated tests exist yet.
-- A navmesh detail (an enemy's ability to path around a pond) can silently
-  behave slightly differently between the Unity Editor and a real device
-  build — found this session, not yet fixed, low priority.
 
 ## Where this comes from
 
