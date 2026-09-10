@@ -6,11 +6,15 @@
 
 **WHERE WE LEFT OFF (2026-09-08, end of session):** the whole World 1 → World 2 player loop is now confirmed working end-to-end on a physical iPhone — beat SpinCycle, win screen shows with correct stats, Continue advances to `Backyard_Dojo`, beat Grasscutter, World Map opens correctly and shows both zones with a corrected "Dojo" label. Store-listing prep is essentially done except two small items. **Next session should start at "Ready for TestFlight" below.**
 
+**WHERE WE LEFT OFF (2026-09-10, end of session):** owner asked to close out B132, B133/B134, and B105 before ending this sprint, plus the remaining process-debt item. All four resolved: B105 fixed (owner decided win-over-death priority when both happen in the same window); B133/B134 resolved (NavMesh modifiers confirmed working under the runtime bake, B127 closed as moot, B134 downgraded — negligible cost); B132 **retracted**, not just fixed — the "SRP Batcher contributes zero" finding that drove two weeks of investigation turned out to be a broken profiler counter, not a real defect (see ADR-0009). `docs/KNOWN_ISSUES.md`, `docs/CHANGELOG.md`, `docs/AI_CONTEXT.md` created, closing the last process-debt item. **New open items from this session:** ADR-0009 needs an owner decision (SRP Batcher rendering-budget strategy — see below), and B144 (geometry density, not B132's wall-module theory) is now the real live rendering item. B142 (intermittent no-win-screen) recurred again via owner report, still blocked on a device console capture.
+
 **WHERE WE LEFT OFF (2026-09-09, end of session):** a large batch of backlog fixes landed (see `docs/BACKLOG.md` for B17/B20/B95/B19/B16/B81/B94/B97, all fixed; B4/B44/B45 explicitly held for TestFlight by owner decision; B125/B126 decided, no World 1/2 content changed). Separately, the Grasscutter boss's reel got a real technical-art pass: its rotation pivot was baked near the hips instead of the blade cluster (fixed directly in `pfb_enemy_grasscutter.prefab`, since that prefab has the model fully unpacked/disconnected from `Grasscutter.fbx` — re-exporting the FBX alone cannot fix bone *positions* there, only mesh/weight data), and the torso housing plus a waist belt/buckle detail were incorrectly rigid-bound to the spinning reel instead of the body (fixed via weight reassignment in Blender, re-exported). Both fixes verified quantitatively (distance-from-pivot under rotation), not just visually — a visual-only read led to one false-positive "fix" that was correctly caught and reverted. Also root-caused and fixed a recurring "HUD elements silently drift position" issue: `HUD3DPositioner.cs` was `[ExecuteAlways]` and repositioned based on `Screen.width/height` even in the Editor, where that reflects the Game View panel's arbitrary size, not a real device — gated to `Application.isPlaying`. **A full Grasscutter model replacement (using `raw-assets/models/zips/Grasscutter_part-segmentation.fbx`, a raw unrigged ~567k-vertex part-segmented export) was scoped but explicitly held** — see `grasscutter-model-replacement-plan.md` at the repo root for the full writeup; the source file has no armature/weights and would need ~95%+ decimation, fresh rigging, a full reweighting pass, and a `pfb_enemy_grasscutter.prefab` rebuild. **TestFlight setup itself is unchanged and still the next real-world action — see "Ready for TestFlight" below.**
 
 ## Ready for TestFlight — what to actually do next
 
-**Status 2026-09-08: owner confirmed this has not been started yet.** This is genuinely the next action, not already in progress. All of it is owner-performed (App Store Connect / Apple Developer portal / Xcode) — not something an agent does, per this project's own rule that final builds and deployments are the owner's.
+**Status 2026-09-10: DONE — owner created the App Store Connect app record, archived/uploaded the build, and sent tester invites.** TestFlight is live. Next actions are in **[§Now that TestFlight is live](#now-that-testflight-is-live)** below. Steps 1–4 below are kept for reference/reruns (e.g. the next build upload).
+
+All of the steps below are owner-performed (App Store Connect / Apple Developer portal / Xcode) — not something an agent does, per this project's own rule that final builds and deployments are the owner's.
 
 ### Step-by-step walkthrough
 
@@ -27,16 +31,28 @@
 - In the **Organizer** window that opens: select the archive → **Distribute App** → **App Store Connect** → **Upload** → accept the defaults (automatic signing is already configured via the post-build script, Team `V62D5FT8F5`).
 
 **3. Fill in TestFlight info** (back in App Store Connect, once the build finishes processing — usually 10–60 min, appears under the app's **TestFlight** tab).
-- **Test Information**: Beta App Description, **Feedback Email** (decide: existing `unboxedheroes.imagination@gmail.com`, or a dedicated `boxforged.com` address — still an open decision), **Privacy Policy URL** → `https://boxforged.com/privacy/` (already live and confirmed accurate, 2026-09-08).
+- **Test Information**: Beta App Description, **Feedback Email** → `boxforged@gmail.com` (owner decision, 2026-09-09), **Privacy Policy URL** → `https://boxforged.com/privacy/` (already live and confirmed accurate, 2026-09-08).
 
 **4. Add testers.**
 - **Internal Testing** — your own App Store Connect team, no Apple review, available almost immediately.
 - **External Testing** — a group + public link, goes through Apple's Beta App Review (lighter than full App Store review, typically under 48 hours).
 
 ### Still-open decisions blocking full completion (not TestFlight itself)
-- Feedback email choice (step 3 above).
-- Support page (`https://boxforged.com/support/`) is **not live** (confirmed by owner 2026-09-08) — not believed to block TestFlight, but needed before a full public store listing.
+- ~~Support page (`https://boxforged.com/support/`) not deployed~~ — **RESOLVED 2026-09-10.** Built (`website/support/index.html`, commit `a2b574f9`), pushed to `origin`, and owner-deployed to the live server. Live for the store listing now.
 5. Do the archive/upload in Xcode yourself (per project rule — this isn't something an agent does). Once a build is in TestFlight, this sprint's remaining items (screenshots, video, the performance question) can happen in parallel with real tester feedback.
+
+## Now that TestFlight is live
+
+**Status 2026-09-10:** app record created, build archived/uploaded, tester invites sent (owner-performed, this session). None of this is store submission — TestFlight is a beta channel, not a public release.
+
+1. **If any invited testers are External Testing group members** (not just your own App Store Connect team), the build goes through Apple's Beta App Review first — typically under 48 hours. Internal testers can install immediately with no review. Nothing to do here but wait/check App Store Connect's TestFlight tab for review status.
+2. **Collect and triage tester feedback** as it comes in (TestFlight's built-in feedback, or the `boxforged@gmail.com` Feedback Email set in step 3 above). Log anything actionable in `docs/BACKLOG.md`.
+3. **Android — in progress, not yet a formal Play Console track.** Owner's partner is testing an Android build as of 2026-09-10 (informal/direct distribution, not confirmed as a Google Play internal testing track). Still needed for a real release: an app record in Google Play Console, a signed AAB upload, and an internal testing track/tester list if not already using one — same owner-only build/deploy boundary as iOS.
+4. **Independent of tester feedback, in parallel:**
+   - ~~Deploy the support page~~ — **DONE 2026-09-10**, see the resolved item just above.
+   - Capture real screenshots and an app preview video now that the full World 1 → World 2 loop works on-device (`docs/STORE_LISTING.md` §7).
+   - ~~`docs/BACKLOG.md` B139 (recurring `NullReferenceException` in `EnemyHealthBar.BuildBar()`)~~ — **FIXED 2026-09-10**, see BACKLOG for the live Play Mode repro that confirmed it.
+   - B132 (World 2 over its draw-call/triangle budget) is safe to leave for TestFlight but should get a `technical-director` scoping pass before a public release.
 
 ## Confirmed fixed and tested this session (2026-09-08), full detail in `docs/BACKLOG.md`
 
@@ -47,12 +63,14 @@
 
 ## Still open — real, but none block TestFlight
 
-- **B132 — CONFIRMED (not just suspected): World 2's SRP Batcher contributes zero on-device**, a third independent confirmation this session. Draw calls (236) and triangles (465k) both measured well over budget in a session spanning both worlds — worse than World 1 alone. Texture memory remains healthy. Not a store-compliance issue (neither store gates on this), but a real internal quality bar the project set for itself, and worth a `technical-director` scoping pass before a *public* release — fine to ship to TestFlight as-is for real-device feedback first.
-- **B133/B134** — whether Sprint 1's NavMesh findings (B127/B128) carry over to World 2's actual runtime `NavMeshSurface` bake — needs `technical-director`.
-- **B139** — a recurring `NullReferenceException` in `EnemyHealthBar.BuildBar()`, found via the on-device dev console, not yet root-caused or confirmed connected to anything else.
-- **B105** — a known, narrow race between `TriggerWin()`/`HandlePlayerDeath()` sharing one state guard — deliberately deferred, not urgent.
+- ~~**B132** — World 2's SRP Batcher contributes zero on-device~~ — **RETRACTED 2026-09-10.** `technical-director` found this was a measurement artifact, not a real defect: `SRP Batcher Draw Calls Count` reads 0 in Unity `6000.5.3f1` whether the batcher is on or off, so the reading carried no information. The batcher is actually engaged and working (44 SetPass calls with it on vs. 85 with it off, measured live via A/B toggle). The real architectural finding: TDD §3.2's `<100 draw calls` budget is structurally unreachable while the SRP Batcher is on, because Unity's batching mechanisms are mutually exclusive per-renderer and only GPU instancing reduces the raw count. **New owner decision needed — see ADR-0009** (`docs/adr/0009-srp-batcher-and-the-draw-call-budget.md`): keep the SRP Batcher and re-budget on SetPass calls/render-thread ms instead (recommended, zero cost), or disable it project-wide and chase the literal draw-call number via instancing (real churn, unmeasured mobile tradeoff). The actual triangle-budget culprit was found along the way and is unrelated to this decision — see B144 below.
+- ~~**B133/B134**~~ — World 2's NavMesh findings — **RESOLVED 2026-09-10.** B133: verified live that `NavMeshModifier` exclusions DO work correctly under World 2's actual runtime bake (unlike the Editor's legacy bake) — B127 closes as moot, no owner decision needed, the system already does what its author intended. B134: the runtime bake costs ~6ms against a 500ms scene-start budget — negligible, downgraded P1→P3, B128's bounds-volume fix deliberately not implemented (the justification for it is gone, and it turned out to be a bigger shared-system change than assumed). Two new real defects found along the way: **B145** (`KoiPond`'s navmesh contribution silently differs between Editor and a real device build — a Read/Write flag gap) and **B143** (the committed Editor `NavMesh.asset`/`NavigationStatic` flags are dead weight at runtime in both worlds).
+- ~~**B139**~~ — recurring `NullReferenceException` in `EnemyHealthBar.BuildBar()` — **FIXED 2026-09-10**, confirmed via live Play Mode repro of the exact reported call chain (`RoomManager.ActivateRoom` → `EnemySpawnPoint.SpawnNext` → `Instantiate` → `EnemyHealthBar.Awake`/`BuildBar`), zero errors across 8 real enemy spawns.
+- ~~**B105**~~ — a known, narrow race between `TriggerWin()`/`HandlePlayerDeath()` sharing one state guard — **FIXED 2026-09-10.** Owner decision: a boss defeat already in flight now wins the race over a same-window player death. Compiles clean; not yet verified against a clean on-device repro of the original race (which was only ever reproduced as a test-methodology side effect, not a real player scenario).
+- **NEW — B144 (P1, replaces B132 as the live rendering item):** Dojo ENV props are geometry-dense with no LODs. One decorative stepping-stone prop is 1,750 triangles and 32 instances of it cost a third of the whole-scene triangle budget — the actual fix target, not the wall-module stockade B132 originally blamed (measured cost: only 10 draw calls).
+- ~~**NEW — owner decision pending: ADR-0009**~~ — **DECIDED 2026-09-10.** Owner chose Option A: keep the SRP Batcher, budget SetPass calls/render-thread ms instead of raw draw-call count. `docs/adr/0005-world2-single-continuous-scene.md` §3, `docs/PERFORMANCE_PROFILING.md` §8/§8.1, `docs/TECHNICAL_DECISIONS.md` all updated to match. **Still needs:** one on-device `SetPass Calls Count` reading (40s range expected) to close out ADR-0009's own validation requirement.
 - No automated EditMode/PlayMode test coverage exists anywhere in the project.
-- `docs/KNOWN_ISSUES.md`, `docs/CHANGELOG.md`, `docs/AI_CONTEXT.md` don't exist, though `.claude/rules/studio-core.md` lists them as required project memory.
+- ~~`docs/KNOWN_ISSUES.md`, `docs/CHANGELOG.md`, `docs/AI_CONTEXT.md` don't exist~~ — **CREATED 2026-09-10**, all three now exist and are current as of that date.
 - Screenshots and an app preview video for the store listing — safe to capture now that the full loop works, per `docs/STORE_LISTING.md` §7.
 - A real Xcode Instruments "Pass B" (frame-time/thermal) capture has still never been done — everything measured so far is draw-call/triangle counts (Pass A equivalent via the profiler buffer), not actual FPS.
 

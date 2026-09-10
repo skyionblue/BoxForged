@@ -19,10 +19,6 @@
         "/Users/jcelli/Documents/tools/unity-mcp/Server",
         "mcp-for-unity"
       ]
-    },
-    "hyper3d": {
-      "type": "http",
-      "url": "https://api.hyper3d.com/api/mcp"
     }
   }
 }

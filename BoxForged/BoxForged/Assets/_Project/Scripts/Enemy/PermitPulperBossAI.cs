@@ -672,6 +672,10 @@ namespace Boxhead.Enemy
         {
             _state = BossState.Dead;
 
+            // B105: the kill is confirmed now, before DefeatSequence's multi-second animation —
+            // tell GameManager so a same-window player death doesn't win the TriggerWin() race.
+            GameManager.Instance?.NotifyBossDefeatSequenceStarted();
+
             // StopAllCoroutines terminates all nested attack coroutines started via
             // yield return StartCoroutine() — stopping only the outer routine leaves inners running.
             StopAllCoroutines();

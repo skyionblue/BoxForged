@@ -24,7 +24,7 @@ scp website-deploy.tar.gz user@yourserver:~/
 ### 3. Extract on the server
 
 ```bash
-sudo tar -xzvf website-deploy.tar.gz -C /var/www/theboxforged.com/
+sudo tar -xzvf website-deploy.tar.gz -C /var/www/boxforged.com/
 ```
 
 The `-v` flag prints every file as it extracts so you can confirm what landed.

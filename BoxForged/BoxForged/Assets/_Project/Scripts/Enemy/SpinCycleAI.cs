@@ -1156,6 +1156,10 @@ namespace Boxhead.Enemy
                 $"playerInputEnabled={(_playerInput != null ? _playerInput.enabled.ToString() : "null")}");
             _state = BossState.Dead;
 
+            // B105: the kill is confirmed now, before DefeatSequence's multi-second animation —
+            // tell GameManager so a same-window player death doesn't win the TriggerWin() race.
+            GameManager.Instance?.NotifyBossDefeatSequenceStarted();
+
             if (_agent != null) { _agent.isStopped = true; _agent.enabled = false; }
 
             // Same defense-in-depth GrasscutterAI.HandleDeath already uses for its player-lock:

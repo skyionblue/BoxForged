@@ -183,7 +183,7 @@ These need either an asset/art pass, a device, or a decision that isn't copy:
 
 - ~~App icon gaps (Android adaptive/round empty, iOS 180×180 mismatch)~~ **FIXED 2026-09-08** — all icon slots (iOS + Android) now consistently use `AppIcon_BoxForged.png`. See `docs/SPRINT.md` Sprint 2.
 - ~~Privacy policy not live~~ **RESOLVED — was already live**, confirmed 2026-09-08. See §4.
-- **Support page** — built at `website/support/index.html` (2026-09-09), matching the privacy page's template, with `boxforged@gmail.com` as the contact address. Not yet deployed — needs the same tarball/nginx deploy steps as the rest of `website/` (see `website/README.md`) before `https://boxforged.com/support/` goes live.
+- ~~Support page~~ — **LIVE as of 2026-09-10** at `https://boxforged.com/support/` (built at `website/support/index.html`, `boxforged@gmail.com` as the contact address, deployed by the owner). Support URL field in §1 is now accurate, not a placeholder.
 - **Screenshots** — both stores require real in-game screenshots (Play Mode or on-device captures), not mockups. World 2 is now actually reachable (B131) and the win/World-Map flow is confirmed working end-to-end (B106/B140/B141) — safe to capture now.
 - **App preview video** (15–30s, per the existing `docs/media/social-launch-playbook.md` checklist) — needs real gameplay footage.
 - **Final owner read-through of §2's copy and §3's rating table** before either goes into a store console — this document is a draft, not a submission.

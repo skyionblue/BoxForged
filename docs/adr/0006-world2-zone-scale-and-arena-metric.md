@@ -416,7 +416,7 @@ Note the shape of this result: under the retired whole-roster metric zone 1 had 
 |---|---|---|---|---|
 | Triangles, whole yard, peak | < 300k | ~117,000 | **~122,600** | ✓ 41% of budget |
 | — of which stockade | — | ~36,570 (162.5 m × 225 tris/m) | **~42,165** (187.4 m) | +5,597 |
-| BD-01 module count = worst-case draw calls with no batching | — | 44 (counted in the built scene) | 47 naive → **35 with §5.2** | **−9 vs built** |
+| BD-01 module count = worst-case draw calls with no batching | — | 44 (counted in the built scene) | 47 naive → **35 with §5.2** | **−9 vs built** — **performance justification retracted 2026-09-10 (ADR-0009/B132): the naive worst-case never applied, the shipped 47-module stockade measured only 10 real draw calls in-frame (frustum culling). BD-01-Long stays listed under Not built and would need re-justifying on art merit alone, not draw-call savings.** |
 | Distinct ENV materials | ≤ 20 | 13 | **13** | ✓ unchanged |
 | New unique (non-atlas) ENV tris | < 8,000 | ~4,550 | **~6,350** (adds BD-01-Long at 1,800) | ✓ 1,650 headroom |
 | Texture memory, steady state | < 150 MB | — | **unchanged** — no new texture | ✓ |

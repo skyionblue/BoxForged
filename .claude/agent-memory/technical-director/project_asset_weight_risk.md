@@ -16,11 +16,13 @@ A full on-device `CulDeSac_WildWestCity` playthrough — the whole of World 1 re
 | Texture memory, steady state | < 150 MB | **41.2 MB / 52 textures** | Comfortably inside — the prediction **did not materialize** |
 | Draw calls | < 100 | **205** | Over by 2× |
 | Triangles | < 300k | **356.7k** | Over ~19% |
-| SRP Batcher contribution | assumed active | **0** (Standard 204, SRP Batcher 0, Instanced 0) | Not engaging at all |
+| SRP Batcher contribution | assumed active | **0** (Standard 204, SRP Batcher 0, Instanced 0) | ~~Not engaging at all~~ **RETRACTED — broken counter, see below** |
 
 Also found: an undocumented `Application.targetFrameRate = 30` at `GameManager.cs:101-102`, contradicting the documented 60 FPS target, with only ~4.34 ms CPU against the resulting 33 ms budget. Owner decision still open.
 
-**So the real cost of holding a whole world resident is draw calls and triangles, not texture residency.** And the SRP-Batcher-at-zero finding is more urgent than any batching *strategy* — something is preventing it engaging at all (likely shader/material variant incompatibility). Investigate that before scoping `StaticBatchingUtility.Combine`.
+**So the real cost of holding a whole world resident is draw calls and triangles, not texture residency.** That half stands.
+
+**SECOND CORRECTION, 2026-09-10 — the SRP-Batcher-at-zero row above is a measurement artifact, and the sentence that used to follow it here sent two later sessions down a dead end.** `SRP Batcher Draw Calls Count` reads 0 in this Unity version whether the batcher is on or off. The batcher **is** engaged (SetPass 44 with it on, 85 with it off). There is no shader/material incompatibility — every material is a stock URP shader reporting SRP-Batcher-compatible, and nothing uses `MaterialPropertyBlock`. Do **not** scope `StaticBatchingUtility.Combine` either: static batching is already on, saves no draw calls, and preempts both the SRP Batcher and GPU instancing. Full detail and the reusable A/B in [[srp-batcher-counter-is-broken]]; the budget question it opens is ADR-0009 (Proposed).
 
 ### What still stands from the original inspection
 
@@ -33,4 +35,6 @@ Also found: an undocumented `Application.targetFrameRate = 30` at `GameManager.c
 
 **How to apply:** for World 2 and any future world, budget **per scene, not per room** — < 100 draw calls, < 300k tris, < 150 MB textures, ≤ 20 distinct ENV materials (ADR-0005 §3). Prefer many instances of few shared-atlas materials over unique per-prop Meshy textures; that is the axis World 1 actually failed on. Never quote a file-inspection estimate as measured.
 
-Related: [[project-preproduction-gate]], [[project-docs-drift-from-code]]
+**One more axis this memory missed entirely: geometry density.** Textures got a policy (B1's `AssetPostprocessor`) and it worked. Meshes got nothing — no per-category triangle cap, no LOD requirement, no import check. Measured 2026-09-10: `pfb_env_stepping_stone_tile` is **1 750 triangles for a flat ground decal**, placed 32 times, = a third of the whole 300k triangle budget in one frame. No dojo ENV prefab has a `LODGroup`. When budgeting a future world, budget triangles per *asset*, not just per scene. B144.
+
+Related: [[project-preproduction-gate]], [[project-docs-drift-from-code]], [[srp-batcher-counter-is-broken]], [[navmesh-baking]]

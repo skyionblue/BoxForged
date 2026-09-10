@@ -1351,6 +1351,10 @@ namespace Boxhead.Enemy
         {
             _state = BossState.Dead;
 
+            // B105: the kill is confirmed now, before DefeatSequence's multi-second animation —
+            // tell GameManager so a same-window player death doesn't win the TriggerWin() race.
+            GameManager.Instance?.NotifyBossDefeatSequenceStarted();
+
             if (_agent != null) { _agent.isStopped = true; _agent.enabled = false; }
 
             // ADR-0007: StopAllCoroutines() below discards SpinDash's IEnumerator mid-flight

@@ -648,11 +648,12 @@ Budget sources differ slightly from World 1's: TDD §3.1/§3.2/§3.3 still own t
 
 | Measurement | Scenario | Budget | Source | Measured | Verdict |
 |---|---|---|---|---|---|
-| Draw Calls Count, worst | S5 Zone 0 (4 enemies) | < 100 whole scene | TDD §3.2 / ADR-0005 §3 | | ☐ pass ☐ fail |
-| Draw Calls Count, worst | S6 Zone 1 (4 enemies) | < 100 whole scene | TDD §3.2 / ADR-0005 §3 | | ☐ pass ☐ fail |
-| Draw Calls Count, worst | S7 boss | < 100 whole scene | TDD §3.2 / ADR-0005 §3 | | ☐ pass ☐ fail |
-| **Draw Calls Breakdown** — `SRP Batcher` | S6 | **must be non-zero** | ADR-0005 §3 (explicit condition) | | ☐ pass ☐ **fail** |
-| **Draw Calls Breakdown** — `Standard Instanced` | S6 | (non-zero here also satisfies the condition) | ADR-0005 §3 | | record |
+| Draw Calls Count, worst | S5 Zone 0 (4 enemies) | record-only, per ADR-0009 (2026-09-10) | TDD §3.2 / ADR-0009 | | record |
+| Draw Calls Count, worst | S6 Zone 1 (4 enemies) | record-only, per ADR-0009 (2026-09-10) | TDD §3.2 / ADR-0009 | | record |
+| Draw Calls Count, worst | S7 boss | record-only, per ADR-0009 (2026-09-10) | TDD §3.2 / ADR-0009 | | record |
+| **SetPass Calls Count** | S6 | in the 40s = batcher engaged; approaching 80s = it is not | ADR-0009 §7 (supersedes the `SRP Batcher` breakdown row below, which reads 0 whether the batcher is on or off) | | ☐ pass ☐ **fail** |
+| ~~**Draw Calls Breakdown** — `SRP Batcher`~~ | S6 | **withdrawn as a pass/fail check — always reads 0, uninformative** | ADR-0009 (2026-09-10 correction of ADR-0005 §3) | | do not use |
+| **Draw Calls Breakdown** — `Standard Instanced` | S6 | — record | ADR-0005 §3 | | record |
 | **Draw Calls Breakdown** — `Standard` | S6 | — record | ADR-0005 §3 | | record |
 | Draw calls, most wall modules on screen | S5/S6 | — record (§4.1) | — | | (a) |
 | Draw calls, fewest wall modules on screen | S5/S6 | — record (§4.1) | — | | (b) |
@@ -754,6 +755,13 @@ Scene-start hitch for Backyard_Dojo loaded AFTER a World 1 run:      __________ 
 ---
 
 ## 8. If something fails — what to do, and what NOT to do
+
+> **⚠ Two rows in the tables below were corrected on 2026-09-10 (`technical-director`, B132 retraction). Read this before using either table.**
+>
+> 1. **Never conclude anything from `SRP Batcher Draw Calls Count` / the breakdown panel's "SRP Batcher" row.** It is broken in Unity `6000.5.3f1` — it reads **0 whether the SRP Batcher is on or off**. The SRP Batcher **is** engaged on this project (proven by A/B: SetPass calls 44 with it on, 85 with it off, identical frame). The §8.1 row *"`SRP Batcher: 0` in the World 2 breakdown → investigate a shader/material incompatibility"* is a **dead end and is withdrawn** — that investigation was done and found all 28 materials on stock URP shaders, all SRP-Batcher-compatible, and zero `MaterialPropertyBlock` users. **To check the batcher is alive, read `SetPass Calls Count`, not the SRP row:** ~40s means engaged, ~80s means it is not.
+> 2. **`StaticBatchingUtility.Combine` is the wrong lever for World 2 and is withdrawn as the "Draw calls > 100" answer there.** Static batching is *already on* in `Backyard_Dojo` (51 objects, 6 batches, 106 of 163 draws). It does **not** reduce the draw-call count, it costs memory and build size, and it **preempts both GPU instancing and the SRP Batcher** on every object it touches. Adding more is a net loss. Note also that the SRP Batcher preempts GPU instancing project-wide, so **on this pipeline you get low SetPass counts or a low draw-call count, not both** — which is why TDD §3.2's `< 100 draw calls` was the wrong budget to hold. **Decided 2026-09-10 (owner, ADR-0009, Option A):** keep the SRP Batcher; SetPass Calls Count and render-thread ms are now the budgeted rendering quantities; raw draw-call count is recorded-only, not a pass/fail gate. See `docs/adr/0009-srp-batcher-and-the-draw-call-budget.md` and B132.
+>
+> The measured actual causes of World 2's overruns are **geometry density** (`pfb_env_stepping_stone_tile` at 1,750 tris × 32 = 84,000 tris, a third of the frame — B144) and the **shadow pass** (50 casters against 87 visible renderers), not batching. The 47-module stockade this document flags as the headline draw-call risk measured **10 draw calls and 444 triangles**.
 
 **Do not change a setting before you have the measurement.** The whole point of §7 is that any later "this is faster now" claim can be checked against a recorded before-number. TDD §3.7 opens with the rule: *no optimization is accepted without a before/after measurement on device.*
 

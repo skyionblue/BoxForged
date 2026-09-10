@@ -63,6 +63,15 @@ namespace Boxhead.Core
         public enum GameState { Playing, Won, Lost }
         public GameState State { get; private set; } = GameState.Playing;
 
+        // B105: a boss's HandleDeath() sets this the instant the kill is confirmed, before its
+        // multi-second DefeatSequence animation plays and long before TriggerWin() is finally
+        // reached. Without it, a player death from any cause during that window would win the
+        // TriggerWin()/HandlePlayerDeath() race unconditionally (HandlePlayerDeath() sets State
+        // synchronously; TriggerWin() only fires at the end of the animation), silently dropping
+        // a real win. Owner decision 2026-09-10: once a boss's defeat sequence has started, the
+        // win takes priority — the player already defeated the boss.
+        private bool _bossDefeatInProgress = false;
+
         [SerializeField] private GameOverUI      _gameOverUI;
         [SerializeField] private HUDController_V2 hudController;
         [SerializeField] private RunStartUI      _runStartUI;
@@ -460,9 +469,18 @@ namespace Boxhead.Core
             hudController.SetEnemyCount(remaining);
         }
 
+        // Called by a boss AI's HandleDeath() the instant the kill is confirmed, before its
+        // DefeatSequence animation plays. See _bossDefeatInProgress's comment for why this exists.
+        public void NotifyBossDefeatSequenceStarted()
+        {
+            _bossDefeatInProgress = true;
+        }
+
         private void HandlePlayerDeath()
         {
             if (State != GameState.Playing) return;
+            // B105: a boss defeat already in flight wins the race — see _bossDefeatInProgress.
+            if (_bossDefeatInProgress) return;
             State = GameState.Lost;
 
             if (_saveSystem != null)
