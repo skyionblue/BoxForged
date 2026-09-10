@@ -345,7 +345,7 @@ Everything that must be in place before App Store and Google Play submission.
 - [x] Google Play store listing drafted — same doc, same copy serves both stores
 - [ ] Age rating submitted and confirmed — draft questionnaire answers + rationale in `docs/STORE_LISTING.md` §3 (Everyone/PEGI 7/Apple 9+); still needs actual submission
 - [ ] Privacy policy URL live (required for both stores) — text drafted in `docs/STORE_LISTING.md` §4, to be published at `https://boxforged.com/privacy/`
-- [ ] Support URL live (can be a contact form on theunboxedheroes.com) — text drafted in `docs/STORE_LISTING.md` §6 at `https://boxforged.com/support/`; support email address still undecided
+- [ ] Support URL live (can be a contact form on theunboxedheroes.com) — text drafted in `docs/STORE_LISTING.md` §6 at `https://boxforged.com/support/`; support/feedback email decided: `boxforged@gmail.com` (owner, 2026-09-09)
 - [ ] All App Store metadata reviewed for the name "BoxForged" — no legacy "BoxHead Ninjas" anywhere
 - [ ] App icon gaps fixed (Android adaptive/round icons empty, iOS 180×180 slot mismatch) — see `docs/SPRINT.md` Sprint 2 and `docs/STORE_LISTING.md` §7
 
