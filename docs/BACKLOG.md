@@ -2059,3 +2059,55 @@ Traced to exactly one object. The scene has **2 `MeshCollider`s**, and one of th
 **Also worth checking before closing:** run the same audit on `CulDeSac_WildWestCity.unity` and any other `LevelBuilder` scene — this is a per-asset defect, not a World 2 one, and nothing currently prevents it recurring. An EditMode validation test asserting "every non-convex `MeshCollider` in a `LevelBuilder` scene has `sharedMesh.isReadable`" would catch the whole class at authoring time, which is cheaper than finding it in a device log.
 
 **Fixed 2026-09-10.** Went with option (a): ticked **Read/Write Enabled** on `Koi_pond_basin.fbx`'s importer (`isReadable: 0 → 1` in the `.meta`, applied via `ModelImporter.isReadable`/`SaveAndReimport()`, not a hand-edited YAML file). Chosen over option (b) — the memory cost of one small prop's mesh staying CPU-resident is negligible, and it avoids re-authoring a collider against the dojo ENV prefabs' known-tricky 270°-local-X/100× baked transform convention (B115) for no real benefit. Verified live: re-entered Play Mode in `Backyard_Dojo.unity`, the `"Source mesh Mesh1.0 does not allow read access"` warning that previously fired on every Play Mode entry no longer appears, console otherwise clean. Also checked `CulDeSac_WildWestCity.unity` per the audit note above: it has exactly one `MeshCollider` in the whole scene, and it references Unity's built-in Plane primitive (same pattern as `Backyard_Dojo`'s own `Ground`), not an FBX asset — **World 1 has no instance of this defect class.** So B145 was a single-asset, World-2-only issue, now closed. The EditMode-validation-test suggestion above is still open (not implemented) if the project wants to catch a future recurrence at authoring time instead of in a device log.
+
+### B146. World 2's `RoomGate_Zone0` is narrower than the chokepoint it is supposed to seal — the player can walk around it into zone 1 before clearing zone 0 — **OPEN, found 2026-09-11**
+**Impact:** progression correctness (a zone-gating bypass, the exact defect class ADR-0005 §6.3's flood-fill exists to prevent). **Priority: P2.** Found 2026-09-11 while removing the stockade's visible geometry (see `docs/CHANGELOG.md`, same date) — surfaced by a targeted capsule sweep along both zone-boundary lines, **not** caused by that change: only `MeshRenderer`/`MeshFilter` components were removed in that pass, every `BoxCollider` was left untouched, so this is pre-existing.
+
+Measured in the Editor with `Physics.CheckCapsule` at the player's real `CharacterController` radius (0.3 m), swept along each zone-boundary line in the `[ENV - Static]` local frame, gates closed (their as-authored state):
+
+| Boundary | Gate | Chokepoint width | Open spans found inside the yard |
+|---|---|---|---|
+| z = 17 (zone 0 → zone 1) | `RoomGate_Zone0`, 10.5 m wide, centred local x = 0.25 → spans −5.00…+5.50 | 15 m (stockade at local x −7.5 and +7.5) | **−7.00…−5.20 (1.80 m)** and **+5.90…+7.10 (1.20 m)** |
+| z = 45 (zone 1 → zone 2) | `RoomGate_Zone1`, 9.8 m wide, centred local x = 0.00 → spans −4.90…+4.90 | 7.8 m (16-gon ring opening) | none — sealed, gate overlaps the opening on both sides |
+
+So the zone-1 boundary is correct (the gate is *wider* than its opening, as it should be) and the zone-0 boundary is not: a 10.5 m gate is being asked to close a 15 m gap, leaving ~1.8 m of clear floor on the west side and ~1.2 m on the east. Both are trivially walkable at a 0.6 m player diameter.
+
+**Why the ADR-0005 §6.3 flood-fill did not catch this:** B115's run reported config (b) (gates closed, stockade on) as "confined to zone 0 only (X −7..7)" — which is consistent with a BFS that never found the gaps because they sit at the extreme edges of that same X range, right against the wall line. The check needs re-running as a boundary-line sweep (what was done here) rather than only as an area flood-fill, since an area BFS starting from spawn can plausibly miss a 1.2 m slot hugging a wall depending on grid phase. The 0.5 m grid B115 used is coarse relative to a 1.2 m gap.
+
+**Fix options (do not pick unilaterally — this changes level geometry):**
+- **(a)** Widen `RoomGate_Zone0`'s `BoxCollider` to ≥ 15.5 m and re-centre it on local x = 0 so it overlaps both walls, mirroring how `RoomGate_Zone1` already behaves. One property change, no art impact, and it makes the two gates consistent. **Recommended.**
+- **(b)** Extend the stockade's chokepoint returns inward at z = 17 to narrow the physical opening to ≤ 10.5 m to match the gate. More faithful to the original "visible chokepoint" intent, but that intent is now gone — the entire stockade, chokepoint returns included, is invisible as of 2026-09-11 (owner decision), so narrowing the opening would only ever be felt, never seen. Prefer (a).
+
+Also worth noting for whoever picks this up: `RoomTrigger_Zone1` (the trigger that advances the zone) sits at local z = 19, two metres *past* the gate line, so a player who slips through one of these gaps does not merely enter zone 1 geometry — they trip the zone-advance trigger.
+
+### B147. The forge bench spawns unrotated, so it sits at 45° to the yard it stands in — **OPEN, cosmetic, found 2026-09-11**
+**Impact:** visual/art only. **Priority: P4.** Noticed 2026-09-11 while relocating World 2's zone-0 bench (see `docs/CHANGELOG.md`).
+
+`LevelBuilder.SpawnWorkbenches` (`Systems/LevelBuilder.cs:289`) instantiates every bench with `Quaternion.identity`, and `WeaponDropTableSO.workbenchPositions` is a bare `Vector3[]` with no rotation field. In `Backyard_Dojo` the whole `[ENV - Static]` hierarchy is rotated 45° (ADR-0005 §6 item 1), so a bench whose long axis is world X ends up skewed 45° relative to every wall, path and prop around it. World 1 has the same 45° environment rotation and the same issue.
+
+Nothing is broken — the bench is reachable, its trigger works, and it does not block navmesh (its only collider is a trigger). It just doesn't sit square to the level. Fix would be either a `rotationY` field alongside the position in the drop table (preferred — it is per-placement data, and cardboard piles/scattered weapons have the same limitation), or having `LevelBuilder` inherit `_spawnRoot`'s yaw. Not worth doing on its own; worth folding into the next pass that touches `WeaponDropTableSO`.
+
+### B148. The Luck stat is completely inert — Spark spent on it buys literally nothing — **OPEN, found 2026-09-11**
+**Impact:** players can permanently spend a limited currency on a no-op. **Priority: P2.** Found 2026-09-11 while tracing why Agility felt like it did nothing (see `docs/CHANGELOG.md`).
+
+`StatOverlay.luckBonus` is written in two places (`ProgressionSystem.RebuildOverlay` for the meta stat, `ApplyRunUpgrade` for the `LuckUp` card) and **read in zero**. A full-codebase grep for `luckBonus` returns only those two writes plus the field declaration and the `TotalOverlay` sum. Nothing consumes it.
+
+Two live surfaces expose it to the player anyway:
+- **`MetaScreen` stat index 3 ("Luck")** — a purchasable permanent upgrade at `_upgradeCost` 10 Spark per level, repeatable with no cap. Every purchase is wasted currency.
+- **The `Lucky Break` card** (`_effect: 6 = LuckUp`, magnitude 5), live in `pfb_upgrade_screen.prefab`'s `_cardPool`, described as "Luck stat increased." Picking it costs the player their one upgrade choice for that room and does nothing.
+
+This is strictly worse than the Agility problem that prompted the investigation: Agility at least had a real (if small) effect. Note `CharacterStatsSO._agility` is dead in the same way — declared, commented "dodge speed multiplier", zero consumers.
+
+**Options (owner/design call — do not pick unilaterally):**
+- **(a)** Wire Luck into something real. The natural hook is drop quality — `WeaponDropTableSO` rarity rolls and `WeaponPickup`/`RarityIndicator` already have the concept of rarity, so `luckBonus` biasing a rarity roll is a small, contained change and matches what "Luck" implies to a player.
+- **(b)** Remove it from both surfaces until it is implemented: drop `Lucky Break` from the card pool and hide/disable `MetaScreen`'s Luck button. Cheapest, and stops the currency drain immediately.
+- **(a) then (b) as a stopgap** is probably the right sequence if (a) is not happening this sprint.
+
+### B149. Nothing in the game improves parry, and at least one player expected an upgrade to — **OPEN, design gap, found 2026-09-11**
+**Impact:** player expectation mismatch on a core defensive mechanic. **Priority: P3.** Raised 2026-09-11 from a direct player report (owner's partner): he was actively using dodge and parry, picked Agility expecting it to widen his parry, and felt no change.
+
+`CombatController.parryActiveWindow` is 0.4 s and is written in exactly one place outside its declaration: `FightingStyleData`'s `PassiveType.WiderParryWindow` (the Cowboy passive), applied once at run start. No meta stat, no in-run card and no weapon modifies it. The same is true of `counterWindowDuration` (1.5 s).
+
+So parry skill is entirely fixed for the whole run the moment the player picks a fighting style — and the only way to get a better parry is to play Cowboy, which is not communicated anywhere in the upgrade UI. Since parry is a defensive core mechanic with a heal attached (`_parryHealAmount` 5, `_counterHealAmount` 10), it is a natural thing for players to want to invest in.
+
+**Worth deciding:** whether parry is *meant* to be a fixed execution skill (a legitimate design position — it keeps parry about timing rather than stats) or whether it should be upgradeable. If the former, the upgrade UI should stop implying otherwise; if the latter, a `ParryWindowUp` effect is a small addition to the existing `UpgradeEffect` enum and overlay plumbing. Not a bug — a gap between design intent and player expectation that has now been observed in the wild once.

@@ -319,7 +319,12 @@ namespace Boxhead.Core
 
             _overlay.maxHealthBonus   = levels[0] * _statBonusPerLevel;
             _overlay.attackPowerBonus = levels[1] * _statBonusPerLevel;
-            _overlay.agilityBonus     = levels[2] * _statBonusPerLevel * 0.1f;
+            // Agility is spent as raw metres added to CombatController.dodgeDistance (3 m base),
+            // so the 0.1 scale here meant +0.5 m per level — a 17% longer roll, which playtesting
+            // (2026-09-11) found imperceptible. Raised to 0.15 (+0.75 m/level) so a single level
+            // reads as a real change. CombatController clamps the total, so raising this cannot
+            // run away as levels accumulate.
+            _overlay.agilityBonus     = levels[2] * _statBonusPerLevel * 0.15f;
             _overlay.luckBonus        = levels[3] * _statBonusPerLevel * 0.1f;
             _overlay.defenseBonus     = levels[4] * _statBonusPerLevel;
         }

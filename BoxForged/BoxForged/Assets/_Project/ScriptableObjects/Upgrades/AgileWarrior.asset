@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e286e9a133314141a4c8e3d80413da3, type: 3}
   m_Name: AgileWarrior
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.UpgradeCardData
-  _displayName: Swift Strikes
-  _description: Movement speed increased.
+  _displayName: Light Footwork
+  _description: Dodge roll travels further and faster.
   _effect: 5
-  _magnitude: 5
+  _magnitude: 0.75
   _icon: {fileID: 0}

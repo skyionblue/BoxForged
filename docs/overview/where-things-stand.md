@@ -1,6 +1,6 @@
 # Where Things Stand
 
-*Last updated: 2026-09-10. This is the one file to read to answer "where are we."
+*Last updated: 2026-09-11. This is the one file to read to answer "where are we."
 Full detail always lives in `docs/SPRINT.md` and `docs/BACKLOG.md` — this just
 summarizes it in plain language.*
 
@@ -13,6 +13,46 @@ submission yet. The support page and privacy policy are both live on the real
 website. A two-week-old performance finding turned out to be a false alarm and
 got corrected. One intermittent bug (occasional missing win screen) is still
 being chased.
+
+## Latest change (2026-09-11)
+
+**World 2's fences are gone.** The Backyard/Dojo used to be ringed by a visible
+bamboo stockade. You asked for it to work the way World 1 does — nothing to look
+at, but still something that stops you walking off the edge — so the walls'
+*visuals* were deleted and their *collision* was left completely untouched. You
+can't tell the difference by walking around; you just can't see a fence any more.
+
+Two things worth knowing:
+
+- **The zone gates are now invisible too.** In World 2 the barrier that holds you
+  in zone 1 until you've cleared it never had any artwork of its own — the fence
+  was doing that job. With the fence gone, you'll walk into an invisible wall with
+  nothing on screen to explain it. If that feels bad in play, the fix is to give
+  the *gate* a visual (a shimmer, a rope, something), not to bring the fence back.
+- **Also fixed:** one of World 2's weapon pickups was being dropped inside the
+  forge bench. The bench has been moved 12 m further up the yard, into the
+  emptiest part of zone 0 — it's now near the gate at the far end rather than
+  sitting next to where you start, and it keeps at least 3 m of clearance from
+  every enemy spawn point and prop around it.
+- **Agility upgrades now do something you can feel.** Your partner was right —
+  picking Agility changed almost nothing. It was wired up correctly, but it only
+  ever affected one thing: how far the dodge roll travels, by half a metre per
+  level on a 3 m roll. A level is now worth +0.75 m (a 25% longer, faster roll),
+  and the two in-run Agility cards had magnitudes that were 10-20x too large
+  (one would have given a 13 m dodge) — those are re-scaled, with a hard ceiling
+  so it can't run away. One card claimed "Movement speed increased," which was
+  flatly untrue; its text and name are corrected.
+- **Parry can't be upgraded by anything, and that's worth a decision.** He was
+  also trying to parry and expected Agility to help. Nothing in the game improves
+  the parry window — the only way to get a wider one is to pick the Cowboy
+  fighting style at the start of a run. Logged as B149.
+- **Luck does nothing at all** (B148). Spark spent on the Luck stat, and the
+  "Lucky Break" card, are both completely inert — nothing in the game reads that
+  value. Needs your call: wire it to drop quality, or take it off the menu.
+- **A real bug turned up while measuring this** (`B146`, not caused by the change):
+  the zone-0 gate is 10.5 m wide but the gap it's meant to plug is 15 m, so there
+  are two walkable slots either side of it. A player can currently slip past into
+  zone 1 without clearing zone 0. Needs your call on the fix — see `docs/BACKLOG.md`.
 
 ## What's working
 

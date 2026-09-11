@@ -23,6 +23,12 @@ namespace Boxhead.Player
         [SerializeField] private float dodgeMovementDelay = 0.2f;
         private float _dodgeDistanceMultiplier = 1f;
 
+        /// <summary>
+        /// Ceiling on how far Agility can stretch the dodge, as a multiple of <see cref="dodgeDistance"/>.
+        /// A const rather than a serialized field so it needs no Inspector wiring on existing prefabs.
+        /// </summary>
+        private const float MaxDodgeDistanceScale = 2.5f;
+
         [Header("Parry")]
         [SerializeField] private float parryActiveWindow = 0.4f;
 
@@ -711,7 +717,14 @@ namespace Boxhead.Player
             // so the visual step and the character's actual displacement stay in sync.
             yield return _waitDodgeDelay;
             float moveDuration = dodgeDuration - dodgeMovementDelay;
-            float effectiveDodgeDist = (dodgeDistance + (Boxhead.Core.ProgressionSystem.Instance?.TotalOverlay.agilityBonus ?? 0f)) * _dodgeDistanceMultiplier;
+            // Agility is the only stat that feeds the dodge. It is additive in metres, and both the
+            // meta stat and the in-run AgilityUp cards stack into it, so it is clamped here: without
+            // a ceiling a long run of Agility picks turns the roll into a cross-arena teleport, which
+            // also skips the CharacterController past geometry it should collide with. The roll's
+            // duration is fixed, so extra distance is also extra speed — that is intentional.
+            float agilityBonus       = Boxhead.Core.ProgressionSystem.Instance?.TotalOverlay.agilityBonus ?? 0f;
+            float boostedDodgeDist   = Mathf.Min(dodgeDistance + agilityBonus, dodgeDistance * MaxDodgeDistanceScale);
+            float effectiveDodgeDist = boostedDodgeDist * _dodgeDistanceMultiplier;
             float elapsed = 0f;
             while (elapsed < moveDuration)
             {

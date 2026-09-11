@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SwiftFeet
   m_EditorClassIdentifier: Assembly-CSharp::Boxhead.Systems.UpgradeCardData
   _displayName: Swift Feet
-  _description: Agility and dodge speed increased.
+  _description: Dodge roll travels much further and faster.
   _effect: 5
-  _magnitude: 10
+  _magnitude: 1.5
   _icon: {fileID: 0}

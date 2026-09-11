@@ -42,6 +42,6 @@ MonoBehaviour:
   - worldPosition: {x: 37.123104, y: 0, z: 30.052038}
     amount: 3
   workbenchPositions:
-  - {x: -1.7678, y: 0, z: 4.5962}
-  - {x: 24.83, y: 0, z: 19.80}
+  - {x: 8.132, y: 0, z: 11.667}
+  - {x: 24.83, y: 0, z: 19.8}
   envProps: []
